@@ -1,34 +1,46 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #0a0a0f;
+  --bg-card: #111118;
+  --bg-card-active: #0d1a2e;
+  --bg-card-alert: #1a0d0d;
+  --border: #1e1e28;
+  --border-active: #1e3a5f;
+  --border-alert: #3d1a1a;
+  --text-primary: #ffffff;
+  --text-secondary: #888;
+  --text-muted: #444;
+  --accent-blue: #60a5fa;
+  --accent-green: #34d399;
+  --accent-red: #f87171;
+  --accent-amber: #fbbf24;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+html, body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-sans), -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 input, select, textarea {
-  color: #111827;
+  color: #ffffff;
+  background: #1a1a24;
 }
 
 input::placeholder, textarea::placeholder {
-  color: #9ca3af;
+  color: #555;
+}
+
+::-webkit-scrollbar {
+  display: none;
 }
