@@ -3,6 +3,7 @@ import { deleteHistory, deleteInventory } from '@/lib/actions'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import DoctorTab from '@/app/components/DoctorTab'
+import HouseIllustration from '@/app/components/HouseIllustration'
 
 export const dynamic = 'force-dynamic'
 
@@ -71,25 +72,7 @@ export default async function HousePage({
 
       {/* House Illustration */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 0 12px', position: 'relative' }}>
-        <svg width="220" height="170" viewBox="0 0 220 170" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="110" cy="162" rx="80" ry="7" fill="#1a1a2e" opacity="0.7" />
-          <polygon points="110,22 190,82 30,82" fill="#1a2540" stroke="#2a4a80" strokeWidth="1" />
-          <rect x="34" y="82" width="152" height="80" fill="#111828" stroke="#1e3a5f" strokeWidth="0.8" />
-          <rect x="50" y="98" width="36" height="28" fill="#0d1a2e" stroke="#2a4a80" strokeWidth="0.6" rx="2" />
-          <line x1="68" y1="98" x2="68" y2="126" stroke="#2a4a80" strokeWidth="0.4" />
-          <line x1="50" y1="112" x2="86" y2="112" stroke="#2a4a80" strokeWidth="0.4" />
-          <rect x="100" y="98" width="36" height="28" fill="#0d1a2e" stroke="#2a4a80" strokeWidth="0.6" rx="2" />
-          <line x1="118" y1="98" x2="118" y2="126" stroke="#2a4a80" strokeWidth="0.4" />
-          <line x1="100" y1="112" x2="136" y2="112" stroke="#2a4a80" strokeWidth="0.4" />
-          <rect x="145" y="100" width="26" height="62" fill="#0d1a2e" stroke="#1e3a5f" strokeWidth="0.6" rx="2" />
-          <rect x="152" y="118" width="6" height="6" fill="#1e3a5f" rx="1" />
-          <rect x="84" y="118" width="28" height="44" fill="#0d1520" stroke="#1e3a5f" strokeWidth="0.5" rx="2" />
-          <circle cx="110" cy="22" r="4" fill="#60a5fa" opacity="0.9" />
-          <circle cx="60" cy="108" r="14" fill="none" stroke="#1d4ed8" strokeWidth="0.5" opacity="0.4" />
-          <circle cx="116" cy="108" r="14" fill="none" stroke="#1d4ed8" strokeWidth="0.5" opacity="0.4" />
-          <circle cx="60" cy="108" r="2.5" fill="#60a5fa" opacity="0.7" />
-          <circle cx="116" cy="108" r="2.5" fill="#60a5fa" opacity="0.7" />
-        </svg>
+        <HouseIllustration houseType={house.houseType} />
         <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: 180, height: 30, background: 'radial-gradient(ellipse, rgba(59,130,246,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
       </div>
 
