@@ -31,10 +31,10 @@ export default async function HousePage({
   params, searchParams,
 }: {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ tab?: string }>
+  searchParams: Promise<{ tab?: string; highlight?: string }>
 }) {
   const { id } = await params
-  const { tab = 'home' } = await searchParams
+  const { tab = 'home', highlight } = await searchParams
 
   const house = await prisma.house.findUnique({
     where: { id },
@@ -261,7 +261,7 @@ export default async function HousePage({
                 {recentHistories.map((h, idx) => {
                   const dotColors: Record<string, string> = { 수리: '#60a5fa', 교체: '#a78bfa', 점검: '#34d399', 청소: '#fbbf24', 기타: '#888' }
                   return (
-                    <div key={h.id} style={{ display: 'flex', gap: 12, paddingBottom: idx < recentHistories.length - 1 ? 16 : 0, position: 'relative' }}>
+                    <Link key={h.id} href={`/houses/${id}?tab=history&highlight=${h.id}`} style={{ display: 'flex', gap: 12, paddingBottom: idx < recentHistories.length - 1 ? 16 : 0, position: 'relative', textDecoration: 'none', color: 'inherit' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <div style={{ width: 8, height: 8, borderRadius: '50%', background: dotColors[h.category] || '#888', flexShrink: 0, marginTop: 4 }} />
                         {idx < recentHistories.length - 1 && (
@@ -269,16 +269,19 @@ export default async function HousePage({
                         )}
                       </div>
                       <div style={{ flex: 1, paddingBottom: 4 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                           <p style={{ fontSize: 13, fontWeight: 500 }}>{h.title}</p>
-                          <p style={{ fontSize: 11, color: '#555' }}>{h.doneAt.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}</p>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                            <p style={{ fontSize: 11, color: '#555' }}>{h.doneAt.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}</p>
+                            <i className="ti ti-chevron-right" style={{ fontSize: 12, color: '#333' }} />
+                          </div>
                         </div>
                         <p style={{ fontSize: 11, color: '#555', marginTop: 1 }}>
                           {h.company && `${h.company} · `}
                           {h.cost != null ? `${h.cost.toLocaleString()}원` : h.category}
                         </p>
                       </div>
-                    </div>
+                    </Link>
                   )
                 })}
               </div>
@@ -356,8 +359,9 @@ export default async function HousePage({
                 const icon = CATEGORY_ICONS[h.category] || 'ti-pin'
                 const catColors: Record<string, string> = { 수리: '#60a5fa', 교체: '#a78bfa', 점검: '#34d399', 청소: '#fbbf24', 기타: '#888' }
                 const color = catColors[h.category] || '#888'
+                const isHighlighted = highlight === h.id
                 return (
-                  <div key={h.id} style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 14, padding: '14px 16px', display: 'flex', gap: 12 }}>
+                  <div key={h.id} id={`history-${h.id}`} style={{ background: isHighlighted ? '#0d1a2e' : 'var(--bg-card)', border: isHighlighted ? '1px solid #3b82f6' : '0.5px solid var(--border)', borderRadius: 14, padding: '14px 16px', display: 'flex', gap: 12, transition: 'border 0.3s' }}>
                     <div style={{ width: 36, height: 36, borderRadius: 10, background: color + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <i className={`ti ${icon}`} style={{ fontSize: 18, color }} aria-hidden="true" />
                     </div>
