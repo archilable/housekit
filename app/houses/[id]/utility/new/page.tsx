@@ -18,12 +18,31 @@ const UTILITY_ITEMS = [
   { name: 'telecom',  label: '통신비', icon: 'ti-wifi', color: '#34d399', placeholder: '89000' },
 ]
 
-export default async function NewUtilityPage({ params }: { params: Promise<{ id: string }> }) {
+// 최근 24개월 목록 생성
+function getMonthOptions() {
+  const months = []
+  const d = new Date()
+  for (let i = 0; i < 24; i++) {
+    months.push(d.toISOString().slice(0, 7))
+    d.setMonth(d.getMonth() - 1)
+  }
+  return months
+}
+
+export default async function NewUtilityPage({
+  params, searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ month?: string }>
+}) {
   const { id } = await params
+  const { month: qMonth } = await searchParams
   const thisMonth = new Date().toISOString().slice(0, 7)
+  const selectedMonth = qMonth || thisMonth
 
   // 기존 데이터 불러오기
-  const existing = await prisma.utility.findUnique({ where: { houseId_month: { houseId: id, month: thisMonth } } })
+  const existing = await prisma.utility.findUnique({ where: { houseId_month: { houseId: id, month: selectedMonth } } })
+  const months = getMonthOptions()
 
   return (
     <div style={{ padding: '20px 16px', maxWidth: '100%' }}>
@@ -31,13 +50,23 @@ export default async function NewUtilityPage({ params }: { params: Promise<{ id:
         <Link href={`/houses/${id}?tab=utility`} style={{ color: '#555', textDecoration: 'none' }}>
           <i className="ti ti-arrow-left" style={{ fontSize: 20, verticalAlign: -3 }} />
         </Link>
-        <h1 style={{ fontSize: 20, fontWeight: 500, marginTop: 14, marginBottom: 4 }}>공과금 입력</h1>
-        <p style={{ fontSize: 13, color: '#666', margin: 0 }}>{thisMonth.replace('-', '년 ')}월</p>
+        <h1 style={{ fontSize: 20, fontWeight: 500, marginTop: 14, marginBottom: 0 }}>공과금 입력</h1>
       </div>
 
       <form action={upsertUtility} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <input type="hidden" name="houseId" value={id} />
-        <input type="hidden" name="month" value={thisMonth} />
+
+        {/* 월 선택 */}
+        <div style={fieldStyle}>
+          <label style={labelStyle}>청구월 선택</label>
+          <select name="month" defaultValue={selectedMonth} style={{ ...inputStyle, appearance: 'none' as const }}>
+            {months.map(m => (
+              <option key={m} value={m}>
+                {m.replace('-', '년 ')}월{m === thisMonth ? ' (이번달)' : ''}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {UTILITY_ITEMS.map(({ name, label, icon, color, placeholder }) => (
           <div key={name} style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 14, padding: 16 }}>
