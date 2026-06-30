@@ -52,7 +52,7 @@ export default async function HousePage({
   void s
 
   return (
-    <div style={{ color: '#fff' }}>
+    <div style={{ color: '#fff', width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 20px 0' }}>
         <Link href="/" style={{ color: '#555', textDecoration: 'none', fontSize: 13 }}>

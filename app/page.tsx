@@ -46,7 +46,7 @@ export default async function Home() {
   }
 
   return (
-    <div style={{ padding: '24px 16px 0' }}>
+    <div style={{ padding: '24px 16px 0', width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
           <p style={{ fontSize: 12, color: '#555', marginBottom: 2 }}>내 자산</p>

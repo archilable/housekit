@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ko" className={geistSans.variable}>
       <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--bg)", overflowX: "hidden" }}>
-        <main style={{ flex: 1, maxWidth: 430, width: "100%", margin: "0 auto", paddingBottom: 80, boxSizing: "border-box" }}>
+        <main style={{ flex: 1, width: "100%", maxWidth: 430, margin: "0 auto", paddingBottom: 80, boxSizing: "border-box", overflowX: "hidden" }}>
           {children}
         </main>
 
@@ -30,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           display: "flex", justifyContent: "space-around", alignItems: "center",
           padding: "10px 0 20px",
           zIndex: 100,
+          boxSizing: "border-box",
         }}>
           {[
             { href: "/", icon: "ti-home-2", label: "홈" },
