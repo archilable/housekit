@@ -34,14 +34,22 @@ export async function POST(req: NextRequest) {
     }
     parts.push({ text: prompt })
 
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts }] }),
-      }
-    )
+    const apiKey = process.env.GEMINI_API_KEY!
+
+    // AQ. 형식 키는 Bearer 토큰, AIza 형식은 query param
+    const isBearer = apiKey.startsWith('AQ.')
+    const url = isBearer
+      ? 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent'
+      : `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`
+
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+    if (isBearer) headers['Authorization'] = `Bearer ${apiKey}`
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ contents: [{ parts }] }),
+    })
 
     const data = await res.json()
     if (!res.ok) {
