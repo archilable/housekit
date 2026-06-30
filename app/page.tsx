@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/db'
-import { deleteHouse } from '@/lib/actions'
 import Link from 'next/link'
+import DeleteHouseButton from './components/DeleteHouseButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -98,13 +98,9 @@ export default async function Home() {
                   대시보드 열기
                 </Link>
                 <div style={{ width: '0.5px', background: '#1a1a22' }} />
-                <form action={deleteHouse.bind(null, house.id)} style={{ flex: 0 }}>
-                  <button type="submit"
-                    onClick={(e) => { if (!confirm(`"${house.address}" 주택을 삭제할까요?\n모든 데이터가 삭제됩니다.`)) e.preventDefault() }}
-                    style={{ width: '100%', padding: '10px 20px', fontSize: 12, color: '#f87171', background: 'none', border: 'none', cursor: 'pointer' }}>
-                    삭제
-                  </button>
-                </form>
+                <div style={{ flex: 0 }}>
+                  <DeleteHouseButton id={house.id} address={house.address} />
+                </div>
               </div>
             </div>
           )
