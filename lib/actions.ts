@@ -63,6 +63,25 @@ export async function createInventory(formData: FormData) {
   redirect(`/houses/${houseId}?tab=inventory`)
 }
 
+export async function updateInventory(id: string, formData: FormData) {
+  const houseId = formData.get('houseId') as string
+  const installedAtStr = formData.get('installedAt') as string
+  await prisma.inventory.update({
+    where: { id },
+    data: {
+      category: formData.get('category') as string,
+      name: formData.get('name') as string,
+      brand: (formData.get('brand') as string) || null,
+      model: (formData.get('model') as string) || null,
+      installedAt: installedAtStr ? new Date(installedAtStr) : null,
+      warrantyMonths: formData.get('warrantyMonths') ? parseInt(formData.get('warrantyMonths') as string) : null,
+      notes: (formData.get('notes') as string) || null,
+    },
+  })
+  revalidatePath(`/houses/${houseId}`)
+  redirect(`/houses/${houseId}?tab=inventory`)
+}
+
 export async function deleteInventory(id: string, houseId: string) {
   await prisma.inventory.delete({ where: { id } })
   revalidatePath(`/houses/${houseId}`)
@@ -90,6 +109,23 @@ export async function createHistory(formData: FormData) {
     },
   })
 
+  revalidatePath(`/houses/${houseId}`)
+  redirect(`/houses/${houseId}?tab=history`)
+}
+
+export async function updateHistory(id: string, formData: FormData) {
+  const houseId = formData.get('houseId') as string
+  await prisma.history.update({
+    where: { id },
+    data: {
+      category: formData.get('category') as string,
+      title: formData.get('title') as string,
+      description: (formData.get('description') as string) || null,
+      company: (formData.get('company') as string) || null,
+      cost: formData.get('cost') ? parseInt(formData.get('cost') as string) : null,
+      doneAt: new Date(formData.get('doneAt') as string),
+    },
+  })
   revalidatePath(`/houses/${houseId}`)
   redirect(`/houses/${houseId}?tab=history`)
 }

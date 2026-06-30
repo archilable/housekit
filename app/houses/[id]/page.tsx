@@ -290,11 +290,16 @@ export default async function HousePage({
                       {item.brand && <p style={{ fontSize: 12, color: '#666' }}>{item.brand} {item.model}</p>}
                       {item.installedAt && <p style={{ fontSize: 11, color: '#444', marginTop: 1 }}>설치 {item.installedAt.toLocaleDateString('ko-KR')}</p>}
                     </div>
-                    <form action={deleteInventory.bind(null, item.id, id)}>
-                      <button type="submit" style={{ background: 'none', border: 'none', color: '#444', cursor: 'pointer', fontSize: 18, padding: 4 }}>
-                        <i className="ti ti-trash" aria-hidden="true" />
-                      </button>
-                    </form>
+                    <div style={{ display: 'flex', gap: 4 }}>
+                      <a href={`/houses/${id}/inventory/${item.id}/edit`} style={{ background: 'none', border: 'none', color: '#60a5fa', cursor: 'pointer', fontSize: 18, padding: 4, textDecoration: 'none' }}>
+                        <i className="ti ti-pencil" aria-hidden="true" />
+                      </a>
+                      <form action={deleteInventory.bind(null, item.id, id)}>
+                        <button type="submit" style={{ background: 'none', border: 'none', color: '#444', cursor: 'pointer', fontSize: 18, padding: 4 }}>
+                          <i className="ti ti-trash" aria-hidden="true" />
+                        </button>
+                      </form>
+                    </div>
                   </div>
                 )
               })}
@@ -338,11 +343,16 @@ export default async function HousePage({
                         {h.cost != null && <span>{h.cost.toLocaleString()}원</span>}
                       </div>
                     </div>
-                    <form action={deleteHistory.bind(null, h.id, id)}>
-                      <button type="submit" style={{ background: 'none', border: 'none', color: '#444', cursor: 'pointer', fontSize: 18, padding: 4 }}>
-                        <i className="ti ti-trash" aria-hidden="true" />
-                      </button>
-                    </form>
+                    <div style={{ display: 'flex', gap: 4 }}>
+                      <a href={`/houses/${id}/history/${h.id}/edit`} style={{ background: 'none', border: 'none', color: '#60a5fa', cursor: 'pointer', fontSize: 18, padding: 4, textDecoration: 'none' }}>
+                        <i className="ti ti-pencil" aria-hidden="true" />
+                      </a>
+                      <form action={deleteHistory.bind(null, h.id, id)}>
+                        <button type="submit" style={{ background: 'none', border: 'none', color: '#444', cursor: 'pointer', fontSize: 18, padding: 4 }}>
+                          <i className="ti ti-trash" aria-hidden="true" />
+                        </button>
+                      </form>
+                    </div>
                   </div>
                 )
               })}
