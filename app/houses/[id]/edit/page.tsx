@@ -7,9 +7,13 @@ const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
   borderRadius: 10, padding: '12px 14px', fontSize: 15, color: '#fff',
   outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' as const,
+  display: 'block' as const,
 }
 const labelStyle = { fontSize: 12, color: '#888', display: 'block', marginBottom: 8 }
 const fieldStyle = { display: 'flex', flexDirection: 'column' as const }
+
+const currentYear = new Date().getFullYear()
+const years = Array.from({ length: currentYear - 1949 }, (_, i) => currentYear - i)
 
 export default async function EditHousePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -49,11 +53,16 @@ export default async function EditHousePage({ params }: { params: Promise<{ id: 
 
         <div style={fieldStyle}>
           <label style={labelStyle}>건축연도</label>
-          <input name="buildYear" type="number" defaultValue={house.buildYear ?? ''} min="1900" max={new Date().getFullYear()} style={inputStyle} />
+          <select name="buildYear" defaultValue={house.buildYear ?? ''} style={{ ...inputStyle, appearance: 'none' as const }}>
+            <option value="">선택하세요</option>
+            {years.map(y => (
+              <option key={y} value={y}>{y}년</option>
+            ))}
+          </select>
         </div>
 
         <div style={fieldStyle}>
-          <label style={labelStyle}>면적 (㎡)</label>
+          <label style={labelStyle}>건축면적 (㎡)</label>
           <input name="area" type="number" defaultValue={house.area ?? ''} step="0.1" style={inputStyle} />
         </div>
 
