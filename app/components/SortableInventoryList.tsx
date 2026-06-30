@@ -15,6 +15,10 @@ interface InventoryItem {
   installedAt: Date | null
   warrantyMonths: number | null
   sortOrder: number
+  contactName: string | null
+  contactPhone: string | null
+  contactCompany: string | null
+  contactImageBase64: string | null
 }
 
 const INVENTORY_ICONS: Record<string, string> = { 보일러: 'ti-flame', 에어컨: 'ti-air-conditioning', 정수기: 'ti-droplet', 냉장고: 'ti-snowflake', 세탁기: 'ti-wash', 도어락: 'ti-lock', 기타: 'ti-package' }
@@ -136,6 +140,16 @@ export default function SortableInventoryList({ initialItems, houseId }: { initi
               </div>
               {item.brand && <p style={{ fontSize: 12, color: '#666' }}>{item.brand} {item.model}</p>}
               {item.installedAt && <p style={{ fontSize: 11, color: '#444', marginTop: 1 }}>설치 {new Date(item.installedAt).toLocaleDateString('ko-KR')}</p>}
+              {(item.contactCompany || item.contactPhone) && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 5, flexWrap: 'wrap' }}>
+                  {item.contactCompany && <span style={{ fontSize: 11, color: '#555' }}>{item.contactCompany}</span>}
+                  {item.contactPhone && (
+                    <a href={`tel:${item.contactPhone}`} style={{ fontSize: 11, color: '#60a5fa', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 3 }}>
+                      <i className="ti ti-phone" style={{ fontSize: 11 }} />{item.contactPhone}
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
             <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
               <a href={`/houses/${houseId}/inventory/${item.id}/edit`} style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: 18, padding: 4, textDecoration: 'none' }}>

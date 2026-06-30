@@ -1,5 +1,6 @@
 import { createInventory } from '@/lib/actions'
 import Link from 'next/link'
+import ContactForm from '@/app/components/ContactForm'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
@@ -66,6 +67,8 @@ export default async function NewInventoryPage({ params }: { params: Promise<{ i
           <label style={labelStyle}>메모</label>
           <textarea name="notes" rows={3} placeholder="추가 정보" style={{ ...inputStyle, resize: 'none' as const }} />
         </div>
+
+        <ContactForm />
 
         <button type="submit" style={{ marginTop: 4, background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: 14, padding: '15px', fontSize: 15, fontWeight: 500, cursor: 'pointer', width: '100%' }}>
           추가하기

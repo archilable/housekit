@@ -73,6 +73,10 @@ export async function createInventory(formData: FormData) {
       installedAt: installedAtStr ? new Date(installedAtStr) : null,
       warrantyMonths,
       notes: notes || null,
+      contactName: (formData.get('contactName') as string) || null,
+      contactPhone: (formData.get('contactPhone') as string) || null,
+      contactCompany: (formData.get('contactCompany') as string) || null,
+      contactImageBase64: (formData.get('contactImageBase64') as string) || null,
     },
   })
 
@@ -93,6 +97,10 @@ export async function updateInventory(id: string, formData: FormData) {
       installedAt: installedAtStr ? new Date(installedAtStr) : null,
       warrantyMonths: formData.get('warrantyMonths') ? parseInt(formData.get('warrantyMonths') as string) : null,
       notes: (formData.get('notes') as string) || null,
+      contactName: (formData.get('contactName') as string) || null,
+      contactPhone: (formData.get('contactPhone') as string) || null,
+      contactCompany: (formData.get('contactCompany') as string) || null,
+      contactImageBase64: (formData.get('contactImageBase64') as string) || null,
     },
   })
   revalidatePath(`/houses/${houseId}`)

@@ -44,7 +44,11 @@ model Inventory {
   installedAt    DateTime?
   warrantyMonths Int?
   notes          String?
-  sortOrder      Int       @default(0)
+  sortOrder           Int       @default(0)
+  contactName         String?
+  contactPhone        String?
+  contactCompany      String?
+  contactImageBase64  String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }

@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db'
 import { updateInventory } from '@/lib/actions'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import ContactForm from '@/app/components/ContactForm'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
@@ -72,6 +73,13 @@ export default async function EditInventoryPage({ params }: { params: Promise<{ 
           <label style={labelStyle}>메모</label>
           <textarea name="notes" rows={3} defaultValue={item.notes ?? ''} style={{ ...inputStyle, resize: 'none' as const }} />
         </div>
+
+        <ContactForm
+          defaultName={item.contactName ?? ''}
+          defaultPhone={item.contactPhone ?? ''}
+          defaultCompany={item.contactCompany ?? ''}
+          defaultImage={item.contactImageBase64 ?? ''}
+        />
 
         <button type="submit" style={{ marginTop: 4, background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: 14, padding: '15px', fontSize: 15, fontWeight: 500, cursor: 'pointer', width: '100%' }}>
           저장하기
