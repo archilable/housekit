@@ -46,15 +46,23 @@ export default function RealPriceData({ address, houseType, area }: Props) {
     setFetched(true)
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => {}, [])
+
+  if (!fetched && !loading) return (
+    <div style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 16, padding: 20, marginTop: 16, textAlign: 'center' }}>
+      <p style={{ fontSize: 12, color: '#555', marginBottom: 14 }}>국토교통부 실거래가를 조회합니다</p>
+      <button onClick={load} style={{ background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: 12, padding: '12px 28px', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, margin: '0 auto' }}>
+        <i className="ti ti-building-estate" style={{ fontSize: 16 }} />
+        국토부 실거래가 조회
+      </button>
+    </div>
+  )
 
   if (loading) return (
     <div style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 16, padding: 20, marginTop: 16, textAlign: 'center' }}>
       <p style={{ fontSize: 13, color: '#555' }}>실거래가 조회 중...</p>
     </div>
   )
-
-  if (!fetched) return null
 
   if (data?.error) return (
     <div style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 16, padding: 20, marginTop: 16 }}>
