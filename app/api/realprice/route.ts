@@ -125,10 +125,10 @@ export async function GET(req: NextRequest) {
   const key = process.env.PUBLIC_DATA_API_KEY!
   const lawdCd = getLawdCd(address)
 
-  // 최근 3개월 데이터 수집
+  // 최근 6개월 데이터 수집
   const months: string[] = []
   const now = new Date()
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 6; i++) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
     months.push(`${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}`)
   }

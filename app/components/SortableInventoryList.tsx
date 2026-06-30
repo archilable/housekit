@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react'
 
 interface WarrantyStatus {
   label: string; color: string; bg: string; border: string
@@ -34,7 +34,7 @@ function getWarrantyStatus(installedAt: Date | null, warrantyMonths: number | nu
   return { label: `보증 ${Math.floor(diffDays / 30)}개월`, color: '#34d399', bg: '#0d1f14', border: '#1a3d28' }
 }
 
-export default function SortableInventoryList({ initialItems, houseId }: { initialItems: InventoryItem[], houseId: string }) {
+export default function SortableInventoryList({ initialItems, houseId, highlightId }: { initialItems: InventoryItem[], houseId: string, highlightId?: string }) {
   const [items, setItems] = useState(initialItems)
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [overId, setOverId] = useState<string | null>(null)
@@ -50,6 +50,13 @@ export default function SortableInventoryList({ initialItems, houseId }: { initi
   const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map())
 
   useEffect(() => { itemsRef.current = items }, [items])
+
+  useLayoutEffect(() => {
+    if (highlightId) {
+      const el = itemRefs.current.get(highlightId)
+      if (el) { setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100) }
+    }
+  }, [highlightId])
   useEffect(() => { draggingIdRef.current = draggingId }, [draggingId])
   useEffect(() => { overIdRef.current = overId }, [overId])
 
@@ -169,6 +176,7 @@ export default function SortableInventoryList({ initialItems, houseId }: { initi
         const icon = INVENTORY_ICONS[item.category] || 'ti-package'
         const isDrag = draggingId === item.id
         const isOver = overId === item.id
+        const isHighlighted = highlightId === item.id
 
         return (
           <div
@@ -178,8 +186,8 @@ export default function SortableInventoryList({ initialItems, houseId }: { initi
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
             style={{
-              background: 'var(--bg-card)',
-              border: isOver ? '1px solid #3b82f6' : `0.5px solid ${w ? w.border : 'var(--border)'}`,
+              background: isHighlighted ? '#1a0e00' : 'var(--bg-card)',
+              border: isHighlighted ? '1px solid #f97316' : isOver ? '1px solid #3b82f6' : `0.5px solid ${w ? w.border : 'var(--border)'}`,
               borderRadius: 14, padding: '14px 16px',
               display: 'flex', alignItems: 'center', gap: 12,
               opacity: isDrag ? 0.4 : 1,

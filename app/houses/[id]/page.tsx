@@ -90,7 +90,7 @@ export default async function HousePage({
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {warrantyAlerts.map(item => (
-              <Link key={item.id} href={`/houses/${id}?tab=inventory`} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(249,115,22,0.08)', borderRadius: 10, padding: '10px 12px' }}>
+              <Link key={item.id} href={`/houses/${id}?tab=inventory&highlight=${item.id}`} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(249,115,22,0.08)', borderRadius: 10, padding: '10px 12px' }}>
                 <div>
                   <p style={{ fontSize: 13, fontWeight: 500, color: '#fff' }}>{item.name}</p>
                   {item.brand && <p style={{ fontSize: 11, color: '#888', marginTop: 2 }}>{item.brand}</p>}
@@ -356,7 +356,7 @@ export default async function HousePage({
               <p style={{ fontSize: 11, color: '#333', marginBottom: 10 }}>
                 <i className="ti ti-grip-vertical" style={{ marginRight: 4 }} />꾹 눌러서 순서 변경 가능
               </p>
-              <SortableInventoryList initialItems={house.inventories} houseId={id} />
+              <SortableInventoryList initialItems={house.inventories} houseId={id} highlightId={highlight} />
             </>
           )}
         </div>
