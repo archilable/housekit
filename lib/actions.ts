@@ -3,9 +3,11 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { prisma } from './db'
+import { auth } from '@/auth'
 
 // House actions
 export async function createHouse(formData: FormData) {
+  const session = await auth()
   const address = formData.get('address') as string
   const addressDetail = formData.get('addressDetail') as string
   const buildYear = formData.get('buildYear') ? parseInt(formData.get('buildYear') as string) : null
@@ -16,6 +18,7 @@ export async function createHouse(formData: FormData) {
 
   const house = await prisma.house.create({
     data: {
+      userId: session?.user?.id ?? null,
       address,
       addressDetail: addressDetail || null,
       buildYear,

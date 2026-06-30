@@ -1,11 +1,16 @@
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import HouseCarousel from '@/app/components/HouseCarousel'
+import { auth, signOut } from '@/auth'
 
 export const dynamic = 'force-dynamic'
 
 export default async function Home() {
+  const session = await auth()
+  const userId = session?.user?.id
+
   const houses = await prisma.house.findMany({
+    where: userId ? { userId } : { userId: null },
     orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
     include: { _count: { select: { inventories: true, histories: true } } },
   })
@@ -44,13 +49,24 @@ export default async function Home() {
           <p style={{ fontSize: 12, color: '#555', marginBottom: 2 }}>내 자산</p>
           <h1 style={{ fontSize: 22, fontWeight: 600 }}>주택 {houses.length}채</h1>
         </div>
-        <Link href="/houses/new" style={{
-          fontSize: 12, color: '#60a5fa', background: '#0d1a2e',
-          padding: '7px 14px', borderRadius: 20, border: '0.5px solid #1e3a5f',
-          textDecoration: 'none',
-        }}>
-          + 주택 추가
-        </Link>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          {session?.user?.image && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={session.user.image} alt="프로필" style={{ width: 28, height: 28, borderRadius: '50%', border: '1px solid #1e3a5f' }} />
+          )}
+          <Link href="/houses/new" style={{
+            fontSize: 12, color: '#60a5fa', background: '#0d1a2e',
+            padding: '7px 14px', borderRadius: 20, border: '0.5px solid #1e3a5f',
+            textDecoration: 'none',
+          }}>
+            + 주택 추가
+          </Link>
+          <form action={async () => { 'use server'; await signOut({ redirectTo: '/login' }) }}>
+            <button type="submit" style={{ fontSize: 12, color: '#555', background: 'none', border: 'none', cursor: 'pointer', padding: '7px 4px' }}>
+              로그아웃
+            </button>
+          </form>
+        </div>
       </div>
 
       <HouseCarousel houses={houses} />
