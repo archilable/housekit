@@ -28,35 +28,37 @@ export async function POST(req: NextRequest) {
 ## 🔗 숨고 검색
 [수리 전문가 검색 키워드 1개]`
 
-    const parts: object[] = []
+    const messages: object[] = []
+
     if (imageBase64) {
-      parts.push({ inline_data: { mime_type: mediaType || 'image/jpeg', data: imageBase64 } })
+      messages.push({
+        role: 'user',
+        content: [
+          { type: 'image_url', image_url: { url: `data:${mediaType || 'image/jpeg'};base64,${imageBase64}` } },
+          { type: 'text', text: prompt },
+        ],
+      })
+    } else {
+      messages.push({ role: 'user', content: prompt })
     }
-    parts.push({ text: prompt })
 
-    const apiKey = process.env.GEMINI_API_KEY!
-
-    // AQ. 형식 키는 Bearer 토큰, AIza 형식은 query param
-    const isBearer = apiKey.startsWith('AQ.')
-    const url = isBearer
-      ? 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent'
-      : `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`
-
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-    if (isBearer) headers['Authorization'] = `Bearer ${apiKey}`
-
-    const res = await fetch(url, {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
-      headers,
-      body: JSON.stringify({ contents: [{ parts }] }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: imageBase64 ? 'meta-llama/llama-4-scout-17b-16e-instruct' : 'llama-3.3-70b-versatile',
+        messages,
+        max_tokens: 1024,
+      }),
     })
 
     const data = await res.json()
-    if (!res.ok) {
-      throw new Error(data.error?.message || `API error ${res.status}`)
-    }
+    if (!res.ok) throw new Error(data.error?.message || `API error ${res.status}`)
 
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? '결과를 받지 못했습니다.'
+    const text = data.choices?.[0]?.message?.content ?? '결과를 받지 못했습니다.'
     return NextResponse.json({ result: text })
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : 'Unknown error'
