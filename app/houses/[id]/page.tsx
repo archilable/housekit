@@ -70,7 +70,7 @@ export default async function HousePage({
       </div>
 
       {/* House Illustration */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 0 8px', position: 'relative' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 0 12px', position: 'relative' }}>
         <svg width="220" height="170" viewBox="0 0 220 170" fill="none" xmlns="http://www.w3.org/2000/svg">
           <ellipse cx="110" cy="162" rx="80" ry="7" fill="#1a1a2e" opacity="0.7" />
           <polygon points="110,22 190,82 30,82" fill="#1a2540" stroke="#2a4a80" strokeWidth="1" />
@@ -94,7 +94,7 @@ export default async function HousePage({
       </div>
 
       {/* House Name */}
-      <div style={{ textAlign: 'center', padding: '0 16px 16px' }}>
+      <div style={{ textAlign: 'center', padding: '4px 16px 20px' }}>
         <h1 style={{ fontSize: 20, fontWeight: 500, marginBottom: 4 }}>{house.address}</h1>
         {house.addressDetail && <p style={{ fontSize: 13, color: '#666' }}>{house.addressDetail}</p>}
 
