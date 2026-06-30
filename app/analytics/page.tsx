@@ -7,18 +7,66 @@ export default async function AnalyticsPage() {
   const houses = await prisma.house.findMany({
     include: {
       utilities: { orderBy: { month: 'desc' }, take: 7 },
+      valuation: true,
       _count: { select: { histories: true, inventories: true } },
     },
   })
+
+  const fmt = (n: number) => n >= 100000000
+    ? `${(n / 100000000).toFixed(1)}억`
+    : n >= 10000
+    ? `${Math.round(n / 10000).toLocaleString()}만원`
+    : n.toLocaleString() + '원'
+
+  function calcEstimated(house: typeof houses[0]) {
+    const v = house.valuation
+    if (!v) return null
+    if (house.houseType === '아파트' && v.officialPrice) {
+      return Math.round(v.officialPrice / (v.priceRatio ?? 0.70))
+    }
+    if (v.landPrice && v.landArea) {
+      const landVal = Math.round(v.landPrice * v.landArea * (v.landShare ?? 1.0))
+      const age = new Date().getFullYear() - (house.buildYear ?? new Date().getFullYear())
+      const depr = Math.max(1 - (v.deprRate ?? 0.02) * age, 0.2)
+      const buildVal = v.buildCostPerSqm && v.buildArea ? Math.round(v.buildCostPerSqm * v.buildArea * depr) : 0
+      return landVal + buildVal
+    }
+    return null
+  }
+
+  const totalAssets = houses.reduce((sum, h) => sum + (calcEstimated(h) ?? 0), 0)
 
   const thisMonth = new Date().toISOString().slice(0, 7)
 
   return (
     <div style={{ padding: '24px 16px 0', width: '100%', boxSizing: 'border-box' }}>
-      <div style={{ marginBottom: 24 }}>
+      <div style={{ marginBottom: 20 }}>
         <p style={{ fontSize: 11, color: '#555', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>분석</p>
-        <h1 style={{ fontSize: 22, fontWeight: 500 }}>공과금 분석</h1>
+        <h1 style={{ fontSize: 22, fontWeight: 500 }}>자산 분석</h1>
       </div>
+
+      {/* 총 자산 카드 */}
+      {totalAssets > 0 && (
+        <div style={{ background: 'linear-gradient(135deg, #0d1a2e 0%, #111828 100%)', border: '0.5px solid #1e3a5f', borderRadius: 20, padding: 20, marginBottom: 24 }}>
+          <p style={{ fontSize: 12, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 10 }}>총 부동산 자산 추정</p>
+          <p style={{ fontSize: 34, fontWeight: 700, color: '#fff', letterSpacing: -1, marginBottom: 4 }}>{fmt(totalAssets)}</p>
+          <p style={{ fontSize: 12, color: '#555' }}>{houses.filter(h => calcEstimated(h) != null).length}개 주택 합산 · 참고용</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
+            {houses.map(h => {
+              const est = calcEstimated(h)
+              if (!est) return null
+              return (
+                <div key={h.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 13, color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, marginRight: 8 }}>{h.address}</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: '#60a5fa', flexShrink: 0 }}>{fmt(est)}</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      <p style={{ fontSize: 13, color: '#666', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }}>공과금 분석</p>
 
       {houses.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '60px 0', color: '#555' }}>

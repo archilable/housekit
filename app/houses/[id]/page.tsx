@@ -41,6 +41,7 @@ export default async function HousePage({
       inventories: { orderBy: { installedAt: 'desc' } },
       histories: { orderBy: { doneAt: 'desc' } },
       utilities: { orderBy: { month: 'desc' }, take: 7 },
+      valuation: true,
     },
   })
   if (!house) notFound()
@@ -105,6 +106,7 @@ export default async function HousePage({
           { key: 'inventory', label: `설비 ${house.inventories.length}` },
           { key: 'history', label: `이력 ${house.histories.length}` },
           { key: 'utility', label: '공과금' },
+          { key: 'valuation', label: '시세' },
           { key: 'doctor', label: '닥터' },
         ].map((t) => (
           <Link key={t.key} href={`/houses/${id}?tab=${t.key}`} style={{
@@ -490,6 +492,138 @@ export default async function HousePage({
           )}
         </div>
       )}
+
+      {/* VALUATION TAB */}
+      {tab === 'valuation' && (() => {
+        const v = house.valuation
+        const isApt = house.houseType === '아파트'
+        const buildYear = house.buildYear ?? new Date().getFullYear()
+        const age = new Date().getFullYear() - buildYear
+
+        // 시세 계산
+        let landVal = 0, buildVal = 0, estimatedPrice = 0
+        if (isApt && v?.officialPrice) {
+          estimatedPrice = Math.round(v.officialPrice / (v.priceRatio ?? 0.70))
+        } else if (v?.landPrice && v?.landArea) {
+          landVal = Math.round(v.landPrice * v.landArea * (v.landShare ?? 1.0))
+          if (v.buildCostPerSqm && v.buildArea) {
+            const depr = Math.max(1 - (v.deprRate ?? 0.02) * age, 0.2)
+            buildVal = Math.round(v.buildCostPerSqm * v.buildArea * depr)
+          }
+          estimatedPrice = landVal + buildVal
+        }
+
+        const fmt = (n: number) => n >= 100000000
+          ? `${(n / 100000000).toFixed(1)}억`
+          : n >= 10000
+          ? `${Math.round(n / 10000).toLocaleString()}만원`
+          : n.toLocaleString() + '원'
+
+        return (
+          <div style={{ padding: '0 16px' }}>
+            {v && estimatedPrice > 0 ? (
+              <>
+                {/* 메인 시세 카드 */}
+                <div style={{ background: 'linear-gradient(135deg, #0d1a2e 0%, #111828 100%)', border: '0.5px solid #1e3a5f', borderRadius: 20, padding: 24, marginBottom: 16, textAlign: 'center' }}>
+                  <p style={{ fontSize: 12, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 12 }}>추정 시세</p>
+                  <p style={{ fontSize: 38, fontWeight: 700, color: '#fff', letterSpacing: -1, marginBottom: 6 }}>{fmt(estimatedPrice)}</p>
+                  <p style={{ fontSize: 12, color: '#555' }}>{new Date().getFullYear()}년 기준 · 참고용 추정치</p>
+
+                  {!isApt && (landVal > 0 || buildVal > 0) && (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 20 }}>
+                      <div style={{ background: '#0a0a0f', borderRadius: 14, padding: 14 }}>
+                        <i className="ti ti-map-pin" style={{ fontSize: 18, color: '#fbbf24', display: 'block', marginBottom: 6 }} />
+                        <p style={{ fontSize: 11, color: '#666', marginBottom: 4 }}>토지가</p>
+                        <p style={{ fontSize: 17, fontWeight: 600, color: '#fbbf24' }}>{fmt(landVal)}</p>
+                      </div>
+                      <div style={{ background: '#0a0a0f', borderRadius: 14, padding: 14 }}>
+                        <i className="ti ti-home-2" style={{ fontSize: 18, color: '#a78bfa', display: 'block', marginBottom: 6 }} />
+                        <p style={{ fontSize: 11, color: '#666', marginBottom: 4 }}>건물가</p>
+                        <p style={{ fontSize: 17, fontWeight: 600, color: '#a78bfa' }}>{fmt(buildVal)}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 계산 근거 */}
+                <div style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 16, padding: 16, marginBottom: 16 }}>
+                  <p style={{ fontSize: 12, color: '#555', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 14 }}>계산 근거</p>
+                  {isApt ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 14, color: '#888' }}>공동주택 공시가격</span>
+                        <span style={{ fontSize: 14, fontWeight: 500 }}>{fmt(v.officialPrice!)}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 14, color: '#888' }}>공시가격 반영률</span>
+                        <span style={{ fontSize: 14, fontWeight: 500 }}>{((v.priceRatio ?? 0.70) * 100).toFixed(0)}%</span>
+                      </div>
+                      <div style={{ height: 1, background: '#1e1e28' }} />
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 14, color: '#60a5fa' }}>추정 시세</span>
+                        <span style={{ fontSize: 15, fontWeight: 700, color: '#60a5fa' }}>{fmt(estimatedPrice)}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 14, color: '#888' }}>공시지가</span>
+                        <span style={{ fontSize: 14 }}>{(v.landPrice ?? 0).toLocaleString()}원/㎡</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 14, color: '#888' }}>대지면적 × 지분율</span>
+                        <span style={{ fontSize: 14 }}>{v.landArea}㎡ × {((v.landShare ?? 1) * 100).toFixed(0)}%</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 14, color: '#fbbf24' }}>토지가</span>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: '#fbbf24' }}>{fmt(landVal)}</span>
+                      </div>
+                      <div style={{ height: 1, background: '#1e1e28' }} />
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 14, color: '#888' }}>건축비 단가</span>
+                        <span style={{ fontSize: 14 }}>{(v.buildCostPerSqm ?? 0).toLocaleString()}원/㎡</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 14, color: '#888' }}>연면적</span>
+                        <span style={{ fontSize: 14 }}>{v.buildArea}㎡</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 14, color: '#888' }}>감가 ({age}년 × {((v.deprRate ?? 0.02) * 100).toFixed(1)}%)</span>
+                        <span style={{ fontSize: 14 }}>잔존율 {(Math.max(1 - (v.deprRate ?? 0.02) * age, 0.2) * 100).toFixed(0)}%</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 14, color: '#a78bfa' }}>건물가</span>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: '#a78bfa' }}>{fmt(buildVal)}</span>
+                      </div>
+                      <div style={{ height: 1, background: '#1e1e28' }} />
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 15, color: '#60a5fa', fontWeight: 500 }}>추정 시세 합계</span>
+                        <span style={{ fontSize: 16, fontWeight: 700, color: '#60a5fa' }}>{fmt(estimatedPrice)}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ background: '#111118', borderRadius: 12, padding: 14, fontSize: 12, color: '#555', lineHeight: 1.8, marginBottom: 16 }}>
+                  ⚠️ 이 금액은 공시가격 기반 참고용 추정치입니다. 실제 매매가와 다를 수 있습니다.
+                </div>
+              </>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '48px 0', color: '#555' }}>
+                <i className="ti ti-building-estate" style={{ fontSize: 44, display: 'block', marginBottom: 12, color: '#2a2a38' }} />
+                <p style={{ fontSize: 15, marginBottom: 6 }}>시세 정보가 없어요</p>
+                <p style={{ fontSize: 13, marginBottom: 24, color: '#444' }}>공시지가 등 정보를 입력하면 추정 시세를 계산해드려요</p>
+              </div>
+            )}
+
+            <Link href={`/houses/${id}/valuation`}
+              style={{ display: 'block', width: '100%', background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: 14, padding: '15px', fontSize: 15, fontWeight: 500, cursor: 'pointer', textAlign: 'center', textDecoration: 'none', boxSizing: 'border-box' }}>
+              {v ? '시세 정보 수정' : '시세 정보 입력하기'}
+            </Link>
+            <div style={{ height: 24 }} />
+          </div>
+        )
+      })()}
 
       {/* DOCTOR TAB */}
       {tab === 'doctor' && (

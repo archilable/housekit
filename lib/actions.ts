@@ -170,3 +170,38 @@ export async function upsertUtility(formData: FormData) {
   revalidatePath(`/houses/${houseId}`)
   redirect(`/houses/${houseId}?tab=utility`)
 }
+
+// Valuation actions
+export async function upsertValuation(formData: FormData) {
+  const houseId = formData.get('houseId') as string
+  const f = (k: string) => formData.get(k)
+  const fi = (k: string) => f(k) ? parseInt(f(k) as string) : null
+  const ff = (k: string) => f(k) ? parseFloat(f(k) as string) : null
+
+  await prisma.valuation.upsert({
+    where: { houseId },
+    create: {
+      houseId,
+      landPrice: fi('landPrice'),
+      landArea: ff('landArea'),
+      landShare: ff('landShare'),
+      buildCostPerSqm: fi('buildCostPerSqm'),
+      buildArea: ff('buildArea'),
+      deprRate: ff('deprRate'),
+      officialPrice: fi('officialPrice'),
+      priceRatio: ff('priceRatio'),
+    },
+    update: {
+      landPrice: fi('landPrice'),
+      landArea: ff('landArea'),
+      landShare: ff('landShare'),
+      buildCostPerSqm: fi('buildCostPerSqm'),
+      buildArea: ff('buildArea'),
+      deprRate: ff('deprRate'),
+      officialPrice: fi('officialPrice'),
+      priceRatio: ff('priceRatio'),
+    },
+  })
+  revalidatePath(`/houses/${houseId}`)
+  redirect(`/houses/${houseId}?tab=valuation`)
+}

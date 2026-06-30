@@ -26,8 +26,9 @@ model House {
 
   inventories   Inventory[]
   histories     History[]
-  utilities      Utility[]
+  utilities       Utility[]
   doctorHistories DoctorHistory[]
+  valuation       Valuation?
 }
 
 
@@ -44,6 +45,25 @@ model Inventory {
   notes          String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+}
+
+model Valuation {
+  id               String   @id @default(cuid())
+  houseId          String   @unique
+  house            House    @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  // 토지 (단독/빌라/다가구)
+  landPrice        Int?     // 개별공시지가 (원/㎡)
+  landArea         Float?   // 대지면적 (㎡)
+  landShare        Float?   // 지분율 (예: 0.5 = 50%)
+  // 건물
+  buildCostPerSqm  Int?     // 건축비 단가 (원/㎡)
+  buildArea        Float?   // 연면적 (㎡)
+  deprRate         Float?   // 연 감가율 (기본 0.02)
+  // 아파트 공동주택 공시가격
+  officialPrice    Int?     // 공동주택 공시가격 (원)
+  priceRatio       Float?   // 공시가격 반영률 (기본 0.7)
+  updatedAt        DateTime @updatedAt
+  createdAt        DateTime @default(now())
 }
 
 model DoctorHistory {
