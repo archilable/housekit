@@ -75,7 +75,7 @@ export default function LandingPage() {
       </p>
 
       {/* 들어가기 버튼 */}
-      <Link href="/" style={{
+      <Link href="/houses" style={{
         display: 'block', width: '100%', maxWidth: 280,
         background: 'linear-gradient(135deg, #1d4ed8, #2563eb)',
         color: '#fff', padding: '17px 0', borderRadius: 16,
