@@ -73,6 +73,7 @@ export default async function HousePage({
       {/* House Illustration */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 0 12px', position: 'relative' }}>
         <HouseIllustration houseType={house.houseType} />
+
         <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: 180, height: 30, background: 'radial-gradient(ellipse, rgba(59,130,246,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
       </div>
 
