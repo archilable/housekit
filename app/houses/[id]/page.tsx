@@ -59,6 +59,20 @@ export default async function HousePage({
   const scoreColor = score >= 70 ? '#34d399' : score >= 40 ? '#fbbf24' : '#f87171'
   const recentHistories = house.histories.slice(0, 5)
 
+  // 보증 만료 임박 설비
+  const warrantyAlerts = house.inventories.filter(item => {
+    if (!item.installedAt || !item.warrantyMonths) return false
+    const expiry = new Date(item.installedAt)
+    expiry.setMonth(expiry.getMonth() + item.warrantyMonths)
+    const diffDays = Math.ceil((expiry.getTime() - Date.now()) / 86400000)
+    return diffDays >= 0 && diffDays <= 30
+  }).map(item => {
+    const expiry = new Date(item.installedAt!)
+    expiry.setMonth(expiry.getMonth() + item.warrantyMonths!)
+    const diffDays = Math.ceil((expiry.getTime() - Date.now()) / 86400000)
+    return { ...item, diffDays }
+  }).sort((a, b) => a.diffDays - b.diffDays)
+
   const s: Record<string, string> = {
     card: 'background:var(--bg-card);border:0.5px solid var(--border);border-radius:16px;',
   }
@@ -66,6 +80,33 @@ export default async function HousePage({
 
   return (
     <div style={{ color: '#fff', width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
+      {/* 보증 만료 알림 배너 */}
+      {warrantyAlerts.length > 0 && (
+        <div style={{ margin: '12px 16px 0', background: 'linear-gradient(135deg, #1a0a00, #2d1500)', border: '1px solid #f97316', borderRadius: 14, padding: '14px 16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+            <i className="ti ti-bell-ringing" style={{ fontSize: 16, color: '#f97316' }} />
+            <p style={{ fontSize: 13, fontWeight: 600, color: '#f97316' }}>보증 만료 임박 알림</p>
+            <span style={{ fontSize: 11, background: '#f97316', color: '#000', borderRadius: 10, padding: '1px 7px', fontWeight: 700 }}>{warrantyAlerts.length}</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {warrantyAlerts.map(item => (
+              <Link key={item.id} href={`/houses/${id}?tab=inventory`} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(249,115,22,0.08)', borderRadius: 10, padding: '10px 12px' }}>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 500, color: '#fff' }}>{item.name}</p>
+                  {item.brand && <p style={{ fontSize: 11, color: '#888', marginTop: 2 }}>{item.brand}</p>}
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: item.diffDays <= 7 ? '#f87171' : '#fbbf24' }}>
+                    D-{item.diffDays}
+                  </p>
+                  <p style={{ fontSize: 10, color: '#666', marginTop: 1 }}>보증 만료</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 16px 0' }}>
         <Link href="/houses" style={{ color: '#555', textDecoration: 'none', fontSize: 13 }}>
