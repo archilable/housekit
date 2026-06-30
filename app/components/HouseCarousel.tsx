@@ -36,8 +36,8 @@ export default function HouseCarousel({ houses }: { houses: House[] }) {
     const dx = e.changedTouches[0].clientX - touchStartX.current
     const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current)
     if (Math.abs(dx) > 50 && dy < 60) {
-      if (dx < 0 && current < houses.length - 1) setCurrent(c => c + 1)
-      if (dx > 0 && current > 0) setCurrent(c => c - 1)
+      if (dx < 0) setCurrent(c => (c + 1) % houses.length)
+      if (dx > 0) setCurrent(c => (c - 1 + houses.length) % houses.length)
     }
     isDragging.current = false
   }
