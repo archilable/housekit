@@ -23,12 +23,12 @@
 
 *, *::before, *::after {
   box-sizing: border-box;
-  max-width: 100%;
 }
 
-html {
+html, body {
   overflow-x: hidden;
-  scrollbar-gutter: stable;
+  width: 100%;
+  max-width: 100%;
 }
 
 body {
@@ -36,14 +36,14 @@ body {
   color: var(--text-primary);
   font-family: var(--font-sans), -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-  width: 100vw;
-  position: relative;
 }
 
 input, select, textarea {
   color: #ffffff;
   background: #1a1a24;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 input::placeholder, textarea::placeholder {
