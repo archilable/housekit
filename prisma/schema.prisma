@@ -26,7 +26,9 @@ model House {
 
   inventories   Inventory[]
   histories     History[]
+  utilities     Utility[]
 }
+
 
 model Inventory {
   id             String    @id @default(cuid())
@@ -41,6 +43,21 @@ model Inventory {
   notes          String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+}
+
+model Utility {
+  id        String   @id @default(cuid())
+  houseId   String
+  house     House    @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  month     String   // "2026-06" 형식
+  electric  Int?     // 전기세
+  water     Int?     // 수도세
+  gas       Int?     // 가스비
+  telecom   Int?     // 통신비
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([houseId, month])
 }
 
 model History {

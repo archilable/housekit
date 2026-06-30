@@ -36,7 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             { href: "/", icon: "ti-home-2", label: "홈" },
             { href: "/houses/new", icon: "ti-plus", label: "등록" },
             { href: "#", icon: "ti-bell", label: "알림" },
-            { href: "#", icon: "ti-chart-bar", label: "분석" },
+            { href: "/analytics", icon: "ti-chart-bar", label: "분석" },
           ].map(({ href, icon, label }) => (
             <Link key={label} href={href} style={{
               display: "flex", flexDirection: "column", alignItems: "center",

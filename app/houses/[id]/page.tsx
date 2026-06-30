@@ -39,9 +39,15 @@ export default async function HousePage({
     include: {
       inventories: { orderBy: { installedAt: 'desc' } },
       histories: { orderBy: { doneAt: 'desc' } },
+      utilities: { orderBy: { month: 'desc' }, take: 7 },
     },
   })
   if (!house) notFound()
+
+  const thisMonth = new Date().toISOString().slice(0, 7)
+  const prevMonth = (() => { const d = new Date(); d.setMonth(d.getMonth() - 1); return d.toISOString().slice(0, 7) })()
+  const thisUtil = house.utilities.find(u => u.month === thisMonth)
+  const prevUtil = house.utilities.find(u => u.month === prevMonth)
 
   const score = calcHealthScore(house.inventories.length, house.histories.length)
   const scoreColor = score >= 70 ? '#34d399' : score >= 40 ? '#fbbf24' : '#f87171'
@@ -92,11 +98,12 @@ export default async function HousePage({
       </div>
 
       {/* Tab Nav */}
-      <div style={{ display: 'flex', gap: 0, borderBottom: '0.5px solid #1e1e28', marginBottom: 16, padding: '0 16px' }}>
+      <div style={{ display: 'flex', gap: 0, borderBottom: '0.5px solid #1e1e28', marginBottom: 16, padding: '0 16px', overflowX: 'auto' }}>
         {[
           { key: 'home', label: '홈' },
           { key: 'inventory', label: `설비 ${house.inventories.length}` },
           { key: 'history', label: `이력 ${house.histories.length}` },
+          { key: 'utility', label: '공과금' },
           { key: 'doctor', label: '닥터' },
         ].map((t) => (
           <Link key={t.key} href={`/houses/${id}?tab=${t.key}`} style={{
@@ -196,6 +203,36 @@ export default async function HousePage({
               </p>
             </div>
           </div>
+
+          {/* 공과금 요약 */}
+          {thisUtil && (
+            <div style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 14, padding: 14, marginBottom: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <p style={{ fontSize: 11, color: '#444', textTransform: 'uppercase', letterSpacing: 1 }}>이번달 공과금</p>
+                <Link href={`/houses/${id}?tab=utility`} style={{ fontSize: 11, color: '#60a5fa', textDecoration: 'none' }}>전체 보기</Link>
+              </div>
+              <div style={{ display: 'flex', gap: 8, justifyContent: 'space-between' }}>
+                {[
+                  { label: '전기', icon: 'ti-bolt', color: '#fbbf24', val: thisUtil.electric },
+                  { label: '수도', icon: 'ti-droplet', color: '#60a5fa', val: thisUtil.water },
+                  { label: '가스', icon: 'ti-flame', color: '#f97316', val: thisUtil.gas },
+                  { label: '통신', icon: 'ti-wifi', color: '#34d399', val: thisUtil.telecom },
+                ].map(({ label, icon, color, val }) => (
+                  <div key={label} style={{ flex: 1, textAlign: 'center' }}>
+                    <i className={`ti ${icon}`} style={{ fontSize: 16, color, display: 'block', marginBottom: 4 }} />
+                    <p style={{ fontSize: 9, color: '#555', marginBottom: 2 }}>{label}</p>
+                    <p style={{ fontSize: 11, fontWeight: 500, color: '#ccc' }}>{val != null ? (val / 1000).toFixed(0) + 'K' : '—'}</p>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 10, paddingTop: 10, borderTop: '0.5px solid #1e1e28', display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 11, color: '#666' }}>합계</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#60a5fa' }}>
+                  {((thisUtil.electric || 0) + (thisUtil.water || 0) + (thisUtil.gas || 0) + (thisUtil.telecom || 0)).toLocaleString()}원
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Quick Actions */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8, marginBottom: 20 }}>
@@ -345,6 +382,110 @@ export default async function HousePage({
                 )
               })}
             </div>
+          )}
+        </div>
+      )}
+
+      {/* UTILITY TAB */}
+      {tab === 'utility' && (
+        <div style={{ padding: '0 16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+            <Link href={`/houses/${id}/utility/new`} style={{ background: '#1d4ed8', color: '#fff', padding: '8px 16px', borderRadius: 10, fontSize: 13, textDecoration: 'none', fontWeight: 500 }}>
+              + 이번달 입력
+            </Link>
+          </div>
+
+          {/* 이번달 현황 */}
+          {thisUtil ? (
+            <div style={{ background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 16, padding: 16, marginBottom: 16 }}>
+              <p style={{ fontSize: 11, color: '#60a5fa', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>{thisMonth.replace('-', '년 ')}월 현황</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                {[
+                  { key: 'electric', label: '전기세', icon: 'ti-bolt', color: '#fbbf24', val: thisUtil.electric, prev: prevUtil?.electric },
+                  { key: 'water', label: '수도세', icon: 'ti-droplet', color: '#60a5fa', val: thisUtil.water, prev: prevUtil?.water },
+                  { key: 'gas', label: '가스비', icon: 'ti-flame', color: '#f97316', val: thisUtil.gas, prev: prevUtil?.gas },
+                  { key: 'telecom', label: '통신비', icon: 'ti-wifi', color: '#34d399', val: thisUtil.telecom, prev: prevUtil?.telecom },
+                ].map(({ label, icon, color, val, prev }) => {
+                  const diff = val != null && prev != null ? val - prev : null
+                  return (
+                    <div key={label} style={{ background: '#111828', borderRadius: 12, padding: 12 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                        <i className={`ti ${icon}`} style={{ fontSize: 16, color }} />
+                        {diff != null && (
+                          <span style={{ fontSize: 10, color: diff > 0 ? '#f87171' : '#34d399' }}>
+                            {diff > 0 ? '▲' : '▼'}{Math.abs(diff).toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+                      <p style={{ fontSize: 11, color: '#666', marginBottom: 2 }}>{label}</p>
+                      <p style={{ fontSize: 15, fontWeight: 500, color: '#fff' }}>
+                        {val != null ? val.toLocaleString() + '원' : '—'}
+                      </p>
+                    </div>
+                  )
+                })}
+              </div>
+              <div style={{ marginTop: 12, paddingTop: 12, borderTop: '0.5px solid #1e3a5f', display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 12, color: '#666' }}>이번달 합계</span>
+                <span style={{ fontSize: 15, fontWeight: 600, color: '#60a5fa' }}>
+                  {((thisUtil.electric || 0) + (thisUtil.water || 0) + (thisUtil.gas || 0) + (thisUtil.telecom || 0)).toLocaleString()}원
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '32px 0', color: '#555', marginBottom: 16 }}>
+              <i className="ti ti-bolt" style={{ fontSize: 36, display: 'block', marginBottom: 8 }} />
+              <p style={{ fontSize: 13 }}>이번달 공과금을 입력해보세요</p>
+            </div>
+          )}
+
+          {/* 월별 이력 */}
+          {house.utilities.length > 0 && (
+            <>
+              <p style={{ fontSize: 11, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>월별 이력</p>
+
+              {/* 바 차트 */}
+              <div style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 14, padding: 16, marginBottom: 12 }}>
+                <p style={{ fontSize: 11, color: '#666', marginBottom: 12 }}>월별 합계 (원)</p>
+                {(() => {
+                  const sorted = [...house.utilities].sort((a, b) => a.month.localeCompare(b.month)).slice(-6)
+                  const totals = sorted.map(u => (u.electric || 0) + (u.water || 0) + (u.gas || 0) + (u.telecom || 0))
+                  const max = Math.max(...totals, 1)
+                  return (
+                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 80 }}>
+                      {sorted.map((u, i) => (
+                        <div key={u.month} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                          <div style={{ width: '100%', background: '#1a1a2e', borderRadius: 4, height: 64, display: 'flex', alignItems: 'flex-end' }}>
+                            <div style={{ width: '100%', background: u.month === thisMonth ? '#1d4ed8' : '#1e3a5f', borderRadius: 4, height: `${(totals[i] / max) * 100}%`, minHeight: 2 }} />
+                          </div>
+                          <span style={{ fontSize: 9, color: '#555' }}>{u.month.slice(5)}월</span>
+                        </div>
+                      ))}
+                    </div>
+                  )
+                })()}
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {house.utilities.map(u => {
+                  const total = (u.electric || 0) + (u.water || 0) + (u.gas || 0) + (u.telecom || 0)
+                  return (
+                    <div key={u.id} style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 14, padding: '14px 16px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                        <span style={{ fontSize: 14, fontWeight: 500 }}>{u.month.replace('-', '년 ')}월</span>
+                        <span style={{ fontSize: 14, fontWeight: 500, color: '#60a5fa' }}>{total.toLocaleString()}원</span>
+                      </div>
+                      <div style={{ display: 'flex', gap: 12, fontSize: 11, color: '#555' }}>
+                        {u.electric && <span>⚡ {u.electric.toLocaleString()}</span>}
+                        {u.water && <span>💧 {u.water.toLocaleString()}</span>}
+                        {u.gas && <span>🔥 {u.gas.toLocaleString()}</span>}
+                        {u.telecom && <span>📶 {u.telecom.toLocaleString()}</span>}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </>
           )}
         </div>
       )}

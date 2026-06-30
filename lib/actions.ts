@@ -151,3 +151,22 @@ export async function deleteHistory(id: string, houseId: string) {
   await prisma.history.delete({ where: { id } })
   revalidatePath(`/houses/${houseId}`)
 }
+
+// Utility actions
+export async function upsertUtility(formData: FormData) {
+  const houseId = formData.get('houseId') as string
+  const month = formData.get('month') as string
+  const electric = formData.get('electric') ? parseInt(formData.get('electric') as string) : null
+  const water = formData.get('water') ? parseInt(formData.get('water') as string) : null
+  const gas = formData.get('gas') ? parseInt(formData.get('gas') as string) : null
+  const telecom = formData.get('telecom') ? parseInt(formData.get('telecom') as string) : null
+
+  await prisma.utility.upsert({
+    where: { houseId_month: { houseId, month } },
+    create: { houseId, month, electric, water, gas, telecom },
+    update: { electric, water, gas, telecom },
+  })
+
+  revalidatePath(`/houses/${houseId}`)
+  redirect(`/houses/${houseId}?tab=utility`)
+}
