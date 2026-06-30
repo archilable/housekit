@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import DoctorTab from '@/app/components/DoctorTab'
 import SortableInventoryList from '@/app/components/SortableInventoryList'
 import AiValuation from '@/app/components/AiValuation'
+import RealPriceData from '@/app/components/RealPriceData'
 import DoctorHistoryList from '@/app/components/DoctorHistoryList'
 import HouseIllustration from '@/app/components/HouseIllustration'
 
@@ -599,6 +600,13 @@ export default async function HousePage({
                 <p style={{ fontSize: 13, marginBottom: 24, color: '#444' }}>공시지가 등 정보를 입력하면 추정 시세를 계산해드려요</p>
               </div>
             )}
+
+            {/* 국토부 실거래가 */}
+            <RealPriceData
+              address={house.address}
+              houseType={house.houseType}
+              area={house.area}
+            />
 
             {/* AI 실거래 시세 추정 */}
             <AiValuation
