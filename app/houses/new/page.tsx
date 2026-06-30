@@ -1,5 +1,6 @@
 import { createHouse } from '@/lib/actions'
 import Link from 'next/link'
+import AddressSearch from '@/app/components/AddressSearch'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
@@ -27,12 +28,7 @@ export default function NewHousePage() {
       <form action={createHouse} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         <div style={fieldStyle}>
           <label style={labelStyle}>주소 <span style={{ color: '#f87171' }}>*</span></label>
-          <input name="address" required placeholder="서울시 마포구 합정동 123-45" style={inputStyle} />
-        </div>
-
-        <div style={fieldStyle}>
-          <label style={labelStyle}>상세 주소</label>
-          <input name="addressDetail" placeholder="1층, 빌라 A동 101호 등" style={inputStyle} />
+          <AddressSearch />
         </div>
 
         <div style={fieldStyle}>

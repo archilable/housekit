@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db'
 import { updateHouse } from '@/lib/actions'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import AddressSearch from '@/app/components/AddressSearch'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
@@ -32,12 +33,7 @@ export default async function EditHousePage({ params }: { params: Promise<{ id: 
       <form action={updateHouse.bind(null, id)} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         <div style={fieldStyle}>
           <label style={labelStyle}>주소 <span style={{ color: '#f87171' }}>*</span></label>
-          <input name="address" required defaultValue={house.address} style={inputStyle} />
-        </div>
-
-        <div style={fieldStyle}>
-          <label style={labelStyle}>상세 주소</label>
-          <input name="addressDetail" defaultValue={house.addressDetail ?? ''} style={inputStyle} />
+          <AddressSearch defaultAddress={house.address} defaultAddressDetail={house.addressDetail ?? ''} />
         </div>
 
         <div style={fieldStyle}>
