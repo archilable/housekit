@@ -71,7 +71,7 @@ export default function LandingPage() {
         fontSize: 15, color: '#555', lineHeight: 1.8, marginBottom: 56,
         maxWidth: 260,
       }}>
-        보일러 교체일부터 공과금까지<br />내 집의 모든 기록을 한 곳에
+        오늘 고친 것도, 10년 후 팔 때도.<br />HouseKit이 기억합니다.
       </p>
 
       {/* 들어가기 버튼 */}
