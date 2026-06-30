@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
@@ -16,7 +16,6 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
   const [result, setResult] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const fileRef = useRef<HTMLInputElement>(null)
   void houseId
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -95,7 +94,6 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
       {/* 사진 */}
       <div style={{ marginBottom: 16 }}>
         <p style={{ fontSize: 12, color: '#888', marginBottom: 8, marginTop: 0 }}>사진 (선택)</p>
-        <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={handleFile} style={{ display: 'none' }} />
         {preview ? (
           <div style={{ position: 'relative', width: '100%' }}>
             <img src={preview} alt="업로드 사진" style={{ width: '100%', borderRadius: 12, maxHeight: 220, objectFit: 'cover', display: 'block' }} />
@@ -105,11 +103,11 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
             </button>
           </div>
         ) : (
-          <button onClick={() => fileRef.current?.click()}
-            style={{ width: '100%', background: '#1a1a24', border: '1px dashed #2a2a38', borderRadius: 12, padding: '24px 0', color: '#555', cursor: 'pointer', fontSize: 13, boxSizing: 'border-box' }}>
+          <label style={{ display: 'block', width: '100%', background: '#1a1a24', border: '1px dashed #2a2a38', borderRadius: 12, padding: '24px 0', color: '#555', cursor: 'pointer', fontSize: 13, boxSizing: 'border-box', textAlign: 'center' }}>
             <i className="ti ti-camera" style={{ fontSize: 24, display: 'block', marginBottom: 6, color: '#444' }} />
             사진 촬영 또는 갤러리에서 선택
-          </button>
+            <input type="file" accept="image/*" onChange={handleFile} style={{ display: 'none' }} />
+          </label>
         )}
       </div>
 
