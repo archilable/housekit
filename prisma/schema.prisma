@@ -44,6 +44,7 @@ model Inventory {
   installedAt    DateTime?
   warrantyMonths Int?
   notes          String?
+  sortOrder      Int       @default(0)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }

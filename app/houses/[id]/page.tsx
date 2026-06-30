@@ -3,6 +3,7 @@ import { deleteHistory, deleteInventory } from '@/lib/actions'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import DoctorTab from '@/app/components/DoctorTab'
+import SortableInventoryList from '@/app/components/SortableInventoryList'
 import AiValuation from '@/app/components/AiValuation'
 import DoctorHistoryList from '@/app/components/DoctorHistoryList'
 import HouseIllustration from '@/app/components/HouseIllustration'
@@ -39,8 +40,8 @@ export default async function HousePage({
   const house = await prisma.house.findUnique({
     where: { id },
     include: {
-      inventories: { orderBy: { installedAt: 'desc' } },
-      histories: { orderBy: { doneAt: 'desc' } },
+      inventories: { orderBy: [{ sortOrder: 'asc' }, { installedAt: 'desc' }] },
+      histories: { orderBy: { doneAt: 'asc' } },
       utilities: { orderBy: { month: 'desc' }, take: 7 },
       valuation: true,
     },
@@ -54,7 +55,7 @@ export default async function HousePage({
 
   const score = calcHealthScore(house.inventories.length, house.histories.length)
   const scoreColor = score >= 70 ? '#34d399' : score >= 40 ? '#fbbf24' : '#f87171'
-  const recentHistories = house.histories.slice(0, 5)
+  const recentHistories = house.histories.slice(-5)
 
   const s: Record<string, string> = {
     card: 'background:var(--bg-card);border:0.5px solid var(--border);border-radius:16px;',
@@ -195,7 +196,7 @@ export default async function HousePage({
             </Link>
 
             {/* 마지막 이력 */}
-            <Link href={`/houses/${id}?tab=history${house.histories[0] ? `&highlight=${house.histories[0].id}` : ''}`} style={{ textDecoration: 'none', color: 'inherit', background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 14, padding: 14, display: 'block' }}>
+            <Link href={`/houses/${id}?tab=history${house.histories.at(-1) ? `&highlight=${house.histories.at(-1)!.id}` : ''}`} style={{ textDecoration: 'none', color: 'inherit', background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 14, padding: 14, display: 'block' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
                 <div style={{ width: 28, height: 28, borderRadius: 8, background: '#0d1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <i className="ti ti-calendar-check" style={{ fontSize: 14, color: '#a78bfa' }} aria-hidden="true" />
@@ -204,10 +205,10 @@ export default async function HousePage({
               </div>
               <p style={{ fontSize: 11, color: '#666' }}>마지막 이력</p>
               <p style={{ fontSize: 16, fontWeight: 500, color: '#a78bfa', marginTop: 2 }}>
-                {house.histories[0] ? house.histories[0].doneAt.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }) : '없음'}
+                {house.histories.at(-1) ? house.histories.at(-1)!.doneAt.toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' }) : '없음'}
               </p>
               <p style={{ fontSize: 10, color: '#555', marginTop: 1 }}>
-                {house.histories[0] ? house.histories[0].title : '이력을 추가하세요'}
+                {house.histories.at(-1) ? house.histories.at(-1)!.title : '이력을 추가하세요'}
               </p>
             </Link>
           </div>
@@ -276,7 +277,7 @@ export default async function HousePage({
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                           <p style={{ fontSize: 13, fontWeight: 500 }}>{h.title}</p>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-                            <p style={{ fontSize: 11, color: '#555' }}>{h.doneAt.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}</p>
+                            <p style={{ fontSize: 11, color: '#555' }}>{h.doneAt.toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
                             <i className="ti ti-chevron-right" style={{ fontSize: 12, color: '#333' }} />
                           </div>
                         </div>
@@ -308,38 +309,12 @@ export default async function HousePage({
               <p>등록된 설비가 없습니다</p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {house.inventories.map((item) => {
-                const w = getWarrantyStatus(item.installedAt, item.warrantyMonths)
-                const iconColor = INVENTORY_COLORS[item.category] || '#888'
-                const icon = INVENTORY_ICONS[item.category] || 'ti-package'
-                return (
-                  <div key={item.id} style={{ background: 'var(--bg-card)', border: `0.5px solid ${w ? w.border : 'var(--border)'}`, borderRadius: 14, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 10, background: iconColor + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <i className={`ti ${icon}`} style={{ fontSize: 18, color: iconColor }} aria-hidden="true" />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                        <p style={{ fontSize: 14, fontWeight: 500 }}>{item.name}</p>
-                        {w && <span style={{ fontSize: 10, color: w.color, background: w.bg, padding: '1px 6px', borderRadius: 10, border: `0.5px solid ${w.border}` }}>{w.label}</span>}
-                      </div>
-                      {item.brand && <p style={{ fontSize: 12, color: '#666' }}>{item.brand} {item.model}</p>}
-                      {item.installedAt && <p style={{ fontSize: 11, color: '#444', marginTop: 1 }}>설치 {item.installedAt.toLocaleDateString('ko-KR')}</p>}
-                    </div>
-                    <div style={{ display: 'flex', gap: 4 }}>
-                      <a href={`/houses/${id}/inventory/${item.id}/edit`} style={{ background: 'none', border: 'none', color: '#60a5fa', cursor: 'pointer', fontSize: 18, padding: 4, textDecoration: 'none' }}>
-                        <i className="ti ti-pencil" aria-hidden="true" />
-                      </a>
-                      <form action={deleteInventory.bind(null, item.id, id)}>
-                        <button type="submit" style={{ background: 'none', border: 'none', color: '#444', cursor: 'pointer', fontSize: 18, padding: 4 }}>
-                          <i className="ti ti-trash" aria-hidden="true" />
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
+            <>
+              <p style={{ fontSize: 11, color: '#333', marginBottom: 10 }}>
+                <i className="ti ti-grip-vertical" style={{ marginRight: 4 }} />꾹 눌러서 순서 변경 가능
+              </p>
+              <SortableInventoryList initialItems={house.inventories} houseId={id} />
+            </>
           )}
         </div>
       )}
