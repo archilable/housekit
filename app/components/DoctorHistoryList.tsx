@@ -43,10 +43,12 @@ export default async function DoctorHistoryList({ houseId }: { houseId: string }
               <div style={{ padding: '0 16px 16px', borderTop: '0.5px solid #1e1e28' }}>
                 {h.imageBase64 && (
                   <div style={{ marginBottom: 12, marginTop: 12 }}>
-                    <div style={{ width: '100%', height: 120, background: '#0d1a2e', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <i className="ti ti-photo" style={{ fontSize: 28, color: '#2a4a80' }} />
-                      <span style={{ fontSize: 11, color: '#444', marginLeft: 8 }}>사진 첨부됨</span>
-                    </div>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`data:image/jpeg;base64,${h.imageBase64}`}
+                      alt="진단 사진"
+                      style={{ width: '100%', maxHeight: 220, objectFit: 'cover', borderRadius: 10, display: 'block' }}
+                    />
                   </div>
                 )}
                 <div style={{ marginTop: 12 }}>

@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
         data: {
           houseId,
           description: description || null,
-          imageBase64: imageBase64 ? imageBase64.slice(0, 2000) : null, // 썸네일용 일부만 저장
+          imageBase64: imageBase64 || null,
           result: text,
         },
       })
