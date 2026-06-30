@@ -39,8 +39,8 @@ body {
   background: var(--bg);
   color: var(--text-primary);
   font-family: var(--font-sans), -apple-system, sans-serif;
+  font-size: 17px;
   -webkit-font-smoothing: antialiased;
-  /* iOS Safari 스크롤 shift 방지 */
   -webkit-overflow-scrolling: touch;
   position: relative;
 }
@@ -80,28 +80,3 @@ input::placeholder, textarea::placeholder {
   display: none;
 }
 
-/* 큰 글씨 모드 */
-[data-text="large"] body {
-  font-size: 18px;
-}
-[data-text="large"] p,
-[data-text="large"] span,
-[data-text="large"] li,
-[data-text="large"] a,
-[data-text="large"] label,
-[data-text="large"] button {
-  font-size: 1.25em !important;
-  line-height: 1.7 !important;
-}
-[data-text="large"] h1 { font-size: 1.6em !important; }
-[data-text="large"] h2 { font-size: 1.4em !important; }
-[data-text="large"] input,
-[data-text="large"] select,
-[data-text="large"] textarea {
-  font-size: 1.2em !important;
-  padding: 14px !important;
-  min-height: 52px !important;
-}
-[data-text="large"] i[class*="ti-"] {
-  font-size: 1.3em !important;
-}

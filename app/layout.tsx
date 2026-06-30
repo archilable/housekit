@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import Link from "next/link";
-import FontSizeProvider from "./components/FontSizeProvider";
+
 import "./globals.css";
 
 const geistSans = Geist({
@@ -19,7 +19,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ko" className={geistSans.variable}>
       <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--bg)" }}>
-        <FontSizeProvider>
         <main style={{ flex: 1, width: "100%", maxWidth: 430, margin: "0 auto", paddingBottom: 80, boxSizing: "border-box", minWidth: 0 }}>
           {children}
         </main>
@@ -51,7 +50,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           ))}
         </nav>
 
-        </FontSizeProvider>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
       </body>
     </html>
