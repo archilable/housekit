@@ -43,7 +43,7 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
       const res = await fetch('/api/doctor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64, mediaType, description }),
+        body: JSON.stringify({ imageBase64, mediaType, description, houseId }),
       })
       const data = await res.json()
       if (data.error) throw new Error(data.error)

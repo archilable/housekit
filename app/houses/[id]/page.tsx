@@ -3,6 +3,7 @@ import { deleteHistory, deleteInventory } from '@/lib/actions'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import DoctorTab from '@/app/components/DoctorTab'
+import DoctorHistoryList from '@/app/components/DoctorHistoryList'
 import HouseIllustration from '@/app/components/HouseIllustration'
 
 export const dynamic = 'force-dynamic'
@@ -491,7 +492,13 @@ export default async function HousePage({
       )}
 
       {/* DOCTOR TAB */}
-      {tab === 'doctor' && <DoctorTab houseId={id} />}
+      {tab === 'doctor' && (
+        <>
+          <DoctorTab houseId={id} />
+          <DoctorHistoryList houseId={id} />
+          <div style={{ height: 32 }} />
+        </>
+      )}
     </div>
   )
 }

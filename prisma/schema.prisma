@@ -26,7 +26,8 @@ model House {
 
   inventories   Inventory[]
   histories     History[]
-  utilities     Utility[]
+  utilities      Utility[]
+  doctorHistories DoctorHistory[]
 }
 
 
@@ -43,6 +44,16 @@ model Inventory {
   notes          String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+}
+
+model DoctorHistory {
+  id          String   @id @default(cuid())
+  houseId     String
+  house       House    @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  description String?
+  imageBase64 String?
+  result      String
+  createdAt   DateTime @default(now())
 }
 
 model Utility {

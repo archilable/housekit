@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/db'
 
 export async function POST(req: NextRequest) {
   try {
-    const { imageBase64, mediaType, description } = await req.json()
+    const { imageBase64, mediaType, description, houseId } = await req.json()
 
     const prompt = `당신은 주택 수리 전문가입니다. 사용자가 집의 문제 부위 사진을 보내왔습니다.
 
@@ -59,6 +60,19 @@ export async function POST(req: NextRequest) {
     if (!res.ok) throw new Error(data.error?.message || `API error ${res.status}`)
 
     const text = data.choices?.[0]?.message?.content ?? '결과를 받지 못했습니다.'
+
+    // 진단 이력 저장
+    if (houseId) {
+      await prisma.doctorHistory.create({
+        data: {
+          houseId,
+          description: description || null,
+          imageBase64: imageBase64 ? imageBase64.slice(0, 2000) : null, // 썸네일용 일부만 저장
+          result: text,
+        },
+      })
+    }
+
     return NextResponse.json({ result: text })
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : 'Unknown error'
