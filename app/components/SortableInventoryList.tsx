@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 
 interface WarrantyStatus {
   label: string; color: string; bg: string; border: string
@@ -43,7 +43,15 @@ export default function SortableInventoryList({ initialItems, houseId }: { initi
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isDragging = useRef(false)
   const touchStartY = useRef(0)
+  const mouseStartY = useRef(0)
+  const draggingIdRef = useRef<string | null>(null)
+  const overIdRef = useRef<string | null>(null)
+  const itemsRef = useRef(items)
   const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map())
+
+  useEffect(() => { itemsRef.current = items }, [items])
+  useEffect(() => { draggingIdRef.current = draggingId }, [draggingId])
+  useEffect(() => { overIdRef.current = overId }, [overId])
 
   const saveOrder = useCallback(async (ordered: InventoryItem[]) => {
     setSaving(true)
@@ -55,6 +63,20 @@ export default function SortableInventoryList({ initialItems, houseId }: { initi
     setSaving(false)
   }, [])
 
+  function applyReorder(fromId: string, toId: string) {
+    const current = itemsRef.current
+    const from = current.findIndex(i => i.id === fromId)
+    const to = current.findIndex(i => i.id === toId)
+    if (from !== -1 && to !== -1 && from !== to) {
+      const next = [...current]
+      const [item] = next.splice(from, 1)
+      next.splice(to, 0, item)
+      setItems(next)
+      saveOrder(next)
+    }
+  }
+
+  // --- Touch ---
   function onTouchStart(id: string, e: React.TouchEvent) {
     touchStartY.current = e.touches[0].clientY
     longPressTimer.current = setTimeout(() => {
@@ -87,16 +109,55 @@ export default function SortableInventoryList({ initialItems, houseId }: { initi
     if (!isDragging.current || !draggingId || !overId) {
       isDragging.current = false; setDraggingId(null); setOverId(null); return
     }
-    const from = items.findIndex(i => i.id === draggingId)
-    const to = items.findIndex(i => i.id === overId)
-    if (from !== -1 && to !== -1 && from !== to) {
-      const next = [...items]
-      const [item] = next.splice(from, 1)
-      next.splice(to, 0, item)
-      setItems(next)
-      saveOrder(next)
-    }
+    applyReorder(draggingId, overId)
     isDragging.current = false; setDraggingId(null); setOverId(null)
+  }
+
+  // --- Mouse ---
+  function onMouseDown(id: string, e: React.MouseEvent) {
+    e.preventDefault()
+    mouseStartY.current = e.clientY
+    longPressTimer.current = setTimeout(() => {
+      isDragging.current = true
+      setDraggingId(id)
+    }, 200)
+
+    function onMouseMove(ev: MouseEvent) {
+      if (!isDragging.current) {
+        if (Math.abs(ev.clientY - mouseStartY.current) > 5 && longPressTimer.current) {
+          clearTimeout(longPressTimer.current)
+          longPressTimer.current = null
+        }
+        return
+      }
+      const y = ev.clientY
+      for (const [rid, el] of itemRefs.current) {
+        if (rid === draggingIdRef.current) continue
+        const rect = el.getBoundingClientRect()
+        if (y >= rect.top && y <= rect.bottom) {
+          setOverId(rid)
+          overIdRef.current = rid
+          break
+        }
+      }
+    }
+
+    function onMouseUp() {
+      if (longPressTimer.current) { clearTimeout(longPressTimer.current); longPressTimer.current = null }
+      if (isDragging.current && draggingIdRef.current && overIdRef.current) {
+        applyReorder(draggingIdRef.current, overIdRef.current)
+      }
+      isDragging.current = false
+      setDraggingId(null)
+      setOverId(null)
+      draggingIdRef.current = null
+      overIdRef.current = null
+      window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('mouseup', onMouseUp)
+    }
+
+    window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('mouseup', onMouseUp)
   }
 
   return (
@@ -125,10 +186,15 @@ export default function SortableInventoryList({ initialItems, houseId }: { initi
               transform: isOver ? 'scale(1.02)' : 'scale(1)',
               transition: 'transform 0.15s, opacity 0.15s, border 0.15s',
               touchAction: draggingId ? 'none' : 'auto',
+              cursor: isDragging.current ? 'grabbing' : 'default',
             }}
           >
             {/* 드래그 핸들 */}
-            <i className="ti ti-grip-vertical" style={{ fontSize: 16, color: '#2a2a38', flexShrink: 0, cursor: 'grab' }} />
+            <i
+              className="ti ti-grip-vertical"
+              onMouseDown={e => onMouseDown(item.id, e)}
+              style={{ fontSize: 16, color: '#444', flexShrink: 0, cursor: 'grab', padding: '4px 2px' }}
+            />
 
             <div style={{ width: 36, height: 36, borderRadius: 10, background: iconColor + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <i className={`ti ${icon}`} style={{ fontSize: 18, color: iconColor }} />
