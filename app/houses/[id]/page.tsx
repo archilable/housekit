@@ -3,6 +3,7 @@ import { deleteHistory, deleteInventory } from '@/lib/actions'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import DoctorTab from '@/app/components/DoctorTab'
+import UtilityChart from '@/app/components/UtilityChart'
 import SortableInventoryList from '@/app/components/SortableInventoryList'
 import AiValuation from '@/app/components/AiValuation'
 import RealPriceData from '@/app/components/RealPriceData'
@@ -432,27 +433,8 @@ export default async function HousePage({
             <>
               <p style={{ fontSize: 13, color: '#666', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>월별 이력</p>
 
-              {/* 바 차트 */}
-              <div style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 14, padding: 16, marginBottom: 12 }}>
-                <p style={{ fontSize: 13, color: '#666', marginBottom: 12 }}>월별 합계 (원)</p>
-                {(() => {
-                  const sorted = [...house.utilities].sort((a, b) => a.month.localeCompare(b.month)).slice(-6)
-                  const totals = sorted.map(u => (u.electric || 0) + (u.water || 0) + (u.gas || 0) + (u.telecom || 0))
-                  const max = Math.max(...totals, 1)
-                  return (
-                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 80 }}>
-                      {sorted.map((u, i) => (
-                        <div key={u.month} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                          <div style={{ width: '100%', background: '#1a1a2e', borderRadius: 4, height: 64, display: 'flex', alignItems: 'flex-end' }}>
-                            <div style={{ width: '100%', background: u.month === thisMonth ? '#1d4ed8' : '#1e3a5f', borderRadius: 4, height: `${(totals[i] / max) * 100}%`, minHeight: 2 }} />
-                          </div>
-                          <span style={{ fontSize: 11, color: '#555' }}>{u.month.slice(5)}월</span>
-                        </div>
-                      ))}
-                    </div>
-                  )
-                })()}
-              </div>
+              {/* 바 + 선형 차트 */}
+              <UtilityChart data={house.utilities} thisMonth={thisMonth} />
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {house.utilities.map(u => {

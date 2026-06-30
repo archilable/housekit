@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
+import UtilityChart from '@/app/components/UtilityChart'
 
 export const dynamic = 'force-dynamic'
 
@@ -139,37 +140,9 @@ export default async function AnalyticsPage() {
                 </div>
               )}
 
-              {/* 바 차트 */}
+              {/* 바 + 선형 차트 */}
               {sorted.length > 0 && (
-                <div style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 14, padding: 16, marginBottom: 10 }}>
-                  <p style={{ fontSize: 11, color: '#666', marginBottom: 14 }}>최근 6개월 추이</p>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 90 }}>
-                    {sorted.map((u, i) => (
-                      <div key={u.month} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                        <span style={{ fontSize: 9, color: '#555' }}>{totals[i] > 0 ? (totals[i] / 1000).toFixed(0) + 'K' : ''}</span>
-                        <div style={{ width: '100%', background: '#1a1a2e', borderRadius: 4, flex: 1, display: 'flex', alignItems: 'flex-end' }}>
-                          <div style={{
-                            width: '100%',
-                            background: u.month === thisMonth ? '#1d4ed8' : '#1e3a5f',
-                            borderRadius: 4,
-                            height: `${(totals[i] / maxTotal) * 100}%`,
-                            minHeight: totals[i] > 0 ? 4 : 0,
-                            transition: 'height 0.3s',
-                          }} />
-                        </div>
-                        <span style={{ fontSize: 9, color: u.month === thisMonth ? '#60a5fa' : '#444' }}>{u.month.slice(5)}월</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* 누적 합계 */}
-                  <div style={{ marginTop: 12, paddingTop: 12, borderTop: '0.5px solid #1e1e28', display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: 11, color: '#555' }}>등록 기간 누적</span>
-                    <span style={{ fontSize: 13, fontWeight: 500, color: '#fbbf24' }}>
-                      {totals.reduce((a, b) => a + b, 0).toLocaleString()}원
-                    </span>
-                  </div>
-                </div>
+                <UtilityChart data={house.utilities} thisMonth={thisMonth} />
               )}
 
               {house.utilities.length === 0 && (
