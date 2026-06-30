@@ -5,10 +5,11 @@ import { notFound } from 'next/navigation'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
-  borderRadius: 10, padding: '11px 14px', fontSize: 14, color: '#fff',
-  outline: 'none', fontFamily: 'inherit',
+  borderRadius: 10, padding: '12px 14px', fontSize: 15, color: '#fff',
+  outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' as const,
 }
-const labelStyle = { fontSize: 12, color: '#888', display: 'block', marginBottom: 6 }
+const labelStyle = { fontSize: 12, color: '#888', display: 'block', marginBottom: 8 }
+const fieldStyle = { display: 'flex', flexDirection: 'column' as const }
 
 export default async function EditHousePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -16,26 +17,26 @@ export default async function EditHousePage({ params }: { params: Promise<{ id: 
   if (!house) notFound()
 
   return (
-    <div style={{ padding: '20px 16px' }}>
-      <div style={{ marginBottom: 24 }}>
+    <div style={{ padding: '20px 16px', maxWidth: '100%' }}>
+      <div style={{ marginBottom: 28 }}>
         <Link href={`/houses/${id}`} style={{ color: '#555', textDecoration: 'none', fontSize: 13 }}>
-          <i className="ti ti-arrow-left" style={{ fontSize: 18, verticalAlign: -3 }} aria-hidden="true" />
+          <i className="ti ti-arrow-left" style={{ fontSize: 20, verticalAlign: -3 }} aria-hidden="true" />
         </Link>
-        <h1 style={{ fontSize: 20, fontWeight: 500, marginTop: 12 }}>주택 정보 수정</h1>
+        <h1 style={{ fontSize: 20, fontWeight: 500, marginTop: 14, marginBottom: 0 }}>주택 정보 수정</h1>
       </div>
 
-      <form action={updateHouse.bind(null, id)} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <div>
+      <form action={updateHouse.bind(null, id)} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+        <div style={fieldStyle}>
           <label style={labelStyle}>주소 <span style={{ color: '#f87171' }}>*</span></label>
           <input name="address" required defaultValue={house.address} style={inputStyle} />
         </div>
 
-        <div>
+        <div style={fieldStyle}>
           <label style={labelStyle}>상세 주소</label>
           <input name="addressDetail" defaultValue={house.addressDetail ?? ''} style={inputStyle} />
         </div>
 
-        <div>
+        <div style={fieldStyle}>
           <label style={labelStyle}>주택 유형 <span style={{ color: '#f87171' }}>*</span></label>
           <select name="houseType" required defaultValue={house.houseType} style={{ ...inputStyle, appearance: 'none' as const }}>
             <option value="단독주택">단독주택</option>
@@ -46,28 +47,27 @@ export default async function EditHousePage({ params }: { params: Promise<{ id: 
           </select>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-          <div>
-            <label style={labelStyle}>건축연도</label>
-            <input name="buildYear" type="number" defaultValue={house.buildYear ?? ''} min="1900" max={new Date().getFullYear()} style={inputStyle} />
-          </div>
-          <div>
-            <label style={labelStyle}>면적 (㎡)</label>
-            <input name="area" type="number" defaultValue={house.area ?? ''} step="0.1" style={inputStyle} />
-          </div>
+        <div style={fieldStyle}>
+          <label style={labelStyle}>건축연도</label>
+          <input name="buildYear" type="number" defaultValue={house.buildYear ?? ''} min="1900" max={new Date().getFullYear()} style={inputStyle} />
         </div>
 
-        <div>
+        <div style={fieldStyle}>
+          <label style={labelStyle}>면적 (㎡)</label>
+          <input name="area" type="number" defaultValue={house.area ?? ''} step="0.1" style={inputStyle} />
+        </div>
+
+        <div style={fieldStyle}>
           <label style={labelStyle}>소유자 이름</label>
           <input name="ownerName" defaultValue={house.ownerName ?? ''} style={inputStyle} />
         </div>
 
-        <div>
+        <div style={fieldStyle}>
           <label style={labelStyle}>메모</label>
           <textarea name="notes" rows={3} defaultValue={house.notes ?? ''} style={{ ...inputStyle, resize: 'none' as const }} />
         </div>
 
-        <button type="submit" style={{ marginTop: 8, background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: 14, padding: '14px', fontSize: 15, fontWeight: 500, cursor: 'pointer' }}>
+        <button type="submit" style={{ marginTop: 4, background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: 14, padding: '15px', fontSize: 15, fontWeight: 500, cursor: 'pointer', width: '100%' }}>
           저장하기
         </button>
       </form>
