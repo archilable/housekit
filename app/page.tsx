@@ -1,19 +1,16 @@
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
-import DeleteHouseButton from './components/DeleteHouseButton'
+import SortableHouseList from './components/SortableHouseList'
 
 export const dynamic = 'force-dynamic'
 
 function calcHealthScore(inventoryCount: number, historyCount: number) {
-  const base = 40
-  const inv = Math.min(inventoryCount * 8, 30)
-  const hist = Math.min(historyCount * 6, 30)
-  return Math.min(base + inv + hist, 100)
+  return Math.min(40 + Math.min(inventoryCount * 8, 30) + Math.min(historyCount * 6, 30), 100)
 }
 
 export default async function Home() {
   const houses = await prisma.house.findMany({
-    orderBy: { createdAt: 'desc' },
+    orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
     include: { _count: { select: { inventories: true, histories: true } } },
   })
 
@@ -57,55 +54,7 @@ export default async function Home() {
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {houses.map((house) => {
-          const score = calcHealthScore(house._count.inventories, house._count.histories)
-          const scoreColor = score >= 70 ? '#34d399' : score >= 40 ? '#fbbf24' : '#f87171'
-          return (
-            <div key={house.id} style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 18, overflow: 'hidden' }}>
-              <Link href={`/houses/${house.id}`} style={{ display: 'block', padding: '18px 18px 14px', textDecoration: 'none', color: 'inherit' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                      <span style={{ fontSize: 11, background: '#0d1a2e', color: '#60a5fa', padding: '2px 8px', borderRadius: 20, border: '0.5px solid #1e3a5f' }}>
-                        {house.houseType}
-                      </span>
-                      {house.buildYear && <span style={{ fontSize: 11, color: '#555' }}>{house.buildYear}년 건축</span>}
-                    </div>
-                    <p style={{ fontSize: 16, fontWeight: 500, marginBottom: 2 }}>{house.address}</p>
-                    {house.addressDetail && <p style={{ fontSize: 13, color: '#666' }}>{house.addressDetail}</p>}
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <p style={{ fontSize: 22, fontWeight: 500, color: scoreColor }}>{score}</p>
-                    <p style={{ fontSize: 10, color: '#555' }}>건강점수</p>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: 16, marginTop: 12 }}>
-                  <span style={{ fontSize: 12, color: '#555' }}>
-                    <i className="ti ti-package" style={{ fontSize: 12, marginRight: 4 }} aria-hidden="true" />
-                    설비 {house._count.inventories}
-                  </span>
-                  <span style={{ fontSize: 12, color: '#555' }}>
-                    <i className="ti ti-tool" style={{ fontSize: 12, marginRight: 4 }} aria-hidden="true" />
-                    이력 {house._count.histories}
-                  </span>
-                </div>
-              </Link>
-
-              <div style={{ borderTop: '0.5px solid #1a1a22', display: 'flex' }}>
-                <Link href={`/houses/${house.id}`} style={{ flex: 1, padding: '10px 0', textAlign: 'center', fontSize: 12, color: '#60a5fa', textDecoration: 'none' }}>
-                  대시보드 열기
-                </Link>
-                <div style={{ width: '0.5px', background: '#1a1a22' }} />
-                <div style={{ flex: 0 }}>
-                  <DeleteHouseButton id={house.id} address={house.address} />
-                </div>
-              </div>
-            </div>
-          )
-        })}
-      </div>
+      <SortableHouseList initialHouses={houses} />
     </div>
   )
 }

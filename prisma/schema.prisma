@@ -26,6 +26,7 @@ model House {
 
   inventories   Inventory[]
   histories     History[]
+  sortOrder       Int      @default(0)
   utilities       Utility[]
   doctorHistories DoctorHistory[]
   valuation       Valuation?
