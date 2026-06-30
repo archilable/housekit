@@ -54,7 +54,7 @@ export default async function NewInventoryPage({ params }: { params: Promise<{ i
 
         <div style={fieldStyle}>
           <label style={labelStyle}>설치일</label>
-          <input name="installedAt" type="date" style={inputStyle} />
+          <input name="installedAt" type="date" style={{ ...inputStyle, display: "block", overflow: "hidden" }} />
         </div>
 
         <div style={fieldStyle}>

@@ -53,7 +53,7 @@ export default async function EditHistoryPage({ params }: { params: Promise<{ id
 
         <div style={fieldStyle}>
           <label style={labelStyle}>작업일 <span style={{ color: '#f87171' }}>*</span></label>
-          <input name="doneAt" type="date" required defaultValue={doneAtValue} style={inputStyle} />
+          <input name="doneAt" type="date" required defaultValue={doneAtValue} style={{ ...inputStyle, display: "block", overflow: "hidden" }} />
         </div>
 
         <div style={fieldStyle}>

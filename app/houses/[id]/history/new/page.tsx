@@ -49,7 +49,7 @@ export default async function NewHistoryPage({ params }: { params: Promise<{ id:
 
         <div style={fieldStyle}>
           <label style={labelStyle}>작업일 <span style={{ color: '#f87171' }}>*</span></label>
-          <input name="doneAt" type="date" required defaultValue={today} style={inputStyle} />
+          <input name="doneAt" type="date" required defaultValue={today} style={{ ...inputStyle, display: "block", overflow: "hidden" }} />
         </div>
 
         <div style={fieldStyle}>
