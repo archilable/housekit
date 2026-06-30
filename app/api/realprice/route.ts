@@ -1,51 +1,84 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// 법정동코드 앞 5자리 추출 (주소 기반 매핑)
+// 법정동코드 앞 5자리 추출 (주소 기반)
 function getLawdCd(address: string): string {
-  const map: Record<string, string> = {
-    '서울': '11', '부산': '26', '대구': '27', '인천': '28', '광주': '29',
-    '대전': '30', '울산': '31', '세종': '36', '경기': '41', '강원': '42',
-    '충북': '43', '충남': '44', '전북': '45', '전남': '46', '경북': '47',
-    '경남': '48', '제주': '50',
-    // 서울 구
-    '종로구': '11110', '중구': '11140', '용산구': '11170', '성동구': '11200',
-    '광진구': '11215', '동대문구': '11230', '중랑구': '11260', '성북구': '11290',
-    '강북구': '11305', '도봉구': '11320', '노원구': '11350', '은평구': '11380',
-    '서대문구': '11410', '마포구': '11440', '양천구': '11470', '강서구': '11500',
-    '구로구': '11530', '금천구': '11545', '영등포구': '11560', '동작구': '11590',
-    '관악구': '11620', '서초구': '11650', '강남구': '11680', '송파구': '11710',
-    '강동구': '11740',
-    // 부산 구
-    '중구': '26110', '서구': '26140', '동구': '26170', '영도구': '26200',
-    '부산진구': '26230', '동래구': '26260', '남구': '26290', '북구': '26320',
-    '해운대구': '26350', '사하구': '26380', '금정구': '26410', '강서구': '26440',
-    '연제구': '26470', '수영구': '26500', '사상구': '26530',
-    // 제주
-    '제주시': '50110', '서귀포시': '50130',
-    // 경기
-    '수원시': '41110', '성남시': '41130', '의정부시': '41150', '안양시': '41170',
-    '부천시': '41190', '광명시': '41210', '평택시': '41220', '동두천시': '41250',
-    '안산시': '41270', '고양시': '41280', '과천시': '41290', '구리시': '41310',
-    '남양주시': '41360', '오산시': '41370', '시흥시': '41390', '군포시': '41410',
-    '의왕시': '41430', '하남시': '41450', '용인시': '41460', '파주시': '41480',
-    '이천시': '41500', '안성시': '41550', '김포시': '41570', '화성시': '41590',
-    '광주시': '41610', '양주시': '41630', '포천시': '41650', '여주시': '41670',
+  // 제주
+  if (address.includes('서귀포시')) return '50130'
+  if (address.includes('제주시') || address.includes('제주')) return '50110'
+  // 서울 구
+  if (address.includes('서울')) {
+    if (address.includes('종로구')) return '11110'
+    if (address.includes('중구')) return '11140'
+    if (address.includes('용산구')) return '11170'
+    if (address.includes('성동구')) return '11200'
+    if (address.includes('광진구')) return '11215'
+    if (address.includes('동대문구')) return '11230'
+    if (address.includes('중랑구')) return '11260'
+    if (address.includes('성북구')) return '11290'
+    if (address.includes('강북구')) return '11305'
+    if (address.includes('도봉구')) return '11320'
+    if (address.includes('노원구')) return '11350'
+    if (address.includes('은평구')) return '11380'
+    if (address.includes('서대문구')) return '11410'
+    if (address.includes('마포구')) return '11440'
+    if (address.includes('양천구')) return '11470'
+    if (address.includes('강서구')) return '11500'
+    if (address.includes('구로구')) return '11530'
+    if (address.includes('금천구')) return '11545'
+    if (address.includes('영등포구')) return '11560'
+    if (address.includes('동작구')) return '11590'
+    if (address.includes('관악구')) return '11620'
+    if (address.includes('서초구')) return '11650'
+    if (address.includes('강남구')) return '11680'
+    if (address.includes('송파구')) return '11710'
+    if (address.includes('강동구')) return '11740'
+    return '11000'
   }
-
-  for (const [key, code] of Object.entries(map)) {
-    if (address.includes(key) && code.length === 5) return code
+  // 부산 구
+  if (address.includes('부산')) {
+    if (address.includes('중구')) return '26110'
+    if (address.includes('서구')) return '26140'
+    if (address.includes('동구')) return '26170'
+    if (address.includes('영도구')) return '26200'
+    if (address.includes('부산진구')) return '26230'
+    if (address.includes('동래구')) return '26260'
+    if (address.includes('남구')) return '26290'
+    if (address.includes('북구')) return '26320'
+    if (address.includes('해운대구')) return '26350'
+    if (address.includes('사하구')) return '26380'
+    if (address.includes('금정구')) return '26410'
+    if (address.includes('강서구')) return '26440'
+    if (address.includes('연제구')) return '26470'
+    if (address.includes('수영구')) return '26500'
+    if (address.includes('사상구')) return '26530'
+    return '26000'
   }
-
-  // 광역시/도 기반 fallback (5자리로 확장)
-  if (address.includes('서울')) return '11000'
-  if (address.includes('부산')) return '26000'
+  // 경기 시
+  if (address.includes('경기') || address.includes('수원') || address.includes('성남') || address.includes('고양') || address.includes('용인')) {
+    if (address.includes('수원')) return '41110'
+    if (address.includes('성남')) return '41130'
+    if (address.includes('의정부')) return '41150'
+    if (address.includes('안양')) return '41170'
+    if (address.includes('부천')) return '41190'
+    if (address.includes('광명')) return '41210'
+    if (address.includes('평택')) return '41220'
+    if (address.includes('안산')) return '41270'
+    if (address.includes('고양')) return '41280'
+    if (address.includes('용인')) return '41460'
+    if (address.includes('파주')) return '41480'
+    if (address.includes('화성')) return '41590'
+    if (address.includes('김포')) return '41570'
+    if (address.includes('남양주')) return '41360'
+    if (address.includes('시흥')) return '41390'
+    return '41000'
+  }
+  // 광역시/도
   if (address.includes('대구')) return '27000'
   if (address.includes('인천')) return '28000'
   if (address.includes('광주')) return '29000'
   if (address.includes('대전')) return '30000'
   if (address.includes('울산')) return '31000'
   if (address.includes('세종')) return '36000'
-  if (address.includes('경기')) return '41000'
   if (address.includes('강원')) return '42000'
   if (address.includes('충북')) return '43000'
   if (address.includes('충남')) return '44000'
@@ -53,9 +86,7 @@ function getLawdCd(address: string): string {
   if (address.includes('전남') || address.includes('전라남도')) return '46000'
   if (address.includes('경북') || address.includes('경상북도')) return '47000'
   if (address.includes('경남') || address.includes('경상남도')) return '48000'
-  if (address.includes('제주')) return '50110'
-
-  return '11000' // 기본값 서울
+  return '11000'
 }
 
 async function fetchAptTrade(lawdCd: string, dealYmd: string, key: string) {
