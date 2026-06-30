@@ -11,13 +11,14 @@ const geistSans = Geist({
 export const metadata: Metadata = {
   title: "HouseKit",
   description: "집의 이력서 — 디지털 주택 기록부",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko" className={geistSans.variable}>
-      <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--bg)" }}>
-        <main style={{ flex: 1, maxWidth: 430, width: "100%", margin: "0 auto", paddingBottom: 80 }}>
+      <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--bg)", overflowX: "hidden" }}>
+        <main style={{ flex: 1, maxWidth: 430, width: "100%", margin: "0 auto", paddingBottom: 80, boxSizing: "border-box" }}>
           {children}
         </main>
 
