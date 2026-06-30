@@ -23,19 +23,37 @@
 
 *, *::before, *::after {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-html, body {
-  overflow-x: hidden;
+html {
+  overflow-x: clip;
   width: 100%;
-  max-width: 100%;
 }
 
 body {
+  overflow-x: clip;
+  width: 100%;
+  min-width: 0;
   background: var(--bg);
   color: var(--text-primary);
   font-family: var(--font-sans), -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
+  /* iOS Safari 스크롤 shift 방지 */
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+
+/* 모든 블록 요소 width 안전장치 */
+div, section, article, header, footer, nav, aside, main {
+  min-width: 0;
+  max-width: 100%;
+}
+
+img, video, svg {
+  max-width: 100%;
+  height: auto;
 }
 
 input, select, textarea {

@@ -18,21 +18,22 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko" className={geistSans.variable}>
-      <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--bg)", overflowX: "hidden" }}>
+      <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--bg)" }}>
         <FontSizeProvider>
-        <main style={{ flex: 1, width: "100%", maxWidth: 430, margin: "0 auto", paddingBottom: 80, boxSizing: "border-box", overflowX: "hidden" }}>
+        <main style={{ flex: 1, width: "100%", maxWidth: 430, margin: "0 auto", paddingBottom: 80, boxSizing: "border-box", minWidth: 0 }}>
           {children}
         </main>
 
         <nav style={{
-          position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)",
-          width: "100%", maxWidth: 430,
-          background: "rgba(10,10,15,0.92)", backdropFilter: "blur(12px)",
+          position: "fixed", bottom: 0, left: 0, right: 0,
+          maxWidth: 430, margin: "0 auto",
+          background: "rgba(10,10,15,0.95)", backdropFilter: "blur(12px)",
           borderTop: "0.5px solid #1e1e28",
           display: "flex", justifyContent: "space-around", alignItems: "center",
           padding: "10px 0 20px",
           zIndex: 100,
           boxSizing: "border-box",
+          width: "100%",
         }}>
           {[
             { href: "/", icon: "ti-home-2", label: "홈" },
