@@ -57,11 +57,14 @@ export default async function HousePage({
         <Link href="/" style={{ color: '#555', textDecoration: 'none', fontSize: 13 }}>
           <i className="ti ti-arrow-left" style={{ fontSize: 18, verticalAlign: -3 }} aria-hidden="true" />
         </Link>
-        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <span style={{ fontSize: 11, background: '#0d1a2e', color: '#60a5fa', padding: '3px 10px', borderRadius: 20, border: '0.5px solid #1e3a5f' }}>
             {house.houseType}
           </span>
           {house.buildYear && <span style={{ fontSize: 11, color: '#555' }}>{house.buildYear}년</span>}
+          <Link href={`/houses/${id}/edit`} style={{ color: '#60a5fa', fontSize: 18, textDecoration: 'none' }}>
+            <i className="ti ti-pencil" aria-hidden="true" />
+          </Link>
         </div>
       </div>
 

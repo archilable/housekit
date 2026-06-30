@@ -29,6 +29,23 @@ export async function createHouse(formData: FormData) {
   redirect(`/houses/${house.id}`)
 }
 
+export async function updateHouse(id: string, formData: FormData) {
+  await prisma.house.update({
+    where: { id },
+    data: {
+      address: formData.get('address') as string,
+      addressDetail: (formData.get('addressDetail') as string) || null,
+      buildYear: formData.get('buildYear') ? parseInt(formData.get('buildYear') as string) : null,
+      area: formData.get('area') ? parseFloat(formData.get('area') as string) : null,
+      houseType: formData.get('houseType') as string,
+      ownerName: (formData.get('ownerName') as string) || null,
+      notes: (formData.get('notes') as string) || null,
+    },
+  })
+  revalidatePath(`/houses/${id}`)
+  redirect(`/houses/${id}`)
+}
+
 export async function deleteHouse(id: string) {
   await prisma.house.delete({ where: { id } })
   revalidatePath('/')
