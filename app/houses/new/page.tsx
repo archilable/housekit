@@ -18,7 +18,7 @@ export default function NewHousePage() {
   return (
     <div style={{ padding: '20px 16px', maxWidth: '100%' }}>
       <div style={{ marginBottom: 28 }}>
-        <Link href="/" style={{ color: '#555', textDecoration: 'none', fontSize: 13 }}>
+        <Link href="/houses" style={{ color: '#555', textDecoration: 'none', fontSize: 13 }}>
           <i className="ti ti-arrow-left" style={{ fontSize: 20, verticalAlign: -3 }} aria-hidden="true" />
         </Link>
         <h1 style={{ fontSize: 20, fontWeight: 500, marginTop: 14, marginBottom: 4 }}>주택 등록</h1>

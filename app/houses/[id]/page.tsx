@@ -65,7 +65,7 @@ export default async function HousePage({
     <div style={{ color: '#fff', width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 16px 0' }}>
-        <Link href="/" style={{ color: '#555', textDecoration: 'none', fontSize: 13 }}>
+        <Link href="/houses" style={{ color: '#555', textDecoration: 'none', fontSize: 13 }}>
           <i className="ti ti-arrow-left" style={{ fontSize: 18, verticalAlign: -3 }} aria-hidden="true" />
         </Link>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>

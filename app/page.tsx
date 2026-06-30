@@ -1,60 +1,94 @@
-import { prisma } from '@/lib/db'
 import Link from 'next/link'
-import SortableHouseList from './components/SortableHouseList'
 
-export const dynamic = 'force-dynamic'
-
-function calcHealthScore(inventoryCount: number, historyCount: number) {
-  return Math.min(40 + Math.min(inventoryCount * 8, 30) + Math.min(historyCount * 6, 30), 100)
-}
-
-export default async function Home() {
-  const houses = await prisma.house.findMany({
-    orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
-    include: { _count: { select: { inventories: true, histories: true } } },
-  })
-
-  if (houses.length === 0) {
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', textAlign: 'center', padding: '0 24px' }}>
-        <div style={{ fontSize: 64, marginBottom: 16 }}>
-          <svg width="80" height="72" viewBox="0 0 80 72" fill="none">
-            <ellipse cx="40" cy="68" rx="28" ry="4" fill="#1a1a2e" />
-            <polygon points="40,8 72,34 8,34" fill="#1a2540" stroke="#2a4a80" strokeWidth="1" />
-            <rect x="12" y="34" width="56" height="34" fill="#111828" stroke="#1e3a5f" strokeWidth="1" />
-            <rect x="20" y="42" width="14" height="12" fill="#0d1a2e" stroke="#2a4a80" strokeWidth="0.5" rx="1" />
-            <rect x="42" y="42" width="14" height="12" fill="#0d1a2e" stroke="#2a4a80" strokeWidth="0.5" rx="1" />
-            <rect x="31" y="50" width="8" height="18" fill="#0d1a2e" stroke="#1e3a5f" strokeWidth="0.5" rx="1" />
-            <circle cx="40" cy="8" r="3" fill="#60a5fa" opacity="0.8" />
-          </svg>
-        </div>
-        <h1 style={{ fontSize: 22, fontWeight: 500, marginBottom: 8 }}>집의 이력서를 시작하세요</h1>
-        <p style={{ fontSize: 14, color: '#666', marginBottom: 32, lineHeight: 1.6 }}>
-          보일러 교체일, 누수 이력, 수리업체까지<br />집의 모든 기록을 한 곳에
-        </p>
-        <Link href="/houses/new" style={{
-          background: '#1d4ed8', color: '#fff', padding: '14px 32px',
-          borderRadius: 14, fontSize: 15, fontWeight: 500, textDecoration: 'none',
-        }}>
-          첫 번째 주택 등록하기
-        </Link>
-      </div>
-    )
-  }
-
+export default function LandingPage() {
   return (
-    <div style={{ padding: '24px 16px 0', width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <div>
-          <p style={{ fontSize: 12, color: '#555', marginBottom: 2 }}>내 자산</p>
-          <h1 style={{ fontSize: 22, fontWeight: 500 }}>주택 {houses.length}채</h1>
-        </div>
-        <div style={{ fontSize: 12, color: '#60a5fa', background: '#0d1a2e', padding: '6px 12px', borderRadius: 20, border: '0.5px solid #1e3a5f' }}>
-          총 건강점수 {Math.round(houses.reduce((s, h) => s + calcHealthScore(h._count.inventories, h._count.histories), 0) / houses.length)}점
-        </div>
+    <div style={{
+      minHeight: '100vh', display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center',
+      background: '#0a0a0f', padding: '0 32px', textAlign: 'center',
+      position: 'relative', overflow: 'hidden',
+    }}>
+      {/* 배경 그라데이션 원 */}
+      <div style={{
+        position: 'absolute', width: 400, height: 400, borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(29,78,216,0.12) 0%, transparent 70%)',
+        top: '10%', left: '50%', transform: 'translateX(-50%)',
+        pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', width: 280, height: 280, borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(96,165,250,0.06) 0%, transparent 70%)',
+        bottom: '15%', left: '50%', transform: 'translateX(-50%)',
+        pointerEvents: 'none',
+      }} />
+
+      {/* 로고 SVG */}
+      <div style={{ marginBottom: 32 }}>
+        <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="72" height="72" rx="20" fill="#0d1a2e" />
+          <rect width="72" height="72" rx="20" fill="url(#logoGrad)" opacity="0.5" />
+          {/* 집 모양 */}
+          <polygon points="36,14 58,32 14,32" fill="#1e3a5f" stroke="#2a4a80" strokeWidth="1" />
+          <rect x="16" y="32" width="40" height="24" fill="#111828" stroke="#1e3a5f" strokeWidth="1" />
+          {/* 문 */}
+          <rect x="30" y="42" width="12" height="14" fill="#0d1a2e" stroke="#1e3a5f" strokeWidth="0.5" rx="1" />
+          {/* 창문 */}
+          <rect x="19" y="36" width="10" height="8" fill="#0d1a2e" stroke="#2a4a80" strokeWidth="0.5" rx="1" />
+          <rect x="43" y="36" width="10" height="8" fill="#0d1a2e" stroke="#2a4a80" strokeWidth="0.5" rx="1" />
+          {/* 포인트 도트 */}
+          <circle cx="36" cy="14" r="2.5" fill="#60a5fa" opacity="0.9" />
+          <circle cx="19" cy="40" r="1" fill="#60a5fa" opacity="0.5" />
+          <circle cx="53" cy="40" r="1" fill="#60a5fa" opacity="0.5" />
+          <defs>
+            <linearGradient id="logoGrad" x1="0" y1="0" x2="72" y2="72">
+              <stop offset="0%" stopColor="#1d4ed8" />
+              <stop offset="100%" stopColor="#0d1a2e" />
+            </linearGradient>
+          </defs>
+        </svg>
       </div>
 
-      <SortableHouseList initialHouses={houses} />
+      {/* 로고 텍스트 */}
+      <div style={{ marginBottom: 12 }}>
+        <h1 style={{
+          fontSize: 42, fontWeight: 700, letterSpacing: -2,
+          background: 'linear-gradient(135deg, #ffffff 0%, #60a5fa 100%)',
+          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text', lineHeight: 1,
+        }}>
+          HouseKit
+        </h1>
+        <p style={{
+          fontSize: 13, letterSpacing: 6, color: '#1e3a5f',
+          textTransform: 'uppercase', marginTop: 8, fontWeight: 500,
+        }}>
+          집의 이력서
+        </p>
+      </div>
+
+      {/* 태그라인 */}
+      <p style={{
+        fontSize: 15, color: '#555', lineHeight: 1.8, marginBottom: 56,
+        maxWidth: 260,
+      }}>
+        보일러 교체일부터 공과금까지<br />내 집의 모든 기록을 한 곳에
+      </p>
+
+      {/* 들어가기 버튼 */}
+      <Link href="/" style={{
+        display: 'block', width: '100%', maxWidth: 280,
+        background: 'linear-gradient(135deg, #1d4ed8, #2563eb)',
+        color: '#fff', padding: '17px 0', borderRadius: 16,
+        fontSize: 16, fontWeight: 600, textDecoration: 'none',
+        letterSpacing: 0.5,
+        boxShadow: '0 8px 32px rgba(29,78,216,0.35)',
+      }}>
+        시작하기
+      </Link>
+
+      <p style={{ fontSize: 12, color: '#2a2a38', marginTop: 24 }}>
+        v0.1 MVP · made with ♥
+      </p>
     </div>
   )
 }

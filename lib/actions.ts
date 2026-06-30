@@ -49,7 +49,7 @@ export async function updateHouse(id: string, formData: FormData) {
 export async function deleteHouse(id: string) {
   await prisma.house.delete({ where: { id } })
   revalidatePath('/')
-  redirect('/')
+  redirect('/houses')
 }
 
 // Inventory actions
