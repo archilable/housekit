@@ -42,7 +42,7 @@ export default async function HousePage({
     where: { id },
     include: {
       inventories: { orderBy: [{ sortOrder: 'asc' }, { installedAt: 'desc' }] },
-      histories: { orderBy: { doneAt: 'asc' } },
+      histories: { orderBy: { doneAt: 'desc' } },
       utilities: { orderBy: { month: 'desc' }, take: 7 },
       valuation: true,
     },
@@ -56,7 +56,7 @@ export default async function HousePage({
 
   const score = calcHealthScore(house.inventories.length, house.histories.length)
   const scoreColor = score >= 70 ? '#34d399' : score >= 40 ? '#fbbf24' : '#f87171'
-  const recentHistories = house.histories.slice(-5)
+  const recentHistories = house.histories.slice(0, 5)
 
   const s: Record<string, string> = {
     card: 'background:var(--bg-card);border:0.5px solid var(--border);border-radius:16px;',
@@ -197,7 +197,7 @@ export default async function HousePage({
             </Link>
 
             {/* 마지막 이력 */}
-            <Link href={`/houses/${id}?tab=history${house.histories.at(-1) ? `&highlight=${house.histories.at(-1)!.id}` : ''}`} style={{ textDecoration: 'none', color: 'inherit', background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 14, padding: 14, display: 'block' }}>
+            <Link href={`/houses/${id}?tab=history${house.histories[0] ? `&highlight=${house.histories[0].id}` : ''}`} style={{ textDecoration: 'none', color: 'inherit', background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 14, padding: 14, display: 'block' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
                 <div style={{ width: 28, height: 28, borderRadius: 8, background: '#0d1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <i className="ti ti-calendar-check" style={{ fontSize: 14, color: '#a78bfa' }} aria-hidden="true" />
@@ -206,10 +206,10 @@ export default async function HousePage({
               </div>
               <p style={{ fontSize: 11, color: '#666' }}>마지막 이력</p>
               <p style={{ fontSize: 16, fontWeight: 500, color: '#a78bfa', marginTop: 2 }}>
-                {house.histories.at(-1) ? house.histories.at(-1)!.doneAt.toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' }) : '없음'}
+                {house.histories[0] ? house.histories[0].doneAt.toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' }) : '없음'}
               </p>
               <p style={{ fontSize: 10, color: '#555', marginTop: 1 }}>
-                {house.histories.at(-1) ? house.histories.at(-1)!.title : '이력을 추가하세요'}
+                {house.histories[0] ? house.histories[0].title : '이력을 추가하세요'}
               </p>
             </Link>
           </div>
