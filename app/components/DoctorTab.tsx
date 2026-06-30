@@ -55,28 +55,66 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
     }
   }
 
+  // 결과에서 숨고 키워드 추출
+  function extractSoomgoKeyword(text: string): string {
+    const lines = text.split('\n')
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].includes('숨고 검색') && lines[i + 1]) {
+        return lines[i + 1].trim()
+      }
+    }
+    return description || '수리'
+  }
+
+  // 결과에서 자재 목록 추출
+  function extractMaterials(text: string): string[] {
+    const lines = text.split('\n')
+    const materials: string[] = []
+    let inMaterials = false
+    for (const line of lines) {
+      if (line.includes('필요한 자재')) { inMaterials = true; continue }
+      if (inMaterials && line.startsWith('##')) break
+      if (inMaterials && line.trim().startsWith('-')) {
+        const mat = line.replace(/^-\s*/, '').split('(')[0].trim()
+        if (mat) materials.push(mat)
+      }
+    }
+    return materials
+  }
+
   function renderResult(text: string) {
     const lines = text.split('\n')
     return lines.map((line, i) => {
       if (line.startsWith('## ')) {
         return <p key={i} style={{ fontSize: 14, fontWeight: 600, color: '#60a5fa', marginTop: 16, marginBottom: 4 }}>{line.replace('## ', '')}</p>
       }
-      if (line.includes('숨고 검색') && lines[i + 1]) return null
-      const sogooMatch = line.match(/^([^:]+)$/)
-      if (lines[i - 1]?.includes('숨고 검색') && sogooMatch) {
-        const keyword = line.trim()
-        const url = `https://soomgo.com/search/pro?keyword=${encodeURIComponent(keyword)}`
-        return (
-          <a key={i} href={url} target="_blank" rel="noopener noreferrer"
-            style={{ display: 'block', marginTop: 8, background: '#1d4ed8', color: '#fff', padding: '10px 16px', borderRadius: 10, fontSize: 13, textDecoration: 'none', wordBreak: 'keep-all' }}>
-            숨고에서 "{keyword}" 전문가 찾기 →
-          </a>
-        )
+      // 숨고 섹션은 버튼으로 대체하므로 숨김
+      if (line.includes('숨고 검색')) return null
+      if (lines[i - 1]?.includes('숨고 검색')) return null
+      // 자재 항목에 쿠팡 링크 추가
+      if (line.trim().startsWith('-') && lines[i - 2]?.includes('필요한 자재') ||
+          line.trim().startsWith('-') && lines[i - 1]?.includes('필요한 자재') ||
+          (lines.slice(0, i).reverse().find(l => l.startsWith('##'))?.includes('필요한 자재'))) {
+        const mat = line.replace(/^-\s*/, '').trim()
+        const matName = mat.split('(')[0].trim()
+        if (matName && line.trim().startsWith('-')) {
+          const coupangUrl = `https://www.coupang.com/np/search?q=${encodeURIComponent(matName)}`
+          return (
+            <a key={i} href={coupangUrl} target="_blank" rel="noopener noreferrer"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#1a1a2e', border: '0.5px solid #2a2a38', borderRadius: 8, padding: '8px 12px', marginTop: 6, textDecoration: 'none' }}>
+              <span style={{ fontSize: 13, color: '#ccc' }}>🛒 {mat}</span>
+              <span style={{ fontSize: 11, color: '#f97316', fontWeight: 500, flexShrink: 0, marginLeft: 8 }}>쿠팡 →</span>
+            </a>
+          )
+        }
       }
       if (!line.trim()) return <br key={i} />
       return <p key={i} style={{ fontSize: 13, color: '#ccc', lineHeight: 1.7, margin: '2px 0', wordBreak: 'keep-all', overflowWrap: 'break-word' }}>{line}</p>
     })
   }
+
+  const soomgoKeyword = result ? extractSoomgoKeyword(result) : ''
+  const materials = result ? extractMaterials(result) : []
 
   return (
     <div style={{ padding: '16px 16px', width: '100%', boxSizing: 'border-box' }}>
@@ -127,13 +165,51 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
 
       <button onClick={handleSubmit} disabled={loading}
         style={{ width: '100%', background: loading ? '#1a2a4a' : '#1d4ed8', color: '#fff', border: 'none', borderRadius: 14, padding: '15px', fontSize: 15, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', boxSizing: 'border-box' }}>
-        {loading ? 'AI 진단 중...' : '🏥 AI 진단 시작'}
+        {loading ? '🔍 AI 진단 중...' : '🏥 AI 진단 시작'}
       </button>
 
       {result && (
-        <div style={{ marginTop: 24, background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 16, padding: 16, wordBreak: 'keep-all', overflowWrap: 'break-word', overflow: 'hidden' }}>
-          <p style={{ fontSize: 14, fontWeight: 600, color: '#34d399', marginBottom: 12, marginTop: 0 }}>✅ 진단 완료</p>
-          {renderResult(result)}
+        <div style={{ marginTop: 24, overflow: 'hidden' }}>
+          {/* 진단 결과 */}
+          <div style={{ background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 16, padding: 16, marginBottom: 12, wordBreak: 'keep-all', overflowWrap: 'break-word' }}>
+            <p style={{ fontSize: 14, fontWeight: 600, color: '#34d399', marginBottom: 12, marginTop: 0 }}>✅ 진단 완료</p>
+            {renderResult(result)}
+          </div>
+
+          {/* 자재 쿠팡 검색 버튼 (추가로) */}
+          {materials.length > 0 && (
+            <div style={{ background: '#1a0f00', border: '0.5px solid #f9731622', borderRadius: 14, padding: 14, marginBottom: 12 }}>
+              <p style={{ fontSize: 12, color: '#f97316', marginBottom: 10, fontWeight: 500 }}>🛒 쿠팡에서 자재 바로 구매</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {materials.map((mat, i) => (
+                  <a key={i} href={`https://www.coupang.com/np/search?q=${encodeURIComponent(mat)}`}
+                    target="_blank" rel="noopener noreferrer"
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#111', border: '0.5px solid #f9731633', borderRadius: 10, padding: '10px 14px', textDecoration: 'none' }}>
+                    <span style={{ fontSize: 13, color: '#ddd' }}>{mat}</span>
+                    <span style={{ fontSize: 12, color: '#f97316', fontWeight: 600, flexShrink: 0 }}>쿠팡 검색 →</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 액션 버튼 2개 */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(soomgoKeyword + ' DIY 수리 방법')}`}
+              target="_blank" rel="noopener noreferrer"
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: '#111828', border: '0.5px solid #1e3a5f', borderRadius: 14, padding: '16px 12px', textDecoration: 'none' }}>
+              <span style={{ fontSize: 24 }}>🔧</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>DIY 수리</span>
+              <span style={{ fontSize: 11, color: '#555', textAlign: 'center' }}>유튜브 영상으로 직접 수리하기</span>
+            </a>
+            <a href={`https://soomgo.com/search/pro?keyword=${encodeURIComponent(soomgoKeyword)}`}
+              target="_blank" rel="noopener noreferrer"
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 14, padding: '16px 12px', textDecoration: 'none' }}>
+              <span style={{ fontSize: 24 }}>👷</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#60a5fa' }}>전문가 찾기</span>
+              <span style={{ fontSize: 11, color: '#555', textAlign: 'center' }}>숨고에서 전문가 연결하기</span>
+            </a>
+          </div>
         </div>
       )}
     </div>
