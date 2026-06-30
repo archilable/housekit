@@ -1,13 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { GoogleGenerativeAI } from '@google/generative-ai'
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
 export async function POST(req: NextRequest) {
   try {
     const { imageBase64, mediaType, description } = await req.json()
-
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-8b' })
 
     const prompt = `당신은 주택 수리 전문가입니다. 사용자가 집의 문제 부위 사진을 보내왔습니다.
 
@@ -33,17 +28,27 @@ export async function POST(req: NextRequest) {
 ## 🔗 숨고 검색
 [수리 전문가 검색 키워드 1개]`
 
-    let result
+    const parts: object[] = []
     if (imageBase64) {
-      result = await model.generateContent([
-        { inlineData: { data: imageBase64, mimeType: mediaType || 'image/jpeg' } },
-        prompt,
-      ])
-    } else {
-      result = await model.generateContent(prompt)
+      parts.push({ inline_data: { mime_type: mediaType || 'image/jpeg', data: imageBase64 } })
+    }
+    parts.push({ text: prompt })
+
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts }] }),
+      }
+    )
+
+    const data = await res.json()
+    if (!res.ok) {
+      throw new Error(data.error?.message || `API error ${res.status}`)
     }
 
-    const text = result.response.text()
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? '결과를 받지 못했습니다.'
     return NextResponse.json({ result: text })
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : 'Unknown error'
