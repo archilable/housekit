@@ -107,6 +107,15 @@ async function fetchVillaTrade(lawdCd: string, dealYmd: string, key: string) {
   return items.map((price, i) => ({ price: price * 10000, area: areas[i] || 0 }))
 }
 
+async function fetchSingleTrade(lawdCd: string, dealYmd: string, key: string) {
+  const url = `https://apis.data.go.kr/1613000/RTMSDataSvcSHTrade/getRTMSDataSvcSHTrade?serviceKey=${key}&LAWD_CD=${lawdCd}&DEAL_YMD=${dealYmd}&numOfRows=100&pageNo=1`
+  const res = await fetch(url)
+  const text = await res.text()
+  const items = [...text.matchAll(/<거래금액>([\s\S]*?)<\/거래금액>/g)].map(m => parseInt(m[1].replace(/,/g, '').trim(), 10)).filter(n => !isNaN(n))
+  const areas = [...text.matchAll(/<연면적>([\s\S]*?)<\/연면적>/g)].map(m => parseFloat(m[1].trim())).filter(n => !isNaN(n))
+  return items.map((price, i) => ({ price: price * 10000, area: areas[i] || 0 }))
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const address = searchParams.get('address') || ''
@@ -131,9 +140,16 @@ export async function GET(req: NextRequest) {
       if (houseType === '아파트') {
         const data = await fetchAptTrade(lawdCd, month, key)
         allTrades = allTrades.concat(data)
-      } else {
-        const data = await fetchVillaTrade(lawdCd, month, key)
+      } else if (houseType === '단독주택' || houseType === '다가구') {
+        const data = await fetchSingleTrade(lawdCd, month, key)
         allTrades = allTrades.concat(data)
+      } else {
+        // 빌라/연립다세대: 연립+단독 둘 다 시도
+        const [villa, single] = await Promise.all([
+          fetchVillaTrade(lawdCd, month, key),
+          fetchSingleTrade(lawdCd, month, key),
+        ])
+        allTrades = allTrades.concat(villa, single)
       }
     }
 
