@@ -64,14 +64,15 @@ export default function UtilityChart({ data, thisMonth }: Props) {
 
         {/* 막대 */}
         {sorted.map((u, i) => {
-          const bH = Math.max((totals[i] / maxTotal) * BAR_H, totals[i] > 0 ? 3 : 0)
+          const ratio = totals[i] / maxTotal
+          const bH = Math.max(ratio * BAR_H, totals[i] > 0 ? 3 : 0)
           const x = padL + colW * i + (colW - barW) / 2
           const isCurrent = u.month === thisMonth
           return (
             <g key={u.month}>
               {/* 배경 트랙 */}
-              <rect x={x} y={TOP} width={barW} height={BAR_H} rx={4} fill="#1a1a2e" />
-              {/* 막대 */}
+              <rect x={x} y={TOP} width={barW} height={BAR_H} rx={4} fill="#16161e" />
+              {/* 막대 — 아래(baseY)에서 위로 bH만큼 */}
               <rect x={x} y={baseY - bH} width={barW} height={bH} rx={4}
                 fill={isCurrent ? '#2563eb' : '#1e3a5f'} opacity={0.9} />
               {/* 금액 */}
