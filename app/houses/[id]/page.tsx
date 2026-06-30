@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db'
 import { deleteHistory, deleteInventory } from '@/lib/actions'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import DoctorTab from '@/app/components/DoctorTab'
 
 export const dynamic = 'force-dynamic'
 
@@ -365,54 +366,7 @@ export default async function HousePage({
       )}
 
       {/* DOCTOR TAB */}
-      {tab === 'doctor' && (
-        <div style={{ padding: '0 16px' }}>
-          <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 16, padding: 20, marginBottom: 12 }}>
-            <div style={{ textAlign: 'center', marginBottom: 20 }}>
-              <div style={{ width: 56, height: 56, borderRadius: 16, background: '#0d1a2e', border: '0.5px solid #1e3a5f', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
-                <i className="ti ti-stethoscope" style={{ fontSize: 28, color: '#60a5fa' }} aria-hidden="true" />
-              </div>
-              <h2 style={{ fontSize: 17, fontWeight: 500, marginBottom: 4 }}>하우스 닥터</h2>
-              <p style={{ fontSize: 13, color: '#666' }}>증상을 설명하면 AI가 원인과 수리비를 진단합니다</p>
-            </div>
-
-            <div style={{ marginBottom: 12 }}>
-              <label style={{ fontSize: 12, color: '#666', display: 'block', marginBottom: 6 }}>문제 부위</label>
-              <select style={{ width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38', borderRadius: 10, padding: '10px 12px', fontSize: 14, color: '#fff', outline: 'none' }}>
-                <option value="">선택하세요</option>
-                <option>보일러 / 난방</option>
-                <option>수도 / 배관</option>
-                <option>전기 / 조명</option>
-                <option>지붕 / 외벽</option>
-                <option>창문 / 문</option>
-                <option>화장실 / 욕실</option>
-                <option>기타</option>
-              </select>
-            </div>
-
-            <div style={{ marginBottom: 12 }}>
-              <label style={{ fontSize: 12, color: '#666', display: 'block', marginBottom: 6 }}>증상 설명</label>
-              <textarea rows={4} placeholder="예: 보일러를 켜면 이상한 소리가 나고 온수가 잘 나오지 않아요" style={{ width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38', borderRadius: 10, padding: '10px 12px', fontSize: 14, color: '#fff', resize: 'none', outline: 'none', fontFamily: 'inherit' }} />
-            </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 12, color: '#666', display: 'block', marginBottom: 6 }}>사진 첨부</label>
-              <div style={{ border: '1px dashed #2a2a38', borderRadius: 10, padding: '20px', textAlign: 'center', color: '#555', fontSize: 13 }}>
-                <i className="ti ti-camera" style={{ fontSize: 24, display: 'block', marginBottom: 4 }} aria-hidden="true" />
-                사진을 드래그하거나 클릭해서 업로드
-              </div>
-            </div>
-
-            <div style={{ background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 10, padding: '12px 14px', marginBottom: 14, fontSize: 12, color: '#60a5fa' }}>
-              AI 진단 기능은 다음 버전에서 제공됩니다. 지금은 수리 이력으로 저장해 두세요.
-            </div>
-
-            <Link href={`/houses/${id}/history/new`} style={{ display: 'block', background: '#1d4ed8', color: '#fff', padding: '12px', borderRadius: 12, textAlign: 'center', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}>
-              수리 이력으로 저장하기
-            </Link>
-          </div>
-        </div>
-      )}
+      {tab === 'doctor' && <DoctorTab houseId={id} />}
     </div>
   )
 }
