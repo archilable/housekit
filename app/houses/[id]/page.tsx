@@ -459,9 +459,14 @@ export default async function HousePage({
                   const total = (u.electric || 0) + (u.water || 0) + (u.gas || 0) + (u.telecom || 0)
                   return (
                     <div key={u.id} style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 14, padding: '14px 16px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                         <span style={{ fontSize: 16, fontWeight: 500 }}>{u.month.replace('-', '년 ')}월</span>
-                        <span style={{ fontSize: 16, fontWeight: 600, color: '#60a5fa' }}>{total.toLocaleString()}원</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <span style={{ fontSize: 16, fontWeight: 600, color: '#60a5fa' }}>{total.toLocaleString()}원</span>
+                          <Link href={`/houses/${id}/utility/new?month=${u.month}`} style={{ color: '#444', textDecoration: 'none', fontSize: 18 }}>
+                            <i className="ti ti-pencil" />
+                          </Link>
+                        </div>
                       </div>
                       <div style={{ display: 'flex', gap: 12, fontSize: 13, color: '#666' }}>
                         {u.electric && <span>⚡ {u.electric.toLocaleString()}</span>}
