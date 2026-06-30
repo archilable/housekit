@@ -136,67 +136,71 @@ export default async function HousePage({
               if (alertItem) {
                 const w = getWarrantyStatus(alertItem.installedAt, alertItem.warrantyMonths)!
                 return (
-                  <div style={{ background: w.bg, border: `0.5px solid ${w.border}`, borderRadius: 14, padding: 14 }}>
+                  <Link href={`/houses/${id}?tab=inventory`} style={{ textDecoration: 'none', color: 'inherit', background: w.bg, border: `0.5px solid ${w.border}`, borderRadius: 14, padding: 14, display: 'block' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
                       <div style={{ width: 28, height: 28, borderRadius: 8, background: w.border, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <i className="ti ti-alert-triangle" style={{ fontSize: 14, color: w.color }} aria-hidden="true" />
                       </div>
-                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: w.color, marginTop: 4 }} />
+                      <i className="ti ti-chevron-right" style={{ fontSize: 13, color: '#333', marginTop: 4 }} />
                     </div>
                     <p style={{ fontSize: 11, color: '#666' }}>보증 알림</p>
                     <p style={{ fontSize: 16, fontWeight: 500, color: w.color, marginTop: 2 }}>{alertItem.name}</p>
                     <p style={{ fontSize: 10, color: '#555', marginTop: 1 }}>{w.label}</p>
-                  </div>
+                  </Link>
                 )
               }
               return (
-                <div style={{ background: '#0d1f14', border: '0.5px solid #1a3d28', borderRadius: 14, padding: 14 }}>
-                  <div style={{ marginBottom: 10 }}>
+                <Link href={`/houses/${id}?tab=inventory`} style={{ textDecoration: 'none', color: 'inherit', background: '#0d1f14', border: '0.5px solid #1a3d28', borderRadius: 14, padding: 14, display: 'block' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
                     <div style={{ width: 28, height: 28, borderRadius: 8, background: '#1a3d28', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <i className="ti ti-shield-check" style={{ fontSize: 14, color: '#34d399' }} aria-hidden="true" />
                     </div>
+                    <i className="ti ti-chevron-right" style={{ fontSize: 13, color: '#333', marginTop: 4 }} />
                   </div>
                   <p style={{ fontSize: 11, color: '#666' }}>보증 현황</p>
                   <p style={{ fontSize: 16, fontWeight: 500, color: '#34d399', marginTop: 2 }}>정상</p>
                   <p style={{ fontSize: 10, color: '#555', marginTop: 1 }}>만료 예정 없음</p>
-                </div>
+                </Link>
               )
             })()}
 
             {/* 총 수리비 */}
-            <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 14, padding: 14 }}>
-              <div style={{ marginBottom: 10 }}>
+            <Link href={`/houses/${id}?tab=history`} style={{ textDecoration: 'none', color: 'inherit', background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 14, padding: 14, display: 'block' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
                 <div style={{ width: 28, height: 28, borderRadius: 8, background: '#1f1000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <i className="ti ti-wallet" style={{ fontSize: 14, color: '#fbbf24' }} aria-hidden="true" />
                 </div>
+                <i className="ti ti-chevron-right" style={{ fontSize: 13, color: '#333', marginTop: 4 }} />
               </div>
               <p style={{ fontSize: 11, color: '#666' }}>누적 수리비</p>
               <p style={{ fontSize: 16, fontWeight: 500, color: '#fbbf24', marginTop: 2 }}>
                 {house.histories.reduce((s, h) => s + (h.cost || 0), 0).toLocaleString()}원
               </p>
               <p style={{ fontSize: 10, color: '#555', marginTop: 1 }}>총 {house.histories.length}건</p>
-            </div>
+            </Link>
 
             {/* 설비 수 */}
-            <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 14, padding: 14 }}>
-              <div style={{ marginBottom: 10 }}>
+            <Link href={`/houses/${id}?tab=inventory`} style={{ textDecoration: 'none', color: 'inherit', background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 14, padding: 14, display: 'block' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
                 <div style={{ width: 28, height: 28, borderRadius: 8, background: '#0d1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <i className="ti ti-package" style={{ fontSize: 14, color: '#60a5fa' }} aria-hidden="true" />
                 </div>
+                <i className="ti ti-chevron-right" style={{ fontSize: 13, color: '#333', marginTop: 4 }} />
               </div>
               <p style={{ fontSize: 11, color: '#666' }}>등록 설비</p>
               <p style={{ fontSize: 16, fontWeight: 500, color: '#60a5fa', marginTop: 2 }}>{house.inventories.length}개</p>
               <p style={{ fontSize: 10, color: '#555', marginTop: 1 }}>
                 {house.inventories.filter(i => getWarrantyStatus(i.installedAt, i.warrantyMonths)).length}개 보증 추적 중
               </p>
-            </div>
+            </Link>
 
-            {/* 마지막 점검 */}
-            <div style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 14, padding: 14 }}>
-              <div style={{ marginBottom: 10 }}>
+            {/* 마지막 이력 */}
+            <Link href={`/houses/${id}?tab=history${house.histories[0] ? `&highlight=${house.histories[0].id}` : ''}`} style={{ textDecoration: 'none', color: 'inherit', background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 14, padding: 14, display: 'block' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
                 <div style={{ width: 28, height: 28, borderRadius: 8, background: '#0d1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <i className="ti ti-calendar-check" style={{ fontSize: 14, color: '#a78bfa' }} aria-hidden="true" />
                 </div>
+                <i className="ti ti-chevron-right" style={{ fontSize: 13, color: '#333', marginTop: 4 }} />
               </div>
               <p style={{ fontSize: 11, color: '#666' }}>마지막 이력</p>
               <p style={{ fontSize: 16, fontWeight: 500, color: '#a78bfa', marginTop: 2 }}>
@@ -205,7 +209,7 @@ export default async function HousePage({
               <p style={{ fontSize: 10, color: '#555', marginTop: 1 }}>
                 {house.histories[0] ? house.histories[0].title : '이력을 추가하세요'}
               </p>
-            </div>
+            </Link>
           </div>
 
           {/* 공과금 요약 */}
