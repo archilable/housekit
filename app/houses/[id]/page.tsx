@@ -208,9 +208,9 @@ export default async function HousePage({
           {/* 공과금 요약 */}
           {thisUtil && (
             <div style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 14, padding: 14, marginBottom: 16 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                <p style={{ fontSize: 11, color: '#444', textTransform: 'uppercase', letterSpacing: 1 }}>이번달 공과금</p>
-                <Link href={`/houses/${id}?tab=utility`} style={{ fontSize: 11, color: '#60a5fa', textDecoration: 'none' }}>전체 보기</Link>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <p style={{ fontSize: 13, color: '#888', textTransform: 'uppercase', letterSpacing: 1 }}>이번달 공과금</p>
+                <Link href={`/houses/${id}?tab=utility`} style={{ fontSize: 13, color: '#60a5fa', textDecoration: 'none' }}>전체 보기</Link>
               </div>
               <div style={{ display: 'flex', gap: 8, justifyContent: 'space-between' }}>
                 {[
@@ -220,15 +220,15 @@ export default async function HousePage({
                   { label: '통신', icon: 'ti-wifi', color: '#34d399', val: thisUtil.telecom },
                 ].map(({ label, icon, color, val }) => (
                   <div key={label} style={{ flex: 1, textAlign: 'center' }}>
-                    <i className={`ti ${icon}`} style={{ fontSize: 16, color, display: 'block', marginBottom: 4 }} />
-                    <p style={{ fontSize: 9, color: '#555', marginBottom: 2 }}>{label}</p>
-                    <p style={{ fontSize: 11, fontWeight: 500, color: '#ccc' }}>{val != null ? (val / 1000).toFixed(0) + 'K' : '—'}</p>
+                    <i className={`ti ${icon}`} style={{ fontSize: 20, color, display: 'block', marginBottom: 6 }} />
+                    <p style={{ fontSize: 11, color: '#666', marginBottom: 3 }}>{label}</p>
+                    <p style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{val != null ? (val / 1000).toFixed(0) + 'K' : '—'}</p>
                   </div>
                 ))}
               </div>
-              <div style={{ marginTop: 10, paddingTop: 10, borderTop: '0.5px solid #1e1e28', display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 11, color: '#666' }}>합계</span>
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#60a5fa' }}>
+              <div style={{ marginTop: 12, paddingTop: 12, borderTop: '0.5px solid #1e1e28', display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 13, color: '#666' }}>합계</span>
+                <span style={{ fontSize: 16, fontWeight: 600, color: '#60a5fa' }}>
                   {((thisUtil.electric || 0) + (thisUtil.water || 0) + (thisUtil.gas || 0) + (thisUtil.telecom || 0)).toLocaleString()}원
                 </span>
               </div>
@@ -391,15 +391,15 @@ export default async function HousePage({
       {tab === 'utility' && (
         <div style={{ padding: '0 16px' }}>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
-            <Link href={`/houses/${id}/utility/new`} style={{ background: '#1d4ed8', color: '#fff', padding: '8px 16px', borderRadius: 10, fontSize: 13, textDecoration: 'none', fontWeight: 500 }}>
-              + 이번달 입력
+            <Link href={`/houses/${id}/utility/new`} style={{ background: '#1d4ed8', color: '#fff', padding: '10px 18px', borderRadius: 10, fontSize: 14, textDecoration: 'none', fontWeight: 500 }}>
+              + 공과금 입력
             </Link>
           </div>
 
           {/* 이번달 현황 */}
           {thisUtil ? (
             <div style={{ background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 16, padding: 16, marginBottom: 16 }}>
-              <p style={{ fontSize: 11, color: '#60a5fa', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>{thisMonth.replace('-', '년 ')}월 현황</p>
+              <p style={{ fontSize: 13, color: '#60a5fa', marginBottom: 14, textTransform: 'uppercase', letterSpacing: 1 }}>{thisMonth.replace('-', '년 ')}월 현황</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 {[
                   { key: 'electric', label: '전기세', icon: 'ti-bolt', color: '#fbbf24', val: thisUtil.electric, prev: prevUtil?.electric },
@@ -411,15 +411,15 @@ export default async function HousePage({
                   return (
                     <div key={label} style={{ background: '#111828', borderRadius: 12, padding: 12 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                        <i className={`ti ${icon}`} style={{ fontSize: 16, color }} />
+                        <i className={`ti ${icon}`} style={{ fontSize: 20, color }} />
                         {diff != null && (
-                          <span style={{ fontSize: 10, color: diff > 0 ? '#f87171' : '#34d399' }}>
+                          <span style={{ fontSize: 12, color: diff > 0 ? '#f87171' : '#34d399' }}>
                             {diff > 0 ? '▲' : '▼'}{Math.abs(diff).toLocaleString()}
                           </span>
                         )}
                       </div>
-                      <p style={{ fontSize: 11, color: '#666', marginBottom: 2 }}>{label}</p>
-                      <p style={{ fontSize: 15, fontWeight: 500, color: '#fff' }}>
+                      <p style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>{label}</p>
+                      <p style={{ fontSize: 17, fontWeight: 600, color: '#fff' }}>
                         {val != null ? val.toLocaleString() + '원' : '—'}
                       </p>
                     </div>
@@ -427,8 +427,8 @@ export default async function HousePage({
                 })}
               </div>
               <div style={{ marginTop: 12, paddingTop: 12, borderTop: '0.5px solid #1e3a5f', display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 12, color: '#666' }}>이번달 합계</span>
-                <span style={{ fontSize: 15, fontWeight: 600, color: '#60a5fa' }}>
+                <span style={{ fontSize: 14, color: '#666' }}>이번달 합계</span>
+                <span style={{ fontSize: 18, fontWeight: 700, color: '#60a5fa' }}>
                   {((thisUtil.electric || 0) + (thisUtil.water || 0) + (thisUtil.gas || 0) + (thisUtil.telecom || 0)).toLocaleString()}원
                 </span>
               </div>
@@ -443,11 +443,11 @@ export default async function HousePage({
           {/* 월별 이력 */}
           {house.utilities.length > 0 && (
             <>
-              <p style={{ fontSize: 11, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>월별 이력</p>
+              <p style={{ fontSize: 13, color: '#666', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>월별 이력</p>
 
               {/* 바 차트 */}
               <div style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 14, padding: 16, marginBottom: 12 }}>
-                <p style={{ fontSize: 11, color: '#666', marginBottom: 12 }}>월별 합계 (원)</p>
+                <p style={{ fontSize: 13, color: '#666', marginBottom: 12 }}>월별 합계 (원)</p>
                 {(() => {
                   const sorted = [...house.utilities].sort((a, b) => a.month.localeCompare(b.month)).slice(-6)
                   const totals = sorted.map(u => (u.electric || 0) + (u.water || 0) + (u.gas || 0) + (u.telecom || 0))
@@ -459,7 +459,7 @@ export default async function HousePage({
                           <div style={{ width: '100%', background: '#1a1a2e', borderRadius: 4, height: 64, display: 'flex', alignItems: 'flex-end' }}>
                             <div style={{ width: '100%', background: u.month === thisMonth ? '#1d4ed8' : '#1e3a5f', borderRadius: 4, height: `${(totals[i] / max) * 100}%`, minHeight: 2 }} />
                           </div>
-                          <span style={{ fontSize: 9, color: '#555' }}>{u.month.slice(5)}월</span>
+                          <span style={{ fontSize: 11, color: '#555' }}>{u.month.slice(5)}월</span>
                         </div>
                       ))}
                     </div>
@@ -473,10 +473,10 @@ export default async function HousePage({
                   return (
                     <div key={u.id} style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 14, padding: '14px 16px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                        <span style={{ fontSize: 14, fontWeight: 500 }}>{u.month.replace('-', '년 ')}월</span>
-                        <span style={{ fontSize: 14, fontWeight: 500, color: '#60a5fa' }}>{total.toLocaleString()}원</span>
+                        <span style={{ fontSize: 16, fontWeight: 500 }}>{u.month.replace('-', '년 ')}월</span>
+                        <span style={{ fontSize: 16, fontWeight: 600, color: '#60a5fa' }}>{total.toLocaleString()}원</span>
                       </div>
-                      <div style={{ display: 'flex', gap: 12, fontSize: 11, color: '#555' }}>
+                      <div style={{ display: 'flex', gap: 12, fontSize: 13, color: '#666' }}>
                         {u.electric && <span>⚡ {u.electric.toLocaleString()}</span>}
                         {u.water && <span>💧 {u.water.toLocaleString()}</span>}
                         {u.gas && <span>🔥 {u.gas.toLocaleString()}</span>}
