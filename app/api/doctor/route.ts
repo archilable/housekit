@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   try {
     const { imageBase64, mediaType, description } = await req.json()
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
 
     const prompt = `당신은 주택 수리 전문가입니다. 사용자가 집의 문제 부위 사진을 보내왔습니다.
 

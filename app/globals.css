@@ -21,21 +21,24 @@
   --font-sans: var(--font-geist-sans);
 }
 
-* {
+*, *::before, *::after {
   box-sizing: border-box;
+  max-width: 100%;
 }
 
-html, body {
+html {
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+
+body {
   background: var(--bg);
   color: var(--text-primary);
   font-family: var(--font-sans), -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
-  width: 100%;
-}
-
-html {
-  scrollbar-gutter: stable;
+  width: 100vw;
+  position: relative;
 }
 
 input, select, textarea {
