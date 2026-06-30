@@ -393,10 +393,27 @@ export default async function HousePage({
                         <p style={{ fontSize: 11, color: '#555' }}>{h.doneAt.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}</p>
                       </div>
                       {h.description && <p style={{ fontSize: 12, color: '#666', marginBottom: 2 }}>{h.description}</p>}
-                      <div style={{ display: 'flex', gap: 10, fontSize: 11, color: '#555' }}>
-                        {h.company && <span>{h.company}</span>}
+                      <div style={{ display: 'flex', gap: 10, fontSize: 11, color: '#555', flexWrap: 'wrap' }}>
+                        {h.contactCompany && <span>{h.contactCompany}</span>}
+                        {!h.contactCompany && h.company && <span>{h.company}</span>}
+                        {h.contactName && <span style={{ color: '#666' }}>{h.contactName}</span>}
+                        {h.contactPhone && <a href={`tel:${h.contactPhone}`} style={{ color: '#60a5fa', textDecoration: 'none' }}>{h.contactPhone}</a>}
                         {h.cost != null && <span>{h.cost.toLocaleString()}원</span>}
                       </div>
+                      {(h.estimateImageBase64 || h.contractImageBase64) && (
+                        <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+                          {h.estimateImageBase64 && (
+                            <div style={{ fontSize: 10, color: '#a78bfa', background: '#1a1040', borderRadius: 6, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 4 }}>
+                              <i className="ti ti-file-invoice" style={{ fontSize: 11 }} />견적서
+                            </div>
+                          )}
+                          {h.contractImageBase64 && (
+                            <div style={{ fontSize: 10, color: '#34d399', background: '#0d1f14', borderRadius: 6, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 4 }}>
+                              <i className="ti ti-file-text" style={{ fontSize: 11 }} />계약서
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div style={{ display: 'flex', gap: 4 }}>
                       <a href={`/houses/${id}/history/${h.id}/edit`} style={{ background: 'none', border: 'none', color: '#60a5fa', cursor: 'pointer', fontSize: 18, padding: 4, textDecoration: 'none' }}>

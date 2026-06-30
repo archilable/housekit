@@ -1,5 +1,6 @@
 import { createHistory } from '@/lib/actions'
 import Link from 'next/link'
+import HistoryContactForm from '@/app/components/HistoryContactForm'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
@@ -53,14 +54,11 @@ export default async function NewHistoryPage({ params }: { params: Promise<{ id:
         </div>
 
         <div style={fieldStyle}>
-          <label style={labelStyle}>업체명</label>
-          <input name="company" placeholder="홍길동 보일러" style={inputStyle} />
-        </div>
-
-        <div style={fieldStyle}>
           <label style={labelStyle}>비용 (원)</label>
           <input name="cost" type="number" placeholder="150000" min="0" style={inputStyle} />
         </div>
+
+        <HistoryContactForm />
 
         <button type="submit" style={{ marginTop: 4, background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: 14, padding: '15px', fontSize: 15, fontWeight: 500, cursor: 'pointer', width: '100%' }}>
           저장하기

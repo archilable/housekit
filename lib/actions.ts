@@ -131,6 +131,12 @@ export async function createHistory(formData: FormData) {
       company: company || null,
       cost,
       doneAt: new Date(doneAt),
+      contactName: (formData.get('contactName') as string) || null,
+      contactPhone: (formData.get('contactPhone') as string) || null,
+      contactCompany: (formData.get('contactCompany') as string) || null,
+      contactImageBase64: (formData.get('contactImageBase64') as string) || null,
+      contractImageBase64: (formData.get('contractImageBase64') as string) || null,
+      estimateImageBase64: (formData.get('estimateImageBase64') as string) || null,
     },
   })
 
@@ -149,6 +155,12 @@ export async function updateHistory(id: string, formData: FormData) {
       company: (formData.get('company') as string) || null,
       cost: formData.get('cost') ? parseInt(formData.get('cost') as string) : null,
       doneAt: new Date(formData.get('doneAt') as string),
+      contactName: (formData.get('contactName') as string) || null,
+      contactPhone: (formData.get('contactPhone') as string) || null,
+      contactCompany: (formData.get('contactCompany') as string) || null,
+      contactImageBase64: (formData.get('contactImageBase64') as string) || null,
+      contractImageBase64: (formData.get('contractImageBase64') as string) || null,
+      estimateImageBase64: (formData.get('estimateImageBase64') as string) || null,
     },
   })
   revalidatePath(`/houses/${houseId}`)

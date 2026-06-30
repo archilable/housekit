@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db'
 import { updateHistory } from '@/lib/actions'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import HistoryContactForm from '@/app/components/HistoryContactForm'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
@@ -57,14 +58,18 @@ export default async function EditHistoryPage({ params }: { params: Promise<{ id
         </div>
 
         <div style={fieldStyle}>
-          <label style={labelStyle}>업체명</label>
-          <input name="company" defaultValue={item.company ?? ''} style={inputStyle} />
-        </div>
-
-        <div style={fieldStyle}>
           <label style={labelStyle}>비용 (원)</label>
           <input name="cost" type="number" defaultValue={item.cost ?? ''} min="0" style={inputStyle} />
         </div>
+
+        <HistoryContactForm
+          defaultName={item.contactName ?? ''}
+          defaultPhone={item.contactPhone ?? ''}
+          defaultCompany={item.contactCompany ?? ''}
+          defaultContactImage={item.contactImageBase64 ?? ''}
+          defaultContractImage={item.contractImageBase64 ?? ''}
+          defaultEstimateImage={item.estimateImageBase64 ?? ''}
+        />
 
         <button type="submit" style={{ marginTop: 4, background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: 14, padding: '15px', fontSize: 15, fontWeight: 500, cursor: 'pointer', width: '100%' }}>
           저장하기
