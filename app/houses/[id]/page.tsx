@@ -54,7 +54,7 @@ export default async function HousePage({
   return (
     <div style={{ color: '#fff', width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 20px 0' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 16px 0' }}>
         <Link href="/" style={{ color: '#555', textDecoration: 'none', fontSize: 13 }}>
           <i className="ti ti-arrow-left" style={{ fontSize: 18, verticalAlign: -3 }} aria-hidden="true" />
         </Link>
@@ -94,7 +94,7 @@ export default async function HousePage({
       </div>
 
       {/* House Name */}
-      <div style={{ textAlign: 'center', padding: '0 20px 16px' }}>
+      <div style={{ textAlign: 'center', padding: '0 16px 16px' }}>
         <h1 style={{ fontSize: 20, fontWeight: 500, marginBottom: 4 }}>{house.address}</h1>
         {house.addressDetail && <p style={{ fontSize: 13, color: '#666' }}>{house.addressDetail}</p>}
 
@@ -108,7 +108,7 @@ export default async function HousePage({
       </div>
 
       {/* Tab Nav */}
-      <div style={{ display: 'flex', gap: 0, borderBottom: '0.5px solid #1e1e28', marginBottom: 16, padding: '0 20px' }}>
+      <div style={{ display: 'flex', gap: 0, borderBottom: '0.5px solid #1e1e28', marginBottom: 16, padding: '0 16px' }}>
         {[
           { key: 'home', label: '홈' },
           { key: 'inventory', label: `설비 ${house.inventories.length}` },
