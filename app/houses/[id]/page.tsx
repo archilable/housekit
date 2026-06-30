@@ -3,6 +3,7 @@ import { deleteHistory, deleteInventory } from '@/lib/actions'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import DoctorTab from '@/app/components/DoctorTab'
+import AiValuation from '@/app/components/AiValuation'
 import DoctorHistoryList from '@/app/components/DoctorHistoryList'
 import HouseIllustration from '@/app/components/HouseIllustration'
 
@@ -616,9 +617,17 @@ export default async function HousePage({
               </div>
             )}
 
+            {/* AI 실거래 시세 추정 */}
+            <AiValuation
+              address={house.address}
+              houseType={house.houseType}
+              buildYear={house.buildYear}
+              area={house.area}
+            />
+
             <Link href={`/houses/${id}/valuation`}
               style={{ display: 'block', width: '100%', background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: 14, padding: '15px', fontSize: 15, fontWeight: 500, cursor: 'pointer', textAlign: 'center', textDecoration: 'none', boxSizing: 'border-box' }}>
-              {v ? '시세 정보 수정' : '시세 정보 입력하기'}
+              {v ? '공시지가 기반 수정' : '공시지가 기반 입력'}
             </Link>
             <div style={{ height: 24 }} />
           </div>
