@@ -44,6 +44,14 @@ input, select, textarea {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="date"], input[type="number"] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-height: 44px;
 }
 
 input::placeholder, textarea::placeholder {
