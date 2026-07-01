@@ -54,6 +54,9 @@ export default async function HousePage({
   const prevMonth = (() => { const d = new Date(); d.setMonth(d.getMonth() - 1); return d.toISOString().slice(0, 7) })()
   const thisUtil = house.utilities.find(u => u.month === thisMonth)
   const prevUtil = house.utilities.find(u => u.month === prevMonth)
+  // 이번달 없으면 가장 최근 달로 대체
+  const displayUtil = thisUtil ?? house.utilities.sort((a, b) => b.month.localeCompare(a.month))[0] ?? null
+  const isCurrentMonth = displayUtil?.month === thisMonth
 
   const score = calcHealthScore(house.inventories.length, house.histories.length)
   const scoreColor = score >= 70 ? '#34d399' : score >= 40 ? '#fbbf24' : '#f87171'
@@ -257,18 +260,27 @@ export default async function HousePage({
           </div>
 
           {/* 공과금 요약 */}
-          {thisUtil && (
+          {displayUtil && (
             <div style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 14, padding: 14, marginBottom: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <p style={{ fontSize: 13, color: '#888', textTransform: 'uppercase', letterSpacing: 1 }}>이번달 공과금</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <p style={{ fontSize: 13, color: '#888', textTransform: 'uppercase', letterSpacing: 1 }}>
+                    {isCurrentMonth ? '이번달 공과금' : `${displayUtil.month.slice(0, 4)}년 ${displayUtil.month.slice(5)}월 공과금`}
+                  </p>
+                  {!isCurrentMonth && (
+                    <span style={{ fontSize: 10, color: '#f97316', background: '#1a0e00', border: '0.5px solid #f97316', borderRadius: 8, padding: '1px 6px' }}>
+                      지난달
+                    </span>
+                  )}
+                </div>
                 <Link href={`/houses/${id}?tab=utility`} style={{ fontSize: 13, color: '#60a5fa', textDecoration: 'none' }}>전체 보기</Link>
               </div>
               <div style={{ display: 'flex', gap: 8, justifyContent: 'space-between' }}>
                 {[
-                  { label: '전기', icon: 'ti-bolt', color: '#fbbf24', val: thisUtil.electric },
-                  { label: '수도', icon: 'ti-droplet', color: '#60a5fa', val: thisUtil.water },
-                  { label: '가스', icon: 'ti-flame', color: '#f97316', val: thisUtil.gas },
-                  { label: '통신', icon: 'ti-wifi', color: '#34d399', val: thisUtil.telecom },
+                  { label: '전기', icon: 'ti-bolt', color: '#fbbf24', val: displayUtil.electric },
+                  { label: '수도', icon: 'ti-droplet', color: '#60a5fa', val: displayUtil.water },
+                  { label: '가스', icon: 'ti-flame', color: '#f97316', val: displayUtil.gas },
+                  { label: '통신', icon: 'ti-wifi', color: '#34d399', val: displayUtil.telecom },
                 ].map(({ label, icon, color, val }) => (
                   <div key={label} style={{ flex: 1, textAlign: 'center' }}>
                     <i className={`ti ${icon}`} style={{ fontSize: 20, color, display: 'block', marginBottom: 6 }} />
@@ -280,7 +292,7 @@ export default async function HousePage({
               <div style={{ marginTop: 12, paddingTop: 12, borderTop: '0.5px solid #1e1e28', display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: 13, color: '#666' }}>합계</span>
                 <span style={{ fontSize: 16, fontWeight: 600, color: '#60a5fa' }}>
-                  {((thisUtil.electric || 0) + (thisUtil.water || 0) + (thisUtil.gas || 0) + (thisUtil.telecom || 0)).toLocaleString()}원
+                  {((displayUtil.electric || 0) + (displayUtil.water || 0) + (displayUtil.gas || 0) + (displayUtil.telecom || 0)).toLocaleString()}원
                 </span>
               </div>
             </div>
