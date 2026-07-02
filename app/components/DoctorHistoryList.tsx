@@ -120,13 +120,7 @@ function HistoryCard({ h }: { h: DoctorHistory }) {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4, flexWrap: 'wrap' }}>
               {resolved ? (
-                <>
-                  <span style={{ fontSize: 10, color: '#34d399', background: '#34d39922', padding: '2px 7px', borderRadius: 10, flexShrink: 0 }}>✅ 해결됨 {resolvedAt && `· ${resolvedAt}`}</span>
-                  <button onClick={e => { e.preventDefault(); handleUnresolve() }} disabled={loading}
-                    style={{ fontSize: 10, color: '#888', background: 'none', border: '0.5px solid #333', borderRadius: 8, padding: '2px 7px', cursor: 'pointer', flexShrink: 0 }}>
-                    ↩ 취소
-                  </button>
-                </>
+                <span style={{ fontSize: 10, color: '#34d399', background: '#34d39922', padding: '2px 7px', borderRadius: 10, flexShrink: 0 }}>✅ 해결됨 {resolvedAt && `· ${resolvedAt}`}</span>
               ) : severity ? (
                 <span style={{ fontSize: 10, color: severityColor[severity] || '#888', background: (severityColor[severity] || '#888') + '22', padding: '2px 7px', borderRadius: 10, flexShrink: 0 }}>{severity}</span>
               ) : null}
@@ -185,8 +179,13 @@ function HistoryCard({ h }: { h: DoctorHistory }) {
             </a>
           </div>
 
-          {/* 해결 완료 버튼 */}
-          {!resolved && (
+          {/* 해결 완료 / 해결 취소 버튼 */}
+          {resolved ? (
+            <button onClick={handleUnresolve} disabled={loading}
+              style={{ width: '100%', background: '#1a1a24', border: '0.5px solid #444', color: '#888', borderRadius: 12, padding: '12px', fontSize: 13, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', marginTop: 2 }}>
+              {loading ? '처리 중...' : '↩ 해결 취소'}
+            </button>
+          ) : (
             <button onClick={handleResolve} disabled={loading}
               style={{ width: '100%', background: '#0a2010', border: '0.5px solid #34d39944', color: '#34d399', borderRadius: 12, padding: '12px', fontSize: 13, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', marginTop: 2 }}>
               {loading ? '처리 중...' : '✅ 문제 해결 완료'}
