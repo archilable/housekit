@@ -278,10 +278,25 @@ export default async function HousePage({
                 <i className="ti ti-chevron-right" style={{ fontSize: 13, color: '#333', marginTop: 4 }} />
               </div>
               <p style={{ fontSize: 11, color: '#666' }}>하우스 닥터</p>
-              <p style={{ fontSize: 16, fontWeight: 500, color: '#34d399', marginTop: 2 }}>{house.doctorHistories.length}건</p>
-              <p style={{ fontSize: 10, color: '#555', marginTop: 1 }}>
-                {house.doctorHistories[0] ? house.doctorHistories[0].createdAt.toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' }) : '진단 기록 없음'}
-              </p>
+              {(() => {
+                const unresolved = house.doctorHistories.filter(d => !d.resolved).length
+                const total = house.doctorHistories.length
+                return (
+                  <>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 2 }}>
+                      {unresolved > 0 ? (
+                        <p style={{ fontSize: 16, fontWeight: 500, color: '#f87171', margin: 0 }}>미해결 {unresolved}건</p>
+                      ) : (
+                        <p style={{ fontSize: 16, fontWeight: 500, color: '#34d399', margin: 0 }}>모두 해결</p>
+                      )}
+                      {total > 0 && <span style={{ fontSize: 10, color: '#444' }}>전체 {total}건</span>}
+                    </div>
+                    <p style={{ fontSize: 10, color: '#555', marginTop: 1 }}>
+                      {house.doctorHistories[0] ? house.doctorHistories[0].createdAt.toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' }) : '진단 기록 없음'}
+                    </p>
+                  </>
+                )
+              })()}
             </Link>
 
           </div>
