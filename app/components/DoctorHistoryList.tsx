@@ -33,6 +33,7 @@ export default async function DoctorHistoryList({ houseId }: { houseId: string }
     where: { houseId },
     orderBy: { createdAt: 'desc' },
     take: 20,
+    select: { id: true, houseId: true, description: true, result: true, createdAt: true },
   })
 
   if (histories.length === 0) return null
@@ -70,16 +71,6 @@ export default async function DoctorHistoryList({ houseId }: { houseId: string }
               </summary>
 
               <div style={{ padding: '0 16px 16px', borderTop: '0.5px solid #1e1e28' }}>
-                {h.imageBase64 && (
-                  <div style={{ marginBottom: 12, marginTop: 12 }}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={`data:image/jpeg;base64,${h.imageBase64}`}
-                      alt="진단 사진"
-                      style={{ width: '100%', maxHeight: 220, objectFit: 'cover', borderRadius: 10, display: 'block' }}
-                    />
-                  </div>
-                )}
 
                 {/* 진단 결과 텍스트 */}
                 <div style={{ marginTop: 12, marginBottom: 16 }}>

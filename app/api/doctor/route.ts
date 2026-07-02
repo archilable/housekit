@@ -74,7 +74,6 @@ export async function POST(req: NextRequest) {
         data: {
           houseId,
           description: description || null,
-          imageBase64: imageBase64 || null,
           result: text,
         },
       })
