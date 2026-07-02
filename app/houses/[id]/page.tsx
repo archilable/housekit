@@ -97,7 +97,7 @@ export default async function HousePage({
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {warrantyAlerts.map(item => (
-              <Link key={item.id} href={`/houses/${id}?tab=inventory&highlight=${item.id}`} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(249,115,22,0.08)', borderRadius: 10, padding: '10px 12px' }}>
+              <Link key={item.id} href="/notifications" style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(249,115,22,0.08)', borderRadius: 10, padding: '10px 12px' }}>
                 <div>
                   <p style={{ fontSize: 13, fontWeight: 500, color: '#fff' }}>{item.name}</p>
                   {item.brand && <p style={{ fontSize: 11, color: '#888', marginTop: 2 }}>{item.brand}</p>}
