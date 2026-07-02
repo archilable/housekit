@@ -1,5 +1,13 @@
-const CACHE_NAME = 'housekit-v4';
+const CACHE_NAME = 'housekit-v5';
 const OFFLINE_URL = '/offline';
+
+// 캐시할 정적 자산 패턴
+const STATIC_PATTERNS = [
+  /\/_next\/static\//,
+  /\/icons\//,
+  /\.css$/,
+  /\.woff2?$/,
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -20,7 +28,9 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
-  // HTML 페이지는 항상 네트워크에서 가져옴 (캐시 안 함)
+  const url = new URL(event.request.url);
+
+  // HTML 페이지: 네트워크 우선, 실패 시 오프라인 페이지
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request).catch(() => caches.match(OFFLINE_URL))
@@ -28,15 +38,27 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 정적 파일만 캐시
+  // API 요청은 캐시 안 함
+  if (url.pathname.startsWith('/api/')) return;
+
+  // 정적 자산: 캐시 우선 (cache-first)
+  const isStatic = STATIC_PATTERNS.some(p => p.test(url.pathname));
+  if (isStatic) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        if (cached) return cached;
+        return fetch(event.request).then((response) => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          return response;
+        });
+      }).catch(() => caches.match(OFFLINE_URL))
+    );
+    return;
+  }
+
+  // 나머지: 네트워크 우선
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        return response;
-      });
-    }).catch(() => caches.match(OFFLINE_URL))
+    fetch(event.request).catch(() => caches.match(event.request))
   );
 });

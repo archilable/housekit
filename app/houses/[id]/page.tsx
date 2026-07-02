@@ -50,10 +50,14 @@ export default async function HousePage({
     where: { id },
     include: {
       inventories: { orderBy: [{ sortOrder: 'asc' }, { installedAt: 'desc' }] },
-      histories: { orderBy: { doneAt: 'desc' } },
+      histories: { orderBy: { doneAt: 'desc' }, take: 30 },
       utilities: { orderBy: { month: 'desc' }, take: 7 },
       valuation: true,
-      doctorHistories: { orderBy: { createdAt: 'desc' } },
+      doctorHistories: {
+        orderBy: { createdAt: 'desc' },
+        take: 20,
+        select: { id: true, description: true, result: true, createdAt: true, houseId: true },
+      },
     },
   })
   if (!house) notFound()

@@ -133,21 +133,18 @@ export async function GET(req: NextRequest) {
   try {
     let allTrades: { price: number; area: number }[] = []
 
-    for (const month of months) {
-      if (houseType === '아파트') {
-        const data = await fetchAptTrade(lawdCd, month, key)
-        allTrades = allTrades.concat(data)
-      } else if (houseType === '단독주택' || houseType === '다가구') {
-        const data = await fetchSingleTrade(lawdCd, month, key)
-        allTrades = allTrades.concat(data)
-      } else {
-        // 빌라/연립다세대: 연립+단독 둘 다 시도
-        const [villa, single] = await Promise.all([
-          fetchVillaTrade(lawdCd, month, key),
-          fetchSingleTrade(lawdCd, month, key),
-        ])
-        allTrades = allTrades.concat(villa, single)
-      }
+    if (houseType === '아파트') {
+      const results = await Promise.all(months.map(m => fetchAptTrade(lawdCd, m, key)))
+      allTrades = results.flat()
+    } else if (houseType === '단독주택' || houseType === '다가구') {
+      const results = await Promise.all(months.map(m => fetchSingleTrade(lawdCd, m, key)))
+      allTrades = results.flat()
+    } else {
+      const results = await Promise.all(months.flatMap(m => [
+        fetchVillaTrade(lawdCd, m, key),
+        fetchSingleTrade(lawdCd, m, key),
+      ]))
+      allTrades = results.flat()
     }
 
     if (allTrades.length === 0) {

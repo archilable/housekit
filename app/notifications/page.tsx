@@ -53,8 +53,10 @@ export default async function NotificationsPage({ searchParams }: { searchParams
   const houses = await prisma.house.findMany({
     where: { userId },
     include: {
-      inventories: true,
-      histories: { orderBy: { doneAt: 'desc' }, take: 5 },
+      inventories: {
+        select: { id: true, name: true, category: true, brand: true, installedAt: true, warrantyMonths: true, houseId: true },
+      },
+      histories: { orderBy: { doneAt: 'desc' }, take: 5, select: { id: true, title: true, category: true, doneAt: true, houseId: true } },
     },
   })
 
