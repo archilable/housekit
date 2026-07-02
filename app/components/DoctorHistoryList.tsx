@@ -119,12 +119,12 @@ export default async function DoctorHistoryList({ houseId }: { houseId: string }
                     <span style={{ fontSize: 12, fontWeight: 600, color: '#fff' }}>DIY 수리</span>
                     <span style={{ fontSize: 10, color: '#555', textAlign: 'center' }}>유튜브 영상으로 직접 수리</span>
                   </a>
-                  <a href={`https://soomgo.com/search/pro?keyword=${encodeURIComponent(soomgoKeyword)}`}
+                  <a href={`https://search.naver.com/search.naver?query=${encodeURIComponent(soomgoKeyword + ' 전문가')}`}
                     target="_blank" rel="noopener noreferrer"
                     style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 12, padding: '12px 8px', textDecoration: 'none' }}>
                     <span style={{ fontSize: 20 }}>👷</span>
                     <span style={{ fontSize: 12, fontWeight: 600, color: '#60a5fa' }}>전문가 찾기</span>
-                    <span style={{ fontSize: 10, color: '#555', textAlign: 'center' }}>숨고에서 전문가 연결</span>
+                    <span style={{ fontSize: 10, color: '#555', textAlign: 'center' }}>네이버에서 전문가 검색</span>
                   </a>
                 </div>
               </div>
