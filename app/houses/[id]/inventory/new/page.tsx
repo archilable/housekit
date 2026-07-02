@@ -33,6 +33,7 @@ export default async function NewInventoryPage({ params }: { params: Promise<{ i
             <option value="정수기">정수기</option>
             <option value="냉장고">냉장고</option>
             <option value="세탁기">세탁기</option>
+            <option value="건조기">건조기</option>
             <option value="도어락">도어락</option>
             <option value="기타">기타</option>
           </select>
