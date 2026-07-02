@@ -57,14 +57,14 @@ export async function POST(req: NextRequest) {
         'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        model: imageBase64 ? 'meta-llama/llama-4-maverick-17b-128e-instruct' : 'llama-3.3-70b-versatile',
+        model: imageBase64 ? 'llama-3.2-90b-vision-preview' : 'llama-3.3-70b-versatile',
         messages,
         max_tokens: 1024,
       }),
     })
 
     const data = await res.json()
-    if (!res.ok) throw new Error(data.error?.message || `API error ${res.status}`)
+    if (!res.ok) throw new Error(JSON.stringify(data.error) || `API error ${res.status}`)
 
     const text = data.choices?.[0]?.message?.content ?? '결과를 받지 못했습니다.'
 
