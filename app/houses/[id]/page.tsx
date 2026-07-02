@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db'
-import { deleteHistory, deleteInventory, deleteUtility } from '@/lib/actions'
+import { deleteHistory, deleteInventory } from '@/lib/actions'
+import DeleteUtilityButton from '@/app/components/DeleteUtilityButton'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import DoctorTab from '@/app/components/DoctorTab'
@@ -522,11 +523,7 @@ export default async function HousePage({
                           <Link href={`/houses/${id}/utility/new?month=${u.month}`} style={{ color: '#444', textDecoration: 'none', fontSize: 18 }}>
                             <i className="ti ti-pencil" />
                           </Link>
-                          <form action={deleteUtility.bind(null, u.id, id)} onSubmit={() => confirm(`${u.month.replace('-', '년 ')}월 공과금을 삭제할까요?`) || event?.preventDefault()}>
-                            <button type="submit" style={{ background: 'none', border: 'none', color: '#3d1a1a', cursor: 'pointer', fontSize: 18, padding: 0, display: 'flex', alignItems: 'center' }}>
-                              <i className="ti ti-trash" />
-                            </button>
-                          </form>
+                          <DeleteUtilityButton utilityId={u.id} houseId={id} month={u.month} />
                         </div>
                       </div>
                       <div style={{ display: 'flex', gap: 12, fontSize: 13, color: '#666' }}>
