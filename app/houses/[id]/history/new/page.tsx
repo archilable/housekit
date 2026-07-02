@@ -1,6 +1,7 @@
 import { createHistory } from '@/lib/actions'
 import Link from 'next/link'
 import HistoryContactForm from '@/app/components/HistoryContactForm'
+import BackHomeButtons from '@/app/components/BackHomeButtons'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
@@ -17,9 +18,7 @@ export default async function NewHistoryPage({ params }: { params: Promise<{ id:
   return (
     <div style={{ padding: '20px 16px', maxWidth: '100%' }}>
       <div style={{ marginBottom: 28 }}>
-        <Link href={`/houses/${id}?tab=history`} style={{ color: '#555', textDecoration: 'none', fontSize: 13 }}>
-          <i className="ti ti-arrow-left" style={{ fontSize: 20, verticalAlign: -3 }} aria-hidden="true" />
-        </Link>
+        <BackHomeButtons houseId={id} />
         <h1 style={{ fontSize: 20, fontWeight: 500, marginTop: 14, marginBottom: 0 }}>이력 추가</h1>
       </div>
 

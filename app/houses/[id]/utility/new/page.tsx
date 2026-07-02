@@ -1,6 +1,7 @@
 import { upsertUtility } from '@/lib/actions'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
+import BackHomeButtons from '@/app/components/BackHomeButtons'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
@@ -47,9 +48,7 @@ export default async function NewUtilityPage({
   return (
     <div style={{ padding: '20px 16px', maxWidth: '100%' }}>
       <div style={{ marginBottom: 28 }}>
-        <Link href={`/houses/${id}?tab=utility`} style={{ color: '#555', textDecoration: 'none' }}>
-          <i className="ti ti-arrow-left" style={{ fontSize: 20, verticalAlign: -3 }} />
-        </Link>
+        <BackHomeButtons houseId={id} />
         <h1 style={{ fontSize: 20, fontWeight: 500, marginTop: 14, marginBottom: 0 }}>공과금 입력</h1>
       </div>
 

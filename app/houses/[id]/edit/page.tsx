@@ -3,6 +3,7 @@ import { updateHouse } from '@/lib/actions'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import AddressSearch from '@/app/components/AddressSearch'
+import BackHomeButtons from '@/app/components/BackHomeButtons'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
@@ -24,9 +25,7 @@ export default async function EditHousePage({ params }: { params: Promise<{ id: 
   return (
     <div style={{ padding: '20px 16px', maxWidth: '100%' }}>
       <div style={{ marginBottom: 28 }}>
-        <Link href={`/houses/${id}`} style={{ color: '#555', textDecoration: 'none', fontSize: 13 }}>
-          <i className="ti ti-arrow-left" style={{ fontSize: 20, verticalAlign: -3 }} aria-hidden="true" />
-        </Link>
+        <BackHomeButtons houseId={id} />
         <h1 style={{ fontSize: 20, fontWeight: 500, marginTop: 14, marginBottom: 0 }}>주택 정보 수정</h1>
       </div>
 
