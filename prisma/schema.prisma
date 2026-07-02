@@ -22,6 +22,7 @@ model User {
   sessions      Session[]
   houses        House[]
   houseAccess   HouseAccess[]
+  isAdmin       Boolean   @default(false)
   createdAt     DateTime  @default(now())
 }
 

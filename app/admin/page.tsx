@@ -1,17 +1,83 @@
 import { prisma } from '@/lib/db'
-import { auth } from '@/auth'
-import { redirect } from 'next/navigation'
+import { auth, signIn } from '@/auth'
+import AdminClient from './AdminClient'
 
 export const dynamic = 'force-dynamic'
 
-const ADMIN_EMAIL = 'archiry@archilable.com'
-
 export default async function AdminPage() {
   const session = await auth()
-  if (!session?.user?.email || session.user.email !== ADMIN_EMAIL) {
-    redirect('/houses')
+
+  // 로그인 안 된 경우 → 로그인 페이지
+  if (!session?.user?.email) {
+    return (
+      <div style={{
+        minHeight: '100vh', display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        background: '#0a0a0f', padding: '0 32px', textAlign: 'center',
+        position: 'relative', overflow: 'hidden',
+      }}>
+        <div style={{
+          position: 'absolute', width: 500, height: 500, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)',
+          top: '5%', left: '50%', transform: 'translateX(-50%)',
+          pointerEvents: 'none',
+        }} />
+
+        <div style={{ marginBottom: 32 }}>
+          <div style={{
+            width: 72, height: 72, borderRadius: 20,
+            background: 'linear-gradient(135deg, #1e1e3a 0%, #0d0d1f 100%)',
+            border: '0.5px solid #2a2a5a', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', margin: '0 auto 20px',
+          }}>
+            <i className="ti ti-shield-lock" style={{ fontSize: 32, color: '#818cf8' }} />
+          </div>
+          <p style={{ fontSize: 12, color: '#555', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>HouseKit</p>
+          <h1 style={{ fontSize: 28, fontWeight: 700, color: '#fff', marginBottom: 8 }}>관리자 센터</h1>
+          <p style={{ fontSize: 14, color: '#555' }}>관리자 권한이 있는 계정으로 로그인하세요</p>
+        </div>
+
+        <form action={async () => {
+          'use server'
+          await signIn('google', { redirectTo: '/admin' })
+        }}>
+          <button type="submit" style={{
+            display: 'flex', alignItems: 'center', gap: 12,
+            background: '#fff', color: '#111', border: 'none',
+            borderRadius: 14, padding: '14px 28px', fontSize: 15,
+            fontWeight: 600, cursor: 'pointer', width: '100%', justifyContent: 'center',
+          }}>
+            <svg width="20" height="20" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Google로 로그인
+          </button>
+        </form>
+      </div>
+    )
   }
 
+  // 로그인은 됐지만 관리자 권한 없는 경우
+  const me = await prisma.user.findUnique({ where: { email: session.user.email } })
+  if (!me?.isAdmin) {
+    return (
+      <div style={{
+        minHeight: '100vh', display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        background: '#0a0a0f', padding: '0 32px', textAlign: 'center',
+      }}>
+        <i className="ti ti-lock" style={{ fontSize: 48, color: '#f87171', marginBottom: 16 }} />
+        <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>접근 권한 없음</h1>
+        <p style={{ fontSize: 14, color: '#555' }}>{session.user.email}</p>
+        <p style={{ fontSize: 13, color: '#444', marginTop: 8 }}>관리자에게 권한 요청하세요</p>
+      </div>
+    )
+  }
+
+  // 관리자 데이터
   const users = await prisma.user.findMany({
     orderBy: { createdAt: 'desc' },
     include: {
@@ -22,76 +88,8 @@ export default async function AdminPage() {
 
   const today = new Date()
   today.setHours(0, 0, 0, 0)
-
   const todayUsers = users.filter(u => u.createdAt && new Date(u.createdAt) >= today)
   const totalHouses = await prisma.house.count()
 
-  return (
-    <div style={{ padding: '24px 16px 100px', maxWidth: 480, margin: '0 auto' }}>
-      <p style={{ fontSize: 11, color: '#555', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 1 }}>관리자</p>
-      <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 24 }}>HouseKit Admin</h1>
-
-      {/* 요약 카드 */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 24 }}>
-        <div style={{ background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 14, padding: '14px 12px', textAlign: 'center' }}>
-          <p style={{ fontSize: 22, fontWeight: 700, color: '#60a5fa' }}>{users.length}</p>
-          <p style={{ fontSize: 11, color: '#666', marginTop: 2 }}>전체 가입자</p>
-        </div>
-        <div style={{ background: '#0d1f14', border: '0.5px solid #1a3d28', borderRadius: 14, padding: '14px 12px', textAlign: 'center' }}>
-          <p style={{ fontSize: 22, fontWeight: 700, color: '#34d399' }}>{todayUsers.length}</p>
-          <p style={{ fontSize: 11, color: '#666', marginTop: 2 }}>오늘 가입</p>
-        </div>
-        <div style={{ background: '#1a0f00', border: '0.5px solid #3d2000', borderRadius: 14, padding: '14px 12px', textAlign: 'center' }}>
-          <p style={{ fontSize: 22, fontWeight: 700, color: '#f97316' }}>{totalHouses}</p>
-          <p style={{ fontSize: 11, color: '#666', marginTop: 2 }}>등록 자산</p>
-        </div>
-      </div>
-
-      {/* 가입자 목록 */}
-      <p style={{ fontSize: 11, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>가입자 목록</p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {users.map((user) => {
-          const isToday = user.createdAt && new Date(user.createdAt) >= today
-          const joinDate = user.createdAt
-            ? new Date(user.createdAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
-            : '—'
-          return (
-            <div key={user.id} style={{
-              background: isToday ? '#0d1f14' : 'var(--bg-card)',
-              border: isToday ? '0.5px solid #1a3d28' : '0.5px solid var(--border)',
-              borderRadius: 14, padding: '14px 16px',
-              display: 'flex', alignItems: 'center', gap: 12,
-            }}>
-              <div style={{
-                width: 40, height: 40, borderRadius: 12,
-                background: isToday ? '#34d39922' : '#60a5fa22',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 18, flexShrink: 0,
-              }}>
-                {user.image
-                  ? <img src={user.image} width={40} height={40} style={{ borderRadius: 12, objectFit: 'cover' }} alt="" />
-                  : <i className="ti ti-user" style={{ color: isToday ? '#34d399' : '#60a5fa' }} />}
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                  <p style={{ fontSize: 14, fontWeight: 500 }}>{user.name || '이름 없음'}</p>
-                  {isToday && <span style={{ fontSize: 10, color: '#34d399', background: '#0d1f14', border: '0.5px solid #1a3d28', padding: '1px 6px', borderRadius: 8 }}>NEW</span>}
-                </div>
-                <p style={{ fontSize: 12, color: '#555' }}>{user.email}</p>
-                <p style={{ fontSize: 11, color: '#444', marginTop: 2 }}>
-                  {joinDate}
-                  {user.houses.length > 0 && user.houses.map(h => (
-                    <span key={h.id} style={{ display: 'block', fontSize: 11, color: '#60a5fa', marginTop: 2 }}>🏠 {h.address}</span>
-                  ))}
-                  {user.houseAccess.length > 0 && user.houseAccess.map((a, i) => (
-                    <span key={i} style={{ display: 'block', fontSize: 11, color: '#888', marginTop: 2 }}>🔗 {a.house.address} (공유)</span>
-                  ))}
-                </p>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
+  return <AdminClient users={users} todayCount={todayUsers.length} totalHouses={totalHouses} myId={me.id} />
 }
