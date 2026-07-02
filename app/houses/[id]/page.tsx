@@ -161,8 +161,8 @@ export default async function HousePage({
       <div style={{ display: 'flex', gap: 0, borderBottom: '0.5px solid #1e1e28', marginBottom: 16, padding: '0 16px', overflowX: 'auto' }}>
         {[
           { key: 'home', label: '홈' },
-          { key: 'history', label: `이력 ${house.histories.length}` },
-          { key: 'inventory', label: `설비 ${house.inventories.length}` },
+          { key: 'history', label: '이력' },
+          { key: 'inventory', label: '설비' },
           { key: 'utility', label: '공과금' },
           { key: 'valuation', label: '시세' },
           { key: 'doctor', label: '닥터' },
