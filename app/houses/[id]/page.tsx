@@ -309,20 +309,6 @@ export default async function HousePage({
             </div>
           )}
 
-          {/* Quick Actions */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8, marginBottom: 20 }}>
-            {[
-              { href: `/houses/${id}/history/new`, icon: 'ti-tool', label: '수리 기록' },
-              { href: `/houses/${id}?tab=inventory`, icon: 'ti-package', label: '설비 현황' },
-              { href: `/houses/${id}?tab=doctor`, icon: 'ti-stethoscope', label: '하우스 닥터' },
-              { href: `/houses/${id}?tab=history`, icon: 'ti-list', label: '전체 이력' },
-            ].map(({ href, icon, label }) => (
-              <Link key={label} href={href} style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 12, padding: '12px 4px', textAlign: 'center', textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
-                <i className={`ti ${icon}`} style={{ fontSize: 20, color: '#60a5fa' }} aria-hidden="true" />
-                <span style={{ fontSize: 10, color: '#666' }}>{label}</span>
-              </Link>
-            ))}
-          </div>
 
           {/* Recent History Timeline */}
           {recentHistories.length > 0 && (
