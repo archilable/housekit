@@ -36,10 +36,15 @@ export default function AiValuation({ address, houseType, buildYear, area }: Pro
     setError(null)
     setResult(null)
     try {
+      // 1. 국토부 실거래 데이터 먼저 가져오기
+      const realRes = await fetch(`/api/realprice?address=${encodeURIComponent(address)}&houseType=${encodeURIComponent(houseType)}&area=${area ?? 0}`)
+      const realTrades = realRes.ok ? await realRes.json() : null
+
+      // 2. 실거래 데이터를 AI에 함께 전달
       const res = await fetch('/api/valuation-ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ address, houseType, buildYear, area }),
+        body: JSON.stringify({ address, houseType, buildYear, area, realTrades }),
       })
       const data = await res.json()
       if (data.error) throw new Error(data.error)
