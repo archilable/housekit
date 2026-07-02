@@ -231,7 +231,7 @@ export default function SortableInventoryList({ initialItems, houseId, highlight
               <a href={`/houses/${houseId}/inventory/${item.id}/edit`} style={{ color: '#60a5fa', fontSize: 18, padding: 4, textDecoration: 'none' }}>
                 <i className="ti ti-pencil" />
               </a>
-              <button onClick={() => handleDelete(item.id, item.name)} style={{ background: 'none', border: 'none', color: '#555', fontSize: 18, padding: 4, cursor: 'pointer' }}>
+              <button onClick={() => handleDelete(item.id, item.name)} style={{ background: 'none', border: 'none', color: '#f87171', fontSize: 18, padding: 4, cursor: 'pointer' }}>
                 <i className="ti ti-trash" />
               </button>
             </div>
