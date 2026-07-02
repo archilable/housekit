@@ -16,6 +16,7 @@ export default async function AdminPage() {
     orderBy: { createdAt: 'desc' },
     include: {
       houses: { select: { id: true } },
+      houseAccess: { select: { id: true } },
     },
   })
 
@@ -23,7 +24,7 @@ export default async function AdminPage() {
   today.setHours(0, 0, 0, 0)
 
   const todayUsers = users.filter(u => u.createdAt && new Date(u.createdAt) >= today)
-  const totalHouses = users.reduce((sum, u) => sum + u.houses.length, 0)
+  const totalHouses = await prisma.house.count()
 
   return (
     <div style={{ padding: '24px 16px 100px', maxWidth: 480, margin: '0 auto' }}>
@@ -78,7 +79,7 @@ export default async function AdminPage() {
                 </div>
                 <p style={{ fontSize: 12, color: '#555' }}>{user.email}</p>
                 <p style={{ fontSize: 11, color: '#444', marginTop: 2 }}>
-                  {joinDate} · 자산 {user.houses.length}개
+                  {joinDate} · 자산 {user.houses.length}개{user.houseAccess.length > 0 ? ` (+${user.houseAccess.length} 공유)` : ''}
                 </p>
               </div>
             </div>
