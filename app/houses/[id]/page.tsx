@@ -188,10 +188,19 @@ export default async function HousePage({
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
             {/* Warranty alert card */}
             {(() => {
-              const alertItems = house.inventories.filter(i => {
-                const w = getWarrantyStatus(i.installedAt, i.warrantyMonths)
-                return w && w.color !== '#34d399'
-              })
+              const alertItems = house.inventories
+                .filter(i => {
+                  if (!i.installedAt || !i.warrantyMonths) return false
+                  const expiry = new Date(i.installedAt)
+                  expiry.setMonth(expiry.getMonth() + i.warrantyMonths)
+                  const daysLeft = Math.ceil((expiry.getTime() - Date.now()) / 86400000)
+                  return daysLeft >= 0
+                })
+                .sort((a, b) => {
+                  const expiryA = new Date(a.installedAt!); expiryA.setMonth(expiryA.getMonth() + a.warrantyMonths!)
+                  const expiryB = new Date(b.installedAt!); expiryB.setMonth(expiryB.getMonth() + b.warrantyMonths!)
+                  return expiryA.getTime() - expiryB.getTime()
+                })
               const alertItem = alertItems[0]
               if (alertItem) {
                 const w = getWarrantyStatus(alertItem.installedAt, alertItem.warrantyMonths)!
