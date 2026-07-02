@@ -21,12 +21,24 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    setMediaType(file.type || 'image/jpeg')
     const reader = new FileReader()
     reader.onload = (ev) => {
       const dataUrl = ev.target?.result as string
-      setPreview(dataUrl)
-      setImageBase64(dataUrl.split(',')[1])
+      const img = new Image()
+      img.onload = () => {
+        const MAX = 1280
+        const ratio = Math.min(MAX / img.width, MAX / img.height, 1)
+        const canvas = document.createElement('canvas')
+        canvas.width = Math.round(img.width * ratio)
+        canvas.height = Math.round(img.height * ratio)
+        const ctx = canvas.getContext('2d')!
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+        const jpeg = canvas.toDataURL('image/jpeg', 0.8)
+        setPreview(jpeg)
+        setMediaType('image/jpeg')
+        setImageBase64(jpeg.split(',')[1])
+      }
+      img.src = dataUrl
     }
     reader.readAsDataURL(file)
   }
@@ -202,12 +214,12 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
               <span style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>DIY 수리</span>
               <span style={{ fontSize: 11, color: '#555', textAlign: 'center' }}>유튜브 영상으로 직접 수리하기</span>
             </a>
-            <a href={`https://soomgo.com/search/pro?keyword=${encodeURIComponent(soomgoKeyword)}`}
+            <a href={`https://search.naver.com/search.naver?query=${encodeURIComponent(soomgoKeyword + ' 전문가')}`}
               target="_blank" rel="noopener noreferrer"
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 14, padding: '16px 12px', textDecoration: 'none' }}>
               <span style={{ fontSize: 24 }}>👷</span>
               <span style={{ fontSize: 13, fontWeight: 600, color: '#60a5fa' }}>전문가 찾기</span>
-              <span style={{ fontSize: 11, color: '#555', textAlign: 'center' }}>숨고에서 전문가 연결하기</span>
+              <span style={{ fontSize: 11, color: '#555', textAlign: 'center' }}>네이버에서 전문가 검색</span>
             </a>
           </div>
         </div>
