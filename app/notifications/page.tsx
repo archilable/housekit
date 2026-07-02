@@ -42,7 +42,9 @@ const CATEGORY_ICON: Record<string, string> = {
   세탁기: '🫧', 건조기: '💨', 도어락: '🔐', 기타: '🔧',
 }
 
-export default async function NotificationsPage() {
+export default async function NotificationsPage({ searchParams }: { searchParams: Promise<{ warranty?: string }> }) {
+  const { warranty } = await searchParams
+  const warrantyOnly = warranty === '1'
   const session = await auth()
   const userId = session?.user?.id
   if (!userId) redirect('/login')
@@ -116,7 +118,7 @@ export default async function NotificationsPage() {
   return (
     <div style={{ padding: '24px 20px 100px', maxWidth: 480, margin: '0 auto' }}>
       <p style={{ fontSize: 11, color: '#555', marginBottom: 4 }}>알림</p>
-      <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 24 }}>알림 센터</h1>
+      <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 24 }}>{warrantyOnly ? '보증 관리' : '알림 센터'}</h1>
 
       {warrantyItems.length === 0 && recentHistories.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', textAlign: 'center', color: '#444' }}>
@@ -193,7 +195,7 @@ export default async function NotificationsPage() {
           )}
 
           {/* 최근 이력 */}
-          {recentHistories.length > 0 && (
+          {!warrantyOnly && recentHistories.length > 0 && (
             <div>
               <p style={{ fontSize: 11, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>최근 이력 (14일)</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

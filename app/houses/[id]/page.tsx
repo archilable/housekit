@@ -18,9 +18,11 @@ function getWarrantyStatus(installedAt: Date | null, warrantyMonths: number | nu
   const expiry = new Date(installedAt)
   expiry.setMonth(expiry.getMonth() + warrantyMonths)
   const diffDays = Math.ceil((expiry.getTime() - Date.now()) / 86400000)
-  if (diffDays < 0) return { label: '보증 만료', color: '#f87171', bg: '#1a0d0d', border: '#3d1a1a' }
-  if (diffDays <= 30) return { label: `보증 D-${diffDays}`, color: '#fbbf24', bg: '#1a1200', border: '#3d2e00' }
-  return { label: `보증 ${Math.floor(diffDays / 30)}개월`, color: '#34d399', bg: '#0d1f14', border: '#1a3d28' }
+  if (diffDays < 0)   return { label: '보증 만료',                          color: '#f87171', bg: '#1a0d0d', border: '#3d1a1a' }
+  if (diffDays <= 30)  return { label: `D-${diffDays}일 후 만료`,             color: '#f87171', bg: '#1a0d0d', border: '#3d1a1a' }
+  if (diffDays <= 90)  return { label: `${diffDays}일 후 만료`,               color: '#f97316', bg: '#1a0f00', border: '#3d2000' }
+  if (diffDays <= 180) return { label: `${Math.floor(diffDays/30)}개월 후 만료`, color: '#fbbf24', bg: '#1a1200', border: '#3d2e00' }
+  return { label: `${Math.floor(diffDays/30)}개월 후 만료`,                     color: '#34d399', bg: '#0d1f14', border: '#1a3d28' }
 }
 
 function calcHealthScore(inventoryCount: number, historyCount: number) {
@@ -205,7 +207,7 @@ export default async function HousePage({
               if (alertItem) {
                 const w = getWarrantyStatus(alertItem.installedAt, alertItem.warrantyMonths)!
                 return (
-                  <Link href="/notifications" style={{ textDecoration: 'none', color: 'inherit', background: w.bg, border: `0.5px solid ${w.border}`, borderRadius: 14, padding: 14, display: 'block' }}>
+                  <Link href="/notifications?warranty=1" style={{ textDecoration: 'none', color: 'inherit', background: w.bg, border: `0.5px solid ${w.border}`, borderRadius: 14, padding: 14, display: 'block' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
                       <div style={{ width: 28, height: 28, borderRadius: 8, background: w.border, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <i className="ti ti-alert-triangle" style={{ fontSize: 14, color: w.color }} aria-hidden="true" />
