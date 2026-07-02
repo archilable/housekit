@@ -399,10 +399,7 @@ export default async function HousePage({
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                          <span style={{ fontSize: 10, fontWeight: 600, color, background: color + '22', borderRadius: 6, padding: '2px 7px', display: 'inline-block', width: 'fit-content' }}>{CATEGORY_LABEL[h.category] || h.category}</span>
-                          <p style={{ fontSize: 14, fontWeight: 500 }}>{h.title}</p>
-                        </div>
+                        <p style={{ fontSize: 14, fontWeight: 500 }}>{h.title}</p>
                         <p style={{ fontSize: 11, color: '#555', flexShrink: 0, marginLeft: 8 }}>{h.doneAt.toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
                       </div>
                       {h.description && <p style={{ fontSize: 12, color: '#666', marginBottom: 2 }}>{h.description}</p>}
