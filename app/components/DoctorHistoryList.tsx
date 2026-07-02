@@ -84,7 +84,7 @@ export default async function DoctorHistoryList({ houseId }: { houseId: string }
                 {/* 진단 결과 텍스트 */}
                 <div style={{ marginTop: 12, marginBottom: 16 }}>
                   {h.result.split('\n').map((line, i) => {
-                    if (line.includes('숨고 검색') || (i > 0 && h.result.split('\n')[i-1]?.includes('숨고 검색'))) return null
+                    if (line.includes('숨고') || line.includes('soomgo') || line.includes('전문가 검색') || line.includes('검색어') || (i > 0 && h.result.split('\n')[i-1]?.includes('숨고'))) return null
                     if (line.startsWith('## ')) {
                       return <p key={i} style={{ fontSize: 13, fontWeight: 600, color: '#60a5fa', marginTop: 12, marginBottom: 4 }}>{line.replace('## ', '')}</p>
                     }
