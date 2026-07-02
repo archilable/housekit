@@ -72,7 +72,7 @@ export default async function HousePage({
     const expiry = new Date(item.installedAt)
     expiry.setMonth(expiry.getMonth() + item.warrantyMonths)
     const diffDays = Math.ceil((expiry.getTime() - Date.now()) / 86400000)
-    return diffDays >= 0 && diffDays <= 30
+    return diffDays >= 0 && diffDays <= 90
   }).map(item => {
     const expiry = new Date(item.installedAt!)
     expiry.setMonth(expiry.getMonth() + item.warrantyMonths!)
@@ -103,8 +103,8 @@ export default async function HousePage({
                   {item.brand && <p style={{ fontSize: 11, color: '#888', marginTop: 2 }}>{item.brand}</p>}
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: item.diffDays <= 7 ? '#f87171' : '#fbbf24' }}>
-                    D-{item.diffDays}
+                  <p style={{ fontSize: 13, fontWeight: 700, color: item.diffDays <= 30 ? '#f87171' : '#fbbf24' }}>
+                    {item.diffDays <= 30 ? `D-${item.diffDays}` : `${Math.floor(item.diffDays / 30)}개월 후`}
                   </p>
                   <p style={{ fontSize: 10, color: '#666', marginTop: 1 }}>보증 만료</p>
                 </div>
