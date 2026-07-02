@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/db'
-import { deleteHistory, deleteInventory } from '@/lib/actions'
+import { deleteHistory, deleteInventory, deleteUtility } from '@/lib/actions'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import DoctorTab from '@/app/components/DoctorTab'
@@ -517,11 +517,16 @@ export default async function HousePage({
                     <div key={u.id} style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 14, padding: '14px 16px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                         <span style={{ fontSize: 16, fontWeight: 500 }}>{u.month.replace('-', '년 ')}월</span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                           <span style={{ fontSize: 16, fontWeight: 600, color: '#60a5fa' }}>{total.toLocaleString()}원</span>
                           <Link href={`/houses/${id}/utility/new?month=${u.month}`} style={{ color: '#444', textDecoration: 'none', fontSize: 18 }}>
                             <i className="ti ti-pencil" />
                           </Link>
+                          <form action={deleteUtility.bind(null, u.id, id)} onSubmit={() => confirm(`${u.month.replace('-', '년 ')}월 공과금을 삭제할까요?`) || event?.preventDefault()}>
+                            <button type="submit" style={{ background: 'none', border: 'none', color: '#3d1a1a', cursor: 'pointer', fontSize: 18, padding: 0, display: 'flex', alignItems: 'center' }}>
+                              <i className="ti ti-trash" />
+                            </button>
+                          </form>
                         </div>
                       </div>
                       <div style={{ display: 'flex', gap: 12, fontSize: 13, color: '#666' }}>

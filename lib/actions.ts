@@ -200,6 +200,12 @@ export async function upsertUtility(formData: FormData) {
   redirect(`/houses/${houseId}?tab=utility`)
 }
 
+export async function deleteUtility(utilityId: string, houseId: string) {
+  await prisma.utility.delete({ where: { id: utilityId } })
+  revalidatePath(`/houses/${houseId}`)
+  redirect(`/houses/${houseId}?tab=utility`)
+}
+
 // Valuation actions
 export async function upsertValuation(formData: FormData) {
   const houseId = formData.get('houseId') as string
