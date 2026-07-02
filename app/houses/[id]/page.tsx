@@ -437,7 +437,7 @@ export default async function HousePage({
                         <i className="ti ti-pencil" aria-hidden="true" />
                       </a>
                       <form action={deleteHistory.bind(null, h.id, id)}>
-                        <button type="submit" style={{ background: 'none', border: 'none', color: '#444', cursor: 'pointer', fontSize: 18, padding: 4 }}>
+                        <button type="submit" style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', fontSize: 18, padding: 4 }}>
                           <i className="ti ti-trash" aria-hidden="true" />
                         </button>
                       </form>
