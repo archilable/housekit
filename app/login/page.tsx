@@ -19,14 +19,11 @@ export default function LoginPage() {
 
       {/* 로고 */}
       <div style={{ marginBottom: 32 }}>
-        <svg width="64" height="64" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="72" height="72" rx="20" fill="#0d1a2e" />
-          <polygon points="36,14 58,32 14,32" fill="#1e3a5f" stroke="#2a4a80" strokeWidth="1" />
-          <rect x="16" y="32" width="40" height="24" fill="#111828" stroke="#1e3a5f" strokeWidth="1" />
-          <rect x="30" y="42" width="12" height="14" fill="#0d1a2e" stroke="#1e3a5f" strokeWidth="0.5" rx="1" />
-          <rect x="19" y="36" width="10" height="8" fill="#0d1a2e" stroke="#2a4a80" strokeWidth="0.5" rx="1" />
-          <rect x="43" y="36" width="10" height="8" fill="#0d1a2e" stroke="#2a4a80" strokeWidth="0.5" rx="1" />
-          <circle cx="36" cy="14" r="2.5" fill="#60a5fa" opacity="0.9" />
+        <svg width="72" height="72" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="96" height="96" rx="22" fill="#0b1220"/>
+          <path d="M48,13 L12,43 L12,82 L84,82 L84,43 Z" fill="#2d4f7c" stroke="#4a72a8" strokeWidth="1.8" strokeLinejoin="round"/>
+          <circle cx="48" cy="58" r="16" fill="#071a0e" stroke="#34d39933" strokeWidth="1"/>
+          <polyline points="39,58 45,65 57,50" stroke="#34d399" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
 
