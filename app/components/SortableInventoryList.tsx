@@ -197,13 +197,6 @@ export default function SortableInventoryList({ initialItems, houseId, highlight
               cursor: isDragging.current ? 'grabbing' : 'default',
             }}
           >
-            {/* 드래그 핸들 */}
-            <i
-              className="ti ti-grip-vertical"
-              onMouseDown={e => onMouseDown(item.id, e)}
-              style={{ fontSize: 16, color: '#444', flexShrink: 0, cursor: 'grab', padding: '4px 2px' }}
-            />
-
             <div style={{ width: 36, height: 36, borderRadius: 10, background: iconColor + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <i className={`ti ${icon}`} style={{ fontSize: 18, color: iconColor }} />
             </div>

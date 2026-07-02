@@ -364,9 +364,6 @@ export default async function HousePage({
             </div>
           ) : (
             <>
-              <p style={{ fontSize: 11, color: '#333', marginBottom: 10 }}>
-                <i className="ti ti-grip-vertical" style={{ marginRight: 4 }} />꾹 눌러서 순서 변경 가능
-              </p>
               <SortableInventoryList initialItems={house.inventories} houseId={id} highlightId={highlight} />
             </>
           )}
