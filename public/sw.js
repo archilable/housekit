@@ -1,4 +1,4 @@
-const CACHE_NAME = 'housekit-v1';
+const CACHE_NAME = 'housekit-v2';
 const OFFLINE_URL = '/offline';
 
 const PRECACHE_URLS = [
