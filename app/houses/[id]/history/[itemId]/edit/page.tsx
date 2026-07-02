@@ -38,6 +38,7 @@ export default async function EditHistoryPage({ params }: { params: Promise<{ id
             <option value="교체">교체</option>
             <option value="점검">점검</option>
             <option value="청소">청소</option>
+            <option value="방역">방역</option>
             <option value="기타">기타</option>
           </select>
         </div>

@@ -27,7 +27,9 @@ function calcHealthScore(inventoryCount: number, historyCount: number) {
   return Math.min(40 + Math.min(inventoryCount * 8, 30) + Math.min(historyCount * 6, 30), 100)
 }
 
-const CATEGORY_ICONS: Record<string, string> = { 수리: 'ti-tool', 교체: 'ti-refresh', 점검: 'ti-search', 청소: 'ti-sparkles', 기타: 'ti-pin' }
+const CATEGORY_ICONS: Record<string, string> = { 수리: 'ti-tool', 교체: 'ti-refresh', 점검: 'ti-search', 청소: 'ti-sparkles', 방역: 'ti-bug', 기타: 'ti-pin' }
+const CATEGORY_COLORS: Record<string, string> = { 수리: '#60a5fa', 교체: '#a78bfa', 점검: '#34d399', 청소: '#fbbf24', 방역: '#f97316', 기타: '#888' }
+const CATEGORY_LABEL: Record<string, string> = { 수리: '🔧 수리', 교체: '🔄 교체', 점검: '🔍 점검', 청소: '✨ 청소', 방역: '🪲 방역', 기타: '📌 기타' }
 const INVENTORY_ICONS: Record<string, string> = { 보일러: 'ti-flame', 에어컨: 'ti-air-conditioning', 정수기: 'ti-droplet', 냉장고: 'ti-snowflake', 세탁기: 'ti-wash', 도어락: 'ti-lock', 기타: 'ti-package' }
 const INVENTORY_COLORS: Record<string, string> = { 보일러: '#f97316', 에어컨: '#60a5fa', 정수기: '#34d399', 냉장고: '#a78bfa', 세탁기: '#38bdf8', 도어락: '#fbbf24', 기타: '#888' }
 
@@ -388,8 +390,7 @@ export default async function HousePage({
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {house.histories.map((h) => {
                 const icon = CATEGORY_ICONS[h.category] || 'ti-pin'
-                const catColors: Record<string, string> = { 수리: '#60a5fa', 교체: '#a78bfa', 점검: '#34d399', 청소: '#fbbf24', 기타: '#888' }
-                const color = catColors[h.category] || '#888'
+                const color = CATEGORY_COLORS[h.category] || '#888'
                 const isHighlighted = highlight === h.id
                 return (
                   <div key={h.id} id={`history-${h.id}`} style={{ background: isHighlighted ? '#0d1a2e' : 'var(--bg-card)', border: isHighlighted ? '1px solid #3b82f6' : '0.5px solid var(--border)', borderRadius: 14, padding: '14px 16px', display: 'flex', gap: 12, transition: 'border 0.3s' }}>
@@ -397,9 +398,12 @@ export default async function HousePage({
                       <i className={`ti ${icon}`} style={{ fontSize: 18, color }} aria-hidden="true" />
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
-                        <p style={{ fontSize: 14, fontWeight: 500 }}>{h.title}</p>
-                        <p style={{ fontSize: 11, color: '#555' }}>{h.doneAt.toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                          <span style={{ fontSize: 10, fontWeight: 600, color, background: color + '22', borderRadius: 6, padding: '2px 7px', display: 'inline-block', width: 'fit-content' }}>{CATEGORY_LABEL[h.category] || h.category}</span>
+                          <p style={{ fontSize: 14, fontWeight: 500 }}>{h.title}</p>
+                        </div>
+                        <p style={{ fontSize: 11, color: '#555', flexShrink: 0, marginLeft: 8 }}>{h.doneAt.toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
                       </div>
                       {h.description && <p style={{ fontSize: 12, color: '#666', marginBottom: 2 }}>{h.description}</p>}
                       <div style={{ display: 'flex', gap: 10, fontSize: 11, color: '#555', flexWrap: 'wrap' }}>
