@@ -56,7 +56,7 @@ export default async function HousePage({
       doctorHistories: {
         orderBy: { createdAt: 'desc' },
         take: 20,
-        select: { id: true, description: true, result: true, createdAt: true, houseId: true },
+        select: { id: true, description: true, result: true, createdAt: true, houseId: true, resolved: true, resolvedAt: true },
       },
     },
   })
@@ -696,7 +696,7 @@ export default async function HousePage({
       {tab === 'doctor' && (
         <>
           <DoctorTab houseId={id} />
-          <DoctorHistoryList houseId={id} />
+          <DoctorHistoryList histories={house.doctorHistories} />
           <div style={{ height: 32 }} />
         </>
       )}

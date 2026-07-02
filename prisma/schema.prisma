@@ -145,13 +145,15 @@ model Valuation {
 }
 
 model DoctorHistory {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   houseId     String
-  house       House    @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  house       House     @relation(fields: [houseId], references: [id], onDelete: Cascade)
   description String?
   imageBase64 String?
   result      String
-  createdAt   DateTime @default(now())
+  resolved    Boolean   @default(false)
+  resolvedAt  DateTime?
+  createdAt   DateTime  @default(now())
 }
 
 model Utility {
