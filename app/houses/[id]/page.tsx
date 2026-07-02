@@ -173,7 +173,7 @@ export default async function HousePage({
           { key: 'valuation', label: '시세' },
         ].map((t) => (
           <Link key={t.key} href={`/houses/${id}?tab=${t.key}`} style={{
-            flex: 1, textAlign: 'center', padding: '10px 0', fontSize: 13,
+            flex: 1, textAlign: 'center', padding: '10px 0', fontSize: 15,
             color: tab === t.key ? '#60a5fa' : '#555',
             borderBottom: tab === t.key ? '2px solid #60a5fa' : '2px solid transparent',
             textDecoration: 'none', fontWeight: tab === t.key ? 500 : 400,
@@ -207,7 +207,7 @@ export default async function HousePage({
               if (alertItem) {
                 const w = getWarrantyStatus(alertItem.installedAt, alertItem.warrantyMonths)!
                 return (
-                  <Link href="/notifications?warranty=1" style={{ textDecoration: 'none', color: 'inherit', background: w.bg, border: `0.5px solid ${w.border}`, borderRadius: 14, padding: 14, display: 'block' }}>
+                  <Link href={`/notifications?warranty=1&houseId=${id}`} style={{ textDecoration: 'none', color: 'inherit', background: w.bg, border: `0.5px solid ${w.border}`, borderRadius: 14, padding: 14, display: 'block' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
                       <div style={{ width: 28, height: 28, borderRadius: 8, background: w.border, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <i className="ti ti-alert-triangle" style={{ fontSize: 14, color: w.color }} aria-hidden="true" />

@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import BackHomeButtons from '@/app/components/BackHomeButtons'
 
 export const dynamic = 'force-dynamic'
 
@@ -42,8 +43,8 @@ const CATEGORY_ICON: Record<string, string> = {
   세탁기: '🫧', 건조기: '💨', 도어락: '🔐', 기타: '🔧',
 }
 
-export default async function NotificationsPage({ searchParams }: { searchParams: Promise<{ warranty?: string }> }) {
-  const { warranty } = await searchParams
+export default async function NotificationsPage({ searchParams }: { searchParams: Promise<{ warranty?: string; houseId?: string }> }) {
+  const { warranty, houseId } = await searchParams
   const warrantyOnly = warranty === '1'
   const session = await auth()
   const userId = session?.user?.id
@@ -117,6 +118,11 @@ export default async function NotificationsPage({ searchParams }: { searchParams
 
   return (
     <div style={{ padding: '24px 20px 100px', maxWidth: 480, margin: '0 auto' }}>
+      {houseId && (
+        <div style={{ marginBottom: 20 }}>
+          <BackHomeButtons houseId={houseId} />
+        </div>
+      )}
       <p style={{ fontSize: 11, color: '#555', marginBottom: 4 }}>알림</p>
       <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 24 }}>{warrantyOnly ? '보증 관리' : '알림 센터'}</h1>
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 interface WarrantyStatus {
   label: string; color: string; bg: string; border: string
@@ -35,7 +36,15 @@ function getWarrantyStatus(installedAt: Date | null, warrantyMonths: number | nu
 }
 
 export default function SortableInventoryList({ initialItems, houseId, highlightId }: { initialItems: InventoryItem[], houseId: string, highlightId?: string }) {
+  const router = useRouter()
   const [items, setItems] = useState(initialItems)
+
+  async function handleDelete(itemId: string, name: string) {
+    if (!confirm(`"${name}"을(를) 삭제할까요?`)) return
+    await fetch(`/api/inventory/${itemId}`, { method: 'DELETE' })
+    setItems(prev => prev.filter(i => i.id !== itemId))
+    router.refresh()
+  }
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [overId, setOverId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
@@ -218,10 +227,13 @@ export default function SortableInventoryList({ initialItems, houseId, highlight
                 </div>
               )}
             </div>
-            <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-              <a href={`/houses/${houseId}/inventory/${item.id}/edit`} style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: 18, padding: 4, textDecoration: 'none' }}>
+            <div style={{ display: 'flex', gap: 8, flexShrink: 0, alignItems: 'center' }}>
+              <a href={`/houses/${houseId}/inventory/${item.id}/edit`} style={{ color: '#60a5fa', fontSize: 18, padding: 4, textDecoration: 'none' }}>
                 <i className="ti ti-pencil" />
               </a>
+              <button onClick={() => handleDelete(item.id, item.name)} style={{ background: 'none', border: 'none', color: '#555', fontSize: 18, padding: 4, cursor: 'pointer' }}>
+                <i className="ti ti-trash" />
+              </button>
             </div>
           </div>
         )
