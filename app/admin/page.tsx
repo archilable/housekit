@@ -15,8 +15,8 @@ export default async function AdminPage() {
   const users = await prisma.user.findMany({
     orderBy: { createdAt: 'desc' },
     include: {
-      houses: { select: { id: true } },
-      houseAccess: { select: { id: true } },
+      houses: { select: { id: true, address: true } },
+      houseAccess: { select: { id: true, house: { select: { address: true } } } },
     },
   })
 
@@ -79,7 +79,13 @@ export default async function AdminPage() {
                 </div>
                 <p style={{ fontSize: 12, color: '#555' }}>{user.email}</p>
                 <p style={{ fontSize: 11, color: '#444', marginTop: 2 }}>
-                  {joinDate} · 자산 {user.houses.length}개{user.houseAccess.length > 0 ? ` (+${user.houseAccess.length} 공유)` : ''}
+                  {joinDate}
+                  {user.houses.length > 0 && user.houses.map(h => (
+                    <span key={h.id} style={{ display: 'block', fontSize: 11, color: '#60a5fa', marginTop: 2 }}>🏠 {h.address}</span>
+                  ))}
+                  {user.houseAccess.length > 0 && user.houseAccess.map((a, i) => (
+                    <span key={i} style={{ display: 'block', fontSize: 11, color: '#888', marginTop: 2 }}>🔗 {a.house.address} (공유)</span>
+                  ))}
                 </p>
               </div>
             </div>
