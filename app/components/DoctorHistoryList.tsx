@@ -88,12 +88,20 @@ function HistoryCard({ h }: { h: DoctorHistory }) {
 
   async function handleResolve() {
     setLoading(true)
-    const res = await fetch(`/api/doctor/${h.id}`, { method: 'PATCH' })
+    const res = await fetch(`/api/doctor/${h.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ resolved: true }) })
     const data = await res.json()
     setResolved(true)
     setResolvedAt(new Date(data.resolvedAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }))
     setLoading(false)
     setShowModal(true)
+  }
+
+  async function handleUnresolve() {
+    setLoading(true)
+    await fetch(`/api/doctor/${h.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ resolved: false }) })
+    setResolved(false)
+    setResolvedAt(null)
+    setLoading(false)
   }
 
   return (
@@ -112,7 +120,13 @@ function HistoryCard({ h }: { h: DoctorHistory }) {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4, flexWrap: 'wrap' }}>
               {resolved ? (
-                <span style={{ fontSize: 10, color: '#34d399', background: '#34d39922', padding: '2px 7px', borderRadius: 10, flexShrink: 0 }}>✅ 해결됨 {resolvedAt && `· ${resolvedAt}`}</span>
+                <>
+                  <span style={{ fontSize: 10, color: '#34d399', background: '#34d39922', padding: '2px 7px', borderRadius: 10, flexShrink: 0 }}>✅ 해결됨 {resolvedAt && `· ${resolvedAt}`}</span>
+                  <button onClick={e => { e.preventDefault(); handleUnresolve() }} disabled={loading}
+                    style={{ fontSize: 10, color: '#888', background: 'none', border: '0.5px solid #333', borderRadius: 8, padding: '2px 7px', cursor: 'pointer', flexShrink: 0 }}>
+                    ↩ 취소
+                  </button>
+                </>
               ) : severity ? (
                 <span style={{ fontSize: 10, color: severityColor[severity] || '#888', background: (severityColor[severity] || '#888') + '22', padding: '2px 7px', borderRadius: 10, flexShrink: 0 }}>{severity}</span>
               ) : null}
