@@ -1,6 +1,7 @@
 import { createInventory } from '@/lib/actions'
 import Link from 'next/link'
 import ContactForm from '@/app/components/ContactForm'
+import SubmitButton from '@/app/components/SubmitButton'
 import BackHomeButtons from '@/app/components/BackHomeButtons'
 
 const inputStyle = {
@@ -70,9 +71,7 @@ export default async function NewInventoryPage({ params }: { params: Promise<{ i
 
         <ContactForm />
 
-        <button type="submit" style={{ marginTop: 4, background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: 14, padding: '15px', fontSize: 15, fontWeight: 500, cursor: 'pointer', width: '100%' }}>
-          추가하기
-        </button>
+        <SubmitButton label="추가하기" loadingLabel="저장 중..." />
       </form>
     </div>
   )

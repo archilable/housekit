@@ -1,3 +1,4 @@
+import SubmitButton from '@/app/components/SubmitButton'
 import { createHouse } from '@/lib/actions'
 import Link from 'next/link'
 import AddressSearch from '@/app/components/AddressSearch'
@@ -78,9 +79,7 @@ export default function NewHousePage() {
           <textarea name="notes" rows={3} placeholder="추가 정보를 입력하세요" style={{ ...inputStyle, resize: 'none' as const }} />
         </div>
 
-        <button type="submit" style={{ marginTop: 4, background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: 14, padding: '15px', fontSize: 15, fontWeight: 500, cursor: 'pointer', width: '100%' }}>
-          등록하기
-        </button>
+        <SubmitButton label="등록하기" loadingLabel="등록 중..." />
       </form>
     </div>
   )

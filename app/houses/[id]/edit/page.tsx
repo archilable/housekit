@@ -3,6 +3,7 @@ import { updateHouse } from '@/lib/actions'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import AddressSearch from '@/app/components/AddressSearch'
+import SubmitButton from '@/app/components/SubmitButton'
 import BackHomeButtons from '@/app/components/BackHomeButtons'
 
 const inputStyle = {
@@ -81,9 +82,7 @@ export default async function EditHousePage({ params }: { params: Promise<{ id: 
           <textarea name="notes" rows={3} defaultValue={house.notes ?? ''} style={{ ...inputStyle, resize: 'none' as const }} />
         </div>
 
-        <button type="submit" style={{ marginTop: 4, background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: 14, padding: '15px', fontSize: 15, fontWeight: 500, cursor: 'pointer', width: '100%' }}>
-          저장하기
-        </button>
+        <SubmitButton label="저장하기" loadingLabel="저장 중..." />
       </form>
     </div>
   )

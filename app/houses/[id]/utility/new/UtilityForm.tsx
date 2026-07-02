@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import UtilityOCR from '@/app/components/UtilityOCR'
+import SubmitButton from '@/app/components/SubmitButton'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
@@ -92,9 +93,7 @@ export default function UtilityForm({ houseId, selectedMonth, months, existing, 
         </div>
       ))}
 
-      <button type="submit" style={{ marginTop: 4, background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: 14, padding: '15px', fontSize: 15, fontWeight: 500, cursor: 'pointer', width: '100%' }}>
-        저장하기
-      </button>
+      <SubmitButton label="저장하기" loadingLabel="저장 중..." />
     </form>
   )
 }

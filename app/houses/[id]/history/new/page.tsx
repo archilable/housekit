@@ -1,6 +1,7 @@
 import { createHistory } from '@/lib/actions'
 import Link from 'next/link'
 import HistoryContactForm from '@/app/components/HistoryContactForm'
+import SubmitButton from '@/app/components/SubmitButton'
 import BackHomeButtons from '@/app/components/BackHomeButtons'
 
 const inputStyle = {
@@ -60,9 +61,7 @@ export default async function NewHistoryPage({ params }: { params: Promise<{ id:
 
         <HistoryContactForm />
 
-        <button type="submit" style={{ marginTop: 4, background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: 14, padding: '15px', fontSize: 15, fontWeight: 500, cursor: 'pointer', width: '100%' }}>
-          저장하기
-        </button>
+        <SubmitButton label="저장하기" loadingLabel="저장 중..." />
       </form>
     </div>
   )
