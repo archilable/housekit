@@ -49,6 +49,7 @@ export default async function HousePage({
       histories: { orderBy: { doneAt: 'desc' } },
       utilities: { orderBy: { month: 'desc' }, take: 7 },
       valuation: true,
+      doctorHistories: { orderBy: { createdAt: 'desc' } },
     },
   })
   if (!house) notFound()
@@ -165,9 +166,9 @@ export default async function HousePage({
           { key: 'home', label: '홈' },
           { key: 'history', label: '이력' },
           { key: 'inventory', label: '설비' },
+          { key: 'doctor', label: '닥터' },
           { key: 'utility', label: '공과금' },
           { key: 'valuation', label: '시세' },
-          { key: 'doctor', label: '닥터' },
         ].map((t) => (
           <Link key={t.key} href={`/houses/${id}?tab=${t.key}`} style={{
             flex: 1, textAlign: 'center', padding: '10px 0', fontSize: 13,
@@ -238,24 +239,7 @@ export default async function HousePage({
               <p style={{ fontSize: 10, color: '#555', marginTop: 1 }}>총 {house.histories.length}건</p>
             </Link>
 
-            {/* 마지막 이력 */}
-            <Link href={`/houses/${id}?tab=history${house.histories[0] ? `&highlight=${house.histories[0].id}` : ''}`} style={{ textDecoration: 'none', color: 'inherit', background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 14, padding: 14, display: 'block' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-                <div style={{ width: 28, height: 28, borderRadius: 8, background: '#0d1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <i className="ti ti-calendar-check" style={{ fontSize: 14, color: '#a78bfa' }} aria-hidden="true" />
-                </div>
-                <i className="ti ti-chevron-right" style={{ fontSize: 13, color: '#333', marginTop: 4 }} />
-              </div>
-              <p style={{ fontSize: 11, color: '#666' }}>마지막 이력</p>
-              <p style={{ fontSize: 16, fontWeight: 500, color: '#a78bfa', marginTop: 2 }}>
-                {house.histories[0] ? house.histories[0].doneAt.toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' }) : '없음'}
-              </p>
-              <p style={{ fontSize: 10, color: '#555', marginTop: 1 }}>
-                {house.histories[0] ? house.histories[0].title : '이력을 추가하세요'}
-              </p>
-            </Link>
-
-            {/* 설비 수 */}
+            {/* 등록 설비 */}
             <Link href={`/houses/${id}?tab=inventory`} style={{ textDecoration: 'none', color: 'inherit', background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 14, padding: 14, display: 'block' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
                 <div style={{ width: 28, height: 28, borderRadius: 8, background: '#0d1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -267,6 +251,21 @@ export default async function HousePage({
               <p style={{ fontSize: 16, fontWeight: 500, color: '#60a5fa', marginTop: 2 }}>{house.inventories.length}개</p>
               <p style={{ fontSize: 10, color: '#555', marginTop: 1 }}>
                 {house.inventories.filter(i => getWarrantyStatus(i.installedAt, i.warrantyMonths)).length}개 보증 추적 중
+              </p>
+            </Link>
+
+            {/* 하우스 닥터 */}
+            <Link href={`/houses/${id}?tab=doctor`} style={{ textDecoration: 'none', color: 'inherit', background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 14, padding: 14, display: 'block' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: '#0d1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <i className="ti ti-stethoscope" style={{ fontSize: 14, color: '#34d399' }} aria-hidden="true" />
+                </div>
+                <i className="ti ti-chevron-right" style={{ fontSize: 13, color: '#333', marginTop: 4 }} />
+              </div>
+              <p style={{ fontSize: 11, color: '#666' }}>하우스 닥터</p>
+              <p style={{ fontSize: 16, fontWeight: 500, color: '#34d399', marginTop: 2 }}>{house.doctorHistories.length}건</p>
+              <p style={{ fontSize: 10, color: '#555', marginTop: 1 }}>
+                {house.doctorHistories[0] ? house.doctorHistories[0].createdAt.toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' }) : '진단 기록 없음'}
               </p>
             </Link>
 
