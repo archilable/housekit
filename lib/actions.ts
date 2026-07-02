@@ -11,7 +11,9 @@ export async function createHouse(formData: FormData) {
   const address = formData.get('address') as string
   const addressDetail = formData.get('addressDetail') as string
   const buildYear = formData.get('buildYear') ? parseInt(formData.get('buildYear') as string) : null
-  const area = formData.get('area') ? parseFloat(formData.get('area') as string) : null
+  const landArea = formData.get('landArea') ? parseFloat(formData.get('landArea') as string) : null
+  const buildArea = formData.get('buildArea') ? parseFloat(formData.get('buildArea') as string) : null
+  const exclusiveArea = formData.get('exclusiveArea') ? parseFloat(formData.get('exclusiveArea') as string) : null
   const houseType = formData.get('houseType') as string
   const ownerName = formData.get('ownerName') as string
   const notes = formData.get('notes') as string
@@ -22,7 +24,9 @@ export async function createHouse(formData: FormData) {
       address,
       addressDetail: addressDetail || null,
       buildYear,
-      area,
+      landArea,
+      buildArea,
+      exclusiveArea,
       houseType,
       ownerName: ownerName || null,
       notes: notes || null,
@@ -39,7 +43,9 @@ export async function updateHouse(id: string, formData: FormData) {
       address: formData.get('address') as string,
       addressDetail: (formData.get('addressDetail') as string) || null,
       buildYear: formData.get('buildYear') ? parseInt(formData.get('buildYear') as string) : null,
-      area: formData.get('area') ? parseFloat(formData.get('area') as string) : null,
+      landArea: formData.get('landArea') ? parseFloat(formData.get('landArea') as string) : null,
+      buildArea: formData.get('buildArea') ? parseFloat(formData.get('buildArea') as string) : null,
+      exclusiveArea: formData.get('exclusiveArea') ? parseFloat(formData.get('exclusiveArea') as string) : null,
       houseType: formData.get('houseType') as string,
       ownerName: (formData.get('ownerName') as string) || null,
       notes: (formData.get('notes') as string) || null,

@@ -1,11 +1,18 @@
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import UtilityChart from '@/app/components/UtilityChart'
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AnalyticsPage() {
+  const session = await auth()
+  const userId = session?.user?.id
+  if (!userId) redirect('/login')
+
   const houses = await prisma.house.findMany({
+    where: { userId },
     include: {
       utilities: { orderBy: { month: 'desc' }, take: 7 },
       valuation: true,

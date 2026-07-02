@@ -54,8 +54,18 @@ export default function NewHousePage() {
         </div>
 
         <div style={fieldStyle}>
+          <label style={labelStyle}>대지면적 (㎡)</label>
+          <input name="landArea" type="number" placeholder="120.0" step="0.1" style={inputStyle} />
+        </div>
+
+        <div style={fieldStyle}>
           <label style={labelStyle}>건축면적 (㎡)</label>
-          <input name="area" type="number" placeholder="84.5" step="0.1" style={inputStyle} />
+          <input name="buildArea" type="number" placeholder="84.5" step="0.1" style={inputStyle} />
+        </div>
+
+        <div style={fieldStyle}>
+          <label style={labelStyle}>전용면적 / 실면적 (㎡)</label>
+          <input name="exclusiveArea" type="number" placeholder="59.9" step="0.1" style={inputStyle} />
         </div>
 
         <div style={fieldStyle}>

@@ -58,8 +58,18 @@ export default async function EditHousePage({ params }: { params: Promise<{ id: 
         </div>
 
         <div style={fieldStyle}>
+          <label style={labelStyle}>대지면적 (㎡)</label>
+          <input name="landArea" type="number" defaultValue={house.landArea ?? ''} step="0.1" style={inputStyle} />
+        </div>
+
+        <div style={fieldStyle}>
           <label style={labelStyle}>건축면적 (㎡)</label>
-          <input name="area" type="number" defaultValue={house.area ?? ''} step="0.1" style={inputStyle} />
+          <input name="buildArea" type="number" defaultValue={house.buildArea ?? ''} step="0.1" style={inputStyle} />
+        </div>
+
+        <div style={fieldStyle}>
+          <label style={labelStyle}>전용면적 / 실면적 (㎡)</label>
+          <input name="exclusiveArea" type="number" defaultValue={house.exclusiveArea ?? ''} step="0.1" style={inputStyle} />
         </div>
 
         <div style={fieldStyle}>

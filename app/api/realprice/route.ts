@@ -89,31 +89,28 @@ function getLawdCd(address: string): string {
   return '11000'
 }
 
+function parseTrades(text: string, areaTag: string) {
+  const items = [...text.matchAll(/<dealAmount>([\s\S]*?)<\/dealAmount>/g)].map(m => parseInt(m[1].replace(/,/g, '').trim(), 10)).filter(n => !isNaN(n))
+  const areas = [...text.matchAll(new RegExp(`<${areaTag}>([\\s\\S]*?)<\\/${areaTag}>`, 'g'))].map(m => parseFloat(m[1].trim())).filter(n => !isNaN(n))
+  return items.map((price, i) => ({ price: price * 10000, area: areas[i] || 0 }))
+}
+
 async function fetchAptTrade(lawdCd: string, dealYmd: string, key: string) {
   const url = `https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade?serviceKey=${key}&LAWD_CD=${lawdCd}&DEAL_YMD=${dealYmd}&numOfRows=100&pageNo=1`
-  const res = await fetch(url)
-  const text = await res.text()
-  const items = [...text.matchAll(/<거래금액>([\s\S]*?)<\/거래금액>/g)].map(m => parseInt(m[1].replace(/,/g, '').trim(), 10)).filter(n => !isNaN(n))
-  const areas = [...text.matchAll(/<전용면적>([\s\S]*?)<\/전용면적>/g)].map(m => parseFloat(m[1].trim())).filter(n => !isNaN(n))
-  return items.map((price, i) => ({ price: price * 10000, area: areas[i] || 0 }))
+  const text = await fetch(url).then(r => r.text())
+  return parseTrades(text, 'excluUseAr')
 }
 
 async function fetchVillaTrade(lawdCd: string, dealYmd: string, key: string) {
   const url = `https://apis.data.go.kr/1613000/RTMSDataSvcRHTrade/getRTMSDataSvcRHTrade?serviceKey=${key}&LAWD_CD=${lawdCd}&DEAL_YMD=${dealYmd}&numOfRows=100&pageNo=1`
-  const res = await fetch(url)
-  const text = await res.text()
-  const items = [...text.matchAll(/<거래금액>([\s\S]*?)<\/거래금액>/g)].map(m => parseInt(m[1].replace(/,/g, '').trim(), 10)).filter(n => !isNaN(n))
-  const areas = [...text.matchAll(/<전용면적>([\s\S]*?)<\/전용면적>/g)].map(m => parseFloat(m[1].trim())).filter(n => !isNaN(n))
-  return items.map((price, i) => ({ price: price * 10000, area: areas[i] || 0 }))
+  const text = await fetch(url).then(r => r.text())
+  return parseTrades(text, 'excluUseAr')
 }
 
 async function fetchSingleTrade(lawdCd: string, dealYmd: string, key: string) {
   const url = `https://apis.data.go.kr/1613000/RTMSDataSvcSHTrade/getRTMSDataSvcSHTrade?serviceKey=${key}&LAWD_CD=${lawdCd}&DEAL_YMD=${dealYmd}&numOfRows=100&pageNo=1`
-  const res = await fetch(url)
-  const text = await res.text()
-  const items = [...text.matchAll(/<거래금액>([\s\S]*?)<\/거래금액>/g)].map(m => parseInt(m[1].replace(/,/g, '').trim(), 10)).filter(n => !isNaN(n))
-  const areas = [...text.matchAll(/<연면적>([\s\S]*?)<\/연면적>/g)].map(m => parseFloat(m[1].trim())).filter(n => !isNaN(n))
-  return items.map((price, i) => ({ price: price * 10000, area: areas[i] || 0 }))
+  const text = await fetch(url).then(r => r.text())
+  return parseTrades(text, 'totalFloorAr')
 }
 
 export async function GET(req: NextRequest) {
@@ -125,10 +122,10 @@ export async function GET(req: NextRequest) {
   const key = process.env.PUBLIC_DATA_API_KEY!
   const lawdCd = getLawdCd(address)
 
-  // 최근 6개월 데이터 수집
+  // 최근 12개월 데이터 수집 (API 반영 지연 감안)
   const months: string[] = []
   const now = new Date()
-  for (let i = 0; i < 6; i++) {
+  for (let i = 2; i < 14; i++) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
     months.push(`${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}`)
   }

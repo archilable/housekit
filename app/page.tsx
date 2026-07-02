@@ -1,6 +1,8 @@
 import Link from 'next/link'
+import { auth } from '@/auth'
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const session = await auth()
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', flexDirection: 'column',
@@ -75,7 +77,7 @@ export default function LandingPage() {
       </p>
 
       {/* 들어가기 버튼 */}
-      <Link href="/houses" style={{
+      <Link href={session ? '/houses' : '/login'} style={{
         display: 'block', width: '100%', maxWidth: 280,
         background: 'linear-gradient(135deg, #1d4ed8, #2563eb)',
         color: '#fff', padding: '17px 0', borderRadius: 16,
@@ -87,7 +89,7 @@ export default function LandingPage() {
       </Link>
 
       <p style={{ fontSize: 12, color: '#2a2a38', marginTop: 24 }}>
-        v0.1 MVP · made with ♥
+        v0.2 · made with ♥
       </p>
     </div>
   )

@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import HouseCarousel from '@/app/components/HouseCarousel'
 import { auth, signOut } from '@/auth'
+import { redirect } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
 
@@ -9,11 +10,24 @@ export default async function Home() {
   const session = await auth()
   const userId = session?.user?.id
 
-  const houses = await prisma.house.findMany({
-    where: userId ? { userId } : { userId: null },
-    orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
-    include: { _count: { select: { inventories: true, histories: true } } },
-  })
+  if (!userId) redirect('/login')
+
+  const [ownedHouses, sharedAccess] = await Promise.all([
+    prisma.house.findMany({
+      where: { userId },
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
+      include: { _count: { select: { inventories: true, histories: true } } },
+    }),
+    prisma.houseAccess.findMany({
+      where: { userId },
+      include: {
+        house: { include: { _count: { select: { inventories: true, histories: true } } } },
+      },
+    }),
+  ])
+
+  const sharedHouses = sharedAccess.map(a => ({ ...a.house, _shared: true }))
+  const houses = [...ownedHouses, ...sharedHouses as typeof ownedHouses]
 
   if (houses.length === 0) {
     return (

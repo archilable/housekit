@@ -9,6 +9,7 @@ import AiValuation from '@/app/components/AiValuation'
 import RealPriceData from '@/app/components/RealPriceData'
 import DoctorHistoryList from '@/app/components/DoctorHistoryList'
 import HouseIllustration from '@/app/components/HouseIllustration'
+import InviteButton from '@/app/components/InviteButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -123,6 +124,7 @@ export default async function HousePage({
           <Link href={`/houses/${id}/edit`} style={{ color: '#60a5fa', fontSize: 18, textDecoration: 'none' }}>
             <i className="ti ti-pencil" aria-hidden="true" />
           </Link>
+          <InviteButton houseId={id} />
         </div>
       </div>
 
@@ -138,6 +140,14 @@ export default async function HousePage({
         <h1 style={{ fontSize: 20, fontWeight: 500, marginBottom: 4 }}>{house.address}</h1>
         {house.addressDetail && <p style={{ fontSize: 13, color: '#666' }}>{house.addressDetail}</p>}
 
+        {(house.landArea || house.buildArea || house.exclusiveArea) && (
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 10, flexWrap: 'wrap' }}>
+            {house.landArea && <span style={{ fontSize: 11, color: '#555' }}>대지 <span style={{ color: '#aaa' }}>{house.landArea}㎡ ({(house.landArea / 3.305785).toFixed(1)}평)</span></span>}
+            {house.buildArea && <span style={{ fontSize: 11, color: '#555' }}>건축 <span style={{ color: '#aaa' }}>{house.buildArea}㎡ ({(house.buildArea / 3.305785).toFixed(1)}평)</span></span>}
+            {house.exclusiveArea && <span style={{ fontSize: 11, color: '#60a5fa' }}>전용 <span style={{ fontWeight: 600 }}>{house.exclusiveArea}㎡ ({(house.exclusiveArea / 3.305785).toFixed(1)}평)</span></span>}
+          </div>
+        )}
+
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 12 }}>
           <span style={{ fontSize: 12, color: '#666' }}>집 건강점수</span>
           <div style={{ width: 100, height: 4, background: '#1a1a2e', borderRadius: 2 }}>
@@ -151,8 +161,8 @@ export default async function HousePage({
       <div style={{ display: 'flex', gap: 0, borderBottom: '0.5px solid #1e1e28', marginBottom: 16, padding: '0 16px', overflowX: 'auto' }}>
         {[
           { key: 'home', label: '홈' },
-          { key: 'inventory', label: `설비 ${house.inventories.length}` },
           { key: 'history', label: `이력 ${house.histories.length}` },
+          { key: 'inventory', label: `설비 ${house.inventories.length}` },
           { key: 'utility', label: '공과금' },
           { key: 'valuation', label: '시세' },
           { key: 'doctor', label: '닥터' },
@@ -226,21 +236,6 @@ export default async function HousePage({
               <p style={{ fontSize: 10, color: '#555', marginTop: 1 }}>총 {house.histories.length}건</p>
             </Link>
 
-            {/* 설비 수 */}
-            <Link href={`/houses/${id}?tab=inventory`} style={{ textDecoration: 'none', color: 'inherit', background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 14, padding: 14, display: 'block' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-                <div style={{ width: 28, height: 28, borderRadius: 8, background: '#0d1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <i className="ti ti-package" style={{ fontSize: 14, color: '#60a5fa' }} aria-hidden="true" />
-                </div>
-                <i className="ti ti-chevron-right" style={{ fontSize: 13, color: '#333', marginTop: 4 }} />
-              </div>
-              <p style={{ fontSize: 11, color: '#666' }}>등록 설비</p>
-              <p style={{ fontSize: 16, fontWeight: 500, color: '#60a5fa', marginTop: 2 }}>{house.inventories.length}개</p>
-              <p style={{ fontSize: 10, color: '#555', marginTop: 1 }}>
-                {house.inventories.filter(i => getWarrantyStatus(i.installedAt, i.warrantyMonths)).length}개 보증 추적 중
-              </p>
-            </Link>
-
             {/* 마지막 이력 */}
             <Link href={`/houses/${id}?tab=history${house.histories[0] ? `&highlight=${house.histories[0].id}` : ''}`} style={{ textDecoration: 'none', color: 'inherit', background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 14, padding: 14, display: 'block' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
@@ -257,6 +252,22 @@ export default async function HousePage({
                 {house.histories[0] ? house.histories[0].title : '이력을 추가하세요'}
               </p>
             </Link>
+
+            {/* 설비 수 */}
+            <Link href={`/houses/${id}?tab=inventory`} style={{ textDecoration: 'none', color: 'inherit', background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 14, padding: 14, display: 'block' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: '#0d1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <i className="ti ti-package" style={{ fontSize: 14, color: '#60a5fa' }} aria-hidden="true" />
+                </div>
+                <i className="ti ti-chevron-right" style={{ fontSize: 13, color: '#333', marginTop: 4 }} />
+              </div>
+              <p style={{ fontSize: 11, color: '#666' }}>등록 설비</p>
+              <p style={{ fontSize: 16, fontWeight: 500, color: '#60a5fa', marginTop: 2 }}>{house.inventories.length}개</p>
+              <p style={{ fontSize: 10, color: '#555', marginTop: 1 }}>
+                {house.inventories.filter(i => getWarrantyStatus(i.installedAt, i.warrantyMonths)).length}개 보증 추적 중
+              </p>
+            </Link>
+
           </div>
 
           {/* 공과금 요약 */}
@@ -662,7 +673,7 @@ export default async function HousePage({
             <RealPriceData
               address={house.address}
               houseType={house.houseType}
-              area={house.area}
+              area={house.exclusiveArea ?? house.area}
             />
 
             {/* AI 실거래 시세 추정 */}
@@ -670,7 +681,7 @@ export default async function HousePage({
               address={house.address}
               houseType={house.houseType}
               buildYear={house.buildYear}
-              area={house.area}
+              area={house.exclusiveArea ?? house.area}
             />
 
             <Link href={`/houses/${id}/valuation`}

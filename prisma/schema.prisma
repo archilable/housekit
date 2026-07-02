@@ -21,7 +21,27 @@ model User {
   accounts      Account[]
   sessions      Session[]
   houses        House[]
+  houseAccess   HouseAccess[]
   createdAt     DateTime  @default(now())
+}
+
+model HouseInvite {
+  id        String   @id @default(cuid())
+  houseId   String
+  house     House    @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  token     String   @unique @default(cuid())
+  createdAt DateTime @default(now())
+}
+
+model HouseAccess {
+  id        String   @id @default(cuid())
+  houseId   String
+  house     House    @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([houseId, userId])
 }
 
 model Account {
@@ -64,6 +84,9 @@ model House {
   addressDetail String?
   buildYear     Int?
   area          Float?
+  landArea      Float?
+  buildArea     Float?
+  exclusiveArea Float?
   houseType     String
   ownerName     String?
   notes         String?
@@ -76,6 +99,8 @@ model House {
   utilities       Utility[]
   doctorHistories DoctorHistory[]
   valuation       Valuation?
+  invites         HouseInvite[]
+  accessList      HouseAccess[]
 }
 
 

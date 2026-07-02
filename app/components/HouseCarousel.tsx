@@ -11,6 +11,7 @@ interface House {
   houseType: string
   buildYear: number | null
   area: number | null
+  exclusiveArea: number | null
   sortOrder: number
   _count: { inventories: number; histories: number }
 }
@@ -90,19 +91,19 @@ export default function HouseCarousel({ houses }: { houses: House[] }) {
             {/* 미니 스탯 */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 16 }}>
               <div style={{ textAlign: 'center' }}>
-                <p style={{ fontSize: 18, fontWeight: 600, color: '#60a5fa' }}>{house._count.inventories}</p>
-                <p style={{ fontSize: 11, color: '#555' }}>설비</p>
-              </div>
-              <div style={{ width: 1, background: '#1e1e28' }} />
-              <div style={{ textAlign: 'center' }}>
                 <p style={{ fontSize: 18, fontWeight: 600, color: '#a78bfa' }}>{house._count.histories}</p>
                 <p style={{ fontSize: 11, color: '#555' }}>이력</p>
               </div>
-              {house.area && (
+              <div style={{ width: 1, background: '#1e1e28' }} />
+              <div style={{ textAlign: 'center' }}>
+                <p style={{ fontSize: 18, fontWeight: 600, color: '#60a5fa' }}>{house._count.inventories}</p>
+                <p style={{ fontSize: 11, color: '#555' }}>설비</p>
+              </div>
+              {(house.exclusiveArea ?? house.area) && (
                 <>
                   <div style={{ width: 1, background: '#1e1e28' }} />
                   <div style={{ textAlign: 'center' }}>
-                    <p style={{ fontSize: 18, fontWeight: 600, color: '#34d399' }}>{house.area}</p>
+                    <p style={{ fontSize: 18, fontWeight: 600, color: '#34d399' }}>{house.exclusiveArea ?? house.area}</p>
                     <p style={{ fontSize: 11, color: '#555' }}>㎡</p>
                   </div>
                 </>
