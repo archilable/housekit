@@ -71,7 +71,7 @@ export default async function ValuationPage({ params }: { params: Promise<{ id: 
                 </div>
                 <div style={fieldStyle}>
                   <label style={labelStyle}>대지면적 (㎡)</label>
-                  <input name="landArea" type="number" step="0.1" placeholder="165.0" defaultValue={v?.landArea ?? house.area ?? ''} style={inputStyle} />
+                  <input name="landArea" type="number" step="0.1" placeholder="165.0" defaultValue={v?.landArea ?? house.landArea ?? ''} style={inputStyle} />
                 </div>
                 <div style={fieldStyle}>
                   <label style={labelStyle}>지분율 <span style={{ color: '#555', fontSize: 11 }}>— 단독=1.0 / 공동소유시 본인 지분</span></label>
@@ -92,7 +92,7 @@ export default async function ValuationPage({ params }: { params: Promise<{ id: 
                 </div>
                 <div style={fieldStyle}>
                   <label style={labelStyle}>연면적 (㎡)</label>
-                  <input name="buildArea" type="number" step="0.1" placeholder="99.0" defaultValue={v?.buildArea ?? house.area ?? ''} style={inputStyle} />
+                  <input name="buildArea" type="number" step="0.1" placeholder="99.0" defaultValue={v?.buildArea ?? house.buildArea ?? ''} style={inputStyle} />
                 </div>
                 <div style={fieldStyle}>
                   <label style={labelStyle}>연 감가율 <span style={{ color: '#555', fontSize: 11 }}>— 일반적으로 0.02 (2%) / 건물 경과 {age}년</span></label>
