@@ -1,9 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
-import Link from "next/link";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
-import { headers } from "next/headers";
+import BottomNav from "@/app/components/BottomNav";
 
 import "./globals.css";
 
@@ -33,10 +32,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const headersList = await headers()
-  const pathname = headersList.get('x-invoke-path') || headersList.get('x-pathname') || ''
-  const isAdmin = pathname.startsWith('/admin')
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko" className={geistSans.variable}>
       <head>
@@ -49,32 +45,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           {children}
         </main>
 
-        {!isAdmin && <nav style={{
-          position: "fixed", bottom: 0, left: 0, right: 0,
-          maxWidth: 430, margin: "0 auto",
-          background: "rgba(10,10,15,0.95)", backdropFilter: "blur(12px)",
-          borderTop: "0.5px solid #1e1e28",
-          display: "flex", justifyContent: "space-around", alignItems: "center",
-          padding: "10px 0 20px",
-          zIndex: 100,
-          boxSizing: "border-box",
-          width: "100%",
-        }}>
-          {[
-            { href: "/houses", icon: "ti-home-2", label: "홈" },
-            { href: "/houses/new", icon: "ti-plus", label: "등록" },
-            { href: "/notifications", icon: "ti-bell", label: "알림" },
-            { href: "/analytics", icon: "ti-chart-bar", label: "분석" },
-          ].map(({ href, icon, label }) => (
-            <Link key={label} href={href} style={{
-              display: "flex", flexDirection: "column", alignItems: "center",
-              gap: 3, textDecoration: "none", color: "#555",
-            }}>
-              <i className={`ti ${icon}`} style={{ fontSize: 22 }} aria-hidden="true" />
-              <span style={{ fontSize: 10 }}>{label}</span>
-            </Link>
-          ))}
-        </nav>}
+        <BottomNav />
 
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
 
