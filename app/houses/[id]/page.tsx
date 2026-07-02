@@ -10,6 +10,7 @@ import RealPriceData from '@/app/components/RealPriceData'
 import DoctorHistoryList from '@/app/components/DoctorHistoryList'
 import HouseIllustration from '@/app/components/HouseIllustration'
 import InviteButton from '@/app/components/InviteButton'
+import BackHomeButtons from '@/app/components/BackHomeButtons'
 
 export const dynamic = 'force-dynamic'
 
@@ -118,19 +119,12 @@ export default async function HousePage({
 
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 16px 0' }}>
-        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-          <Link href="javascript:history.back()" style={{ color: '#555', textDecoration: 'none' }}>
-            <i className="ti ti-chevron-left" style={{ fontSize: 22 }} aria-hidden="true" />
-          </Link>
-          <Link href="/houses" style={{ color: '#555', textDecoration: 'none' }}>
-            <i className="ti ti-home" style={{ fontSize: 22 }} aria-hidden="true" />
-          </Link>
-        </div>
+        <BackHomeButtons />
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <span style={{ fontSize: 11, background: '#0d1a2e', color: '#60a5fa', padding: '3px 10px', borderRadius: 20, border: '0.5px solid #1e3a5f' }}>
+          <span style={{ fontSize: 13, background: '#0d1a2e', color: '#60a5fa', padding: '3px 10px', borderRadius: 20, border: '0.5px solid #1e3a5f' }}>
             {house.houseType}
           </span>
-          {house.buildYear && <span style={{ fontSize: 11, color: '#555' }}>{house.buildYear}년</span>}
+          {house.buildYear && <span style={{ fontSize: 13, color: '#555' }}>{house.buildYear}년</span>}
           <Link href={`/houses/${id}/edit`} style={{ color: '#60a5fa', fontSize: 18, textDecoration: 'none' }}>
             <i className="ti ti-pencil" aria-hidden="true" />
           </Link>
@@ -147,14 +141,14 @@ export default async function HousePage({
 
       {/* House Name */}
       <div style={{ textAlign: 'center', padding: '4px 16px 20px' }}>
-        <h1 style={{ fontSize: 20, fontWeight: 500, marginBottom: 4 }}>{house.address}</h1>
-        {house.addressDetail && <p style={{ fontSize: 13, color: '#666' }}>{house.addressDetail}</p>}
+        <h1 style={{ fontSize: 22, fontWeight: 500, marginBottom: 4 }}>{house.address}</h1>
+        {house.addressDetail && <p style={{ fontSize: 15, color: '#666' }}>{house.addressDetail}</p>}
 
         {(house.landArea || house.buildArea || house.exclusiveArea) && (
           <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 10, flexWrap: 'wrap' }}>
-            {house.landArea && <span style={{ fontSize: 11, color: '#555' }}>대지 <span style={{ color: '#aaa' }}>{house.landArea}㎡ ({(house.landArea / 3.305785).toFixed(1)}평)</span></span>}
-            {house.buildArea && <span style={{ fontSize: 11, color: '#555' }}>건축 <span style={{ color: '#aaa' }}>{house.buildArea}㎡ ({(house.buildArea / 3.305785).toFixed(1)}평)</span></span>}
-            {house.exclusiveArea && <span style={{ fontSize: 11, color: '#60a5fa' }}>전용 <span style={{ fontWeight: 600 }}>{house.exclusiveArea}㎡ ({(house.exclusiveArea / 3.305785).toFixed(1)}평)</span></span>}
+            {house.landArea && <span style={{ fontSize: 13, color: '#555' }}>대지 <span style={{ color: '#aaa' }}>{house.landArea}㎡ ({(house.landArea / 3.305785).toFixed(1)}평)</span></span>}
+            {house.buildArea && <span style={{ fontSize: 13, color: '#555' }}>건축 <span style={{ color: '#aaa' }}>{house.buildArea}㎡ ({(house.buildArea / 3.305785).toFixed(1)}평)</span></span>}
+            {house.exclusiveArea && <span style={{ fontSize: 13, color: '#60a5fa' }}>전용 <span style={{ fontWeight: 600 }}>{house.exclusiveArea}㎡ ({(house.exclusiveArea / 3.305785).toFixed(1)}평)</span></span>}
           </div>
         )}
 
