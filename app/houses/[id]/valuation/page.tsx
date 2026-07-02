@@ -92,7 +92,7 @@ export default async function ValuationPage({ params }: { params: Promise<{ id: 
                 </div>
                 <div style={fieldStyle}>
                   <label style={labelStyle}>연면적 (㎡)</label>
-                  <input name="buildArea" type="number" step="0.1" placeholder="99.0" defaultValue={v?.buildArea ?? house.buildArea ?? ''} style={inputStyle} />
+                  <input name="buildArea" type="number" step="0.1" placeholder="99.0" defaultValue={v?.buildArea ?? house.exclusiveArea ?? house.buildArea ?? ''} style={inputStyle} />
                 </div>
                 <div style={fieldStyle}>
                   <label style={labelStyle}>연 감가율 <span style={{ color: '#555', fontSize: 11 }}>— 일반적으로 0.02 (2%) / 건물 경과 {age}년</span></label>
