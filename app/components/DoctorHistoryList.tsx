@@ -52,7 +52,7 @@ function ResolveModal({ history, onClose }: { history: DoctorHistory; onClose: (
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
       onClick={onClose}>
-      <div style={{ background: '#111118', borderRadius: '20px 20px 0 0', padding: '24px 20px 40px', width: '100%', maxWidth: 480 }}
+      <div style={{ background: '#111118', borderRadius: '20px 20px 0 0', padding: '24px 20px 60px', width: '100%', maxWidth: 480 }}
         onClick={e => e.stopPropagation()}>
         <div style={{ textAlign: 'center', marginBottom: 20 }}>
           <span style={{ fontSize: 40 }}>🎉</span>
