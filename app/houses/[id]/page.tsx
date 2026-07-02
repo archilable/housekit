@@ -118,9 +118,14 @@ export default async function HousePage({
 
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 16px 0' }}>
-        <Link href="/houses" style={{ color: '#555', textDecoration: 'none', fontSize: 13 }}>
-          <i className="ti ti-arrow-left" style={{ fontSize: 18, verticalAlign: -3 }} aria-hidden="true" />
-        </Link>
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+          <Link href="javascript:history.back()" style={{ color: '#555', textDecoration: 'none' }}>
+            <i className="ti ti-chevron-left" style={{ fontSize: 22 }} aria-hidden="true" />
+          </Link>
+          <Link href="/houses" style={{ color: '#555', textDecoration: 'none' }}>
+            <i className="ti ti-home" style={{ fontSize: 22 }} aria-hidden="true" />
+          </Link>
+        </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <span style={{ fontSize: 11, background: '#0d1a2e', color: '#60a5fa', padding: '3px 10px', borderRadius: 20, border: '0.5px solid #1e3a5f' }}>
             {house.houseType}
