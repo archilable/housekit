@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import Link from "next/link";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
+import { headers } from "next/headers";
 
 import "./globals.css";
 
@@ -32,7 +33,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const headersList = await headers()
+  const pathname = headersList.get('x-invoke-path') || headersList.get('x-pathname') || ''
+  const isAdmin = pathname.startsWith('/admin')
   return (
     <html lang="ko" className={geistSans.variable}>
       <head>
@@ -45,7 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </main>
 
-        <nav style={{
+        {!isAdmin && <nav style={{
           position: "fixed", bottom: 0, left: 0, right: 0,
           maxWidth: 430, margin: "0 auto",
           background: "rgba(10,10,15,0.95)", backdropFilter: "blur(12px)",
@@ -70,7 +74,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <span style={{ fontSize: 10 }}>{label}</span>
             </Link>
           ))}
-        </nav>
+        </nav>}
 
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
 
