@@ -12,6 +12,7 @@ type User = {
   createdAt: Date
   houses: House[]
   houseAccess: HouseAccess[]
+  accounts: { provider: string }[]
 }
 
 export default function AdminClient({ users, todayCount, totalHouses, myId }: {
@@ -102,7 +103,14 @@ export default function AdminClient({ users, todayCount, totalHouses, myId }: {
                     {isToday && <span style={{ fontSize: 10, color: '#34d399', background: '#0d1f14', border: '0.5px solid #1a3d28', padding: '1px 6px', borderRadius: 8 }}>NEW</span>}
                     {user.isAdmin && <span style={{ fontSize: 10, color: '#818cf8', background: '#0d0d1f', border: '0.5px solid #2a2a5a', padding: '1px 6px', borderRadius: 8 }}>관리자</span>}
                   </div>
-                  <p style={{ fontSize: 12, color: '#555' }}>{user.email}</p>
+                  <p style={{ fontSize: 12, color: '#555' }}>
+                    {user.email ?? (user.accounts.some(a => a.provider === 'kakao') ? '카카오 계정' : '이메일 없음')}
+                    {user.accounts.map(a => (
+                      <span key={a.provider} style={{ marginLeft: 5, fontSize: 10, color: a.provider === 'kakao' ? '#FEE500' : '#60a5fa', background: '#111', border: '0.5px solid #222', borderRadius: 6, padding: '1px 5px' }}>
+                        {a.provider}
+                      </span>
+                    ))}
+                  </p>
                   <p style={{ fontSize: 11, color: '#444', marginTop: 1 }}>{joinDate}</p>
                 </div>
                 {/* 관리자 권한 토글 */}

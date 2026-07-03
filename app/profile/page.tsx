@@ -6,6 +6,10 @@ export default async function ProfilePage() {
   if (!session?.user) redirect('/login')
 
   const user = session.user
+  const dbUser = await import('@/lib/db').then(m => m.prisma.user.findUnique({
+    where: { id: user.id },
+    include: { accounts: { select: { provider: true } } },
+  }))
 
   return (
     <div style={{ minHeight: '100vh', background: '#0a0a0f', padding: '60px 20px 100px' }}>
@@ -26,7 +30,18 @@ export default async function ProfilePage() {
           )}
           <div>
             <p style={{ fontSize: 18, fontWeight: 600, color: '#fff', margin: 0 }}>{user.name ?? '이름 없음'}</p>
-            <p style={{ fontSize: 13, color: '#555', margin: '4px 0 0' }}>{user.email ?? '이메일 없음'}</p>
+            <p style={{ fontSize: 13, color: '#555', margin: '4px 0 0' }}>
+              {user.email ?? (dbUser?.accounts.some(a => a.provider === 'kakao') ? '카카오 계정' : '이메일 없음')}
+            </p>
+            {dbUser?.accounts && dbUser.accounts.length > 0 && (
+              <div style={{ display: 'flex', gap: 4, marginTop: 6 }}>
+                {dbUser.accounts.map(a => (
+                  <span key={a.provider} style={{ fontSize: 11, color: a.provider === 'kakao' ? '#191919' : '#fff', background: a.provider === 'kakao' ? '#FEE500' : '#1d4ed8', borderRadius: 8, padding: '2px 8px', fontWeight: 600 }}>
+                    {a.provider === 'kakao' ? '카카오' : 'Google'}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

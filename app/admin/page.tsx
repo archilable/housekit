@@ -83,6 +83,7 @@ export default async function AdminPage() {
     include: {
       houses: { select: { id: true, address: true } },
       houseAccess: { select: { id: true, house: { select: { address: true } } } },
+      accounts: { select: { provider: true } },
     },
   })
 
