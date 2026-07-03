@@ -49,7 +49,7 @@ export default function HouseCarousel({ houses: initialHouses }: { houses: House
     setSaving(false)
   }, [])
 
-  // 메인 카드 스와이프
+  // 메인 카드 스와이프 (터치)
   function onMainTouchStart(e: React.TouchEvent) {
     touchStartX.current = e.touches[0].clientX
     touchStartY.current = e.touches[0].clientY
@@ -61,6 +61,22 @@ export default function HouseCarousel({ houses: initialHouses }: { houses: House
     const dx = e.changedTouches[0].clientX - touchStartX.current
     const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current)
     if (Math.abs(dx) > 50 && dy < 60) {
+      if (dx < 0) setCurrent(c => (c + 1) % houses.length)
+      if (dx > 0) setCurrent(c => (c - 1 + houses.length) % houses.length)
+    }
+    mainDragging.current = false
+  }
+
+  // 메인 카드 마우스 드래그 (데스크탑)
+  function onMainMouseDown(e: React.MouseEvent) {
+    touchStartX.current = e.clientX
+    mainDragging.current = true
+  }
+
+  function onMainMouseUp(e: React.MouseEvent) {
+    if (!mainDragging.current) return
+    const dx = e.clientX - touchStartX.current
+    if (Math.abs(dx) > 50) {
       if (dx < 0) setCurrent(c => (c + 1) % houses.length)
       if (dx > 0) setCurrent(c => (c - 1 + houses.length) % houses.length)
     }
@@ -139,7 +155,10 @@ export default function HouseCarousel({ houses: initialHouses }: { houses: House
       <div
         onTouchStart={onMainTouchStart}
         onTouchEnd={onMainTouchEnd}
-        style={{ width: '100%', touchAction: 'pan-y', userSelect: 'none' }}
+        onMouseDown={onMainMouseDown}
+        onMouseUp={onMainMouseUp}
+        onMouseLeave={() => { mainDragging.current = false }}
+        style={{ width: '100%', touchAction: 'pan-y', userSelect: 'none', cursor: houses.length > 1 ? 'grab' : 'default' }}
       >
         {/* 메인 카드 */}
         <div style={{
@@ -245,6 +264,7 @@ export default function HouseCarousel({ houses: initialHouses }: { houses: House
                   onTouchStart={e => onThumbTouchStart(i, e)}
                   onTouchMove={e => onThumbTouchMove(i, e)}
                   onTouchEnd={() => onThumbTouchEnd(i)}
+                  onClick={() => setCurrent(i)}
                   style={{
                     flexShrink: 0,
                     background: i === current ? '#0d1a2e' : '#111118',
