@@ -1,27 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { unstable_cache } from 'next/cache'
 
-export async function POST(req: NextRequest) {
-  try {
-    const { address, houseType, buildYear, area, realTrades } = await req.json()
+async function runValuationAi(address: string, houseType: string, buildYear: number | null, area: number | null, realTrades: any) {
+  const age = buildYear ? new Date().getFullYear() - buildYear : null
 
-    const age = buildYear ? new Date().getFullYear() - buildYear : null
+  let realTradeText = '실거래 데이터 없음'
+  if (realTrades && !realTrades.error && realTrades.count > 0) {
+    realTradeText = `최근 12개월 ${realTrades.count}건 실거래 기준:
+- 최고가: ${(realTrades.max / 100000000).toFixed(1)}억원
+- 최저가: ${(realTrades.min / 100000000).toFixed(1)}억원
+- 평균가: ${(realTrades.avg / 100000000).toFixed(1)}억원
+- 중간가: ${(realTrades.median / 100000000).toFixed(1)}억원`
+  }
 
-    // 실거래 데이터 요약
-    let realTradeText = '실거래 데이터 없음'
-    if (realTrades && realTrades.trades && realTrades.trades.length > 0) {
-      const trades = realTrades.trades as { price: number; area: number }[]
-      const sorted = [...trades].sort((a, b) => b.price - a.price)
-      const avg = Math.round(trades.reduce((s, t) => s + t.price, 0) / trades.length)
-      const max = sorted[0].price
-      const min = sorted[sorted.length - 1].price
-      realTradeText = `최근 12개월 ${trades.length}건 실거래 기준:
-- 최고가: ${(max / 100000000).toFixed(1)}억원
-- 최저가: ${(min / 100000000).toFixed(1)}억원
-- 평균가: ${(avg / 100000000).toFixed(1)}억원
-- 거래된 면적대: ${Math.min(...trades.map(t => t.area)).toFixed(0)}~${Math.max(...trades.map(t => t.area)).toFixed(0)}㎡`
-    }
-
-    const prompt = `당신은 대한민국 부동산 감정평가 전문가입니다. 국토교통부 실거래가 데이터와 주택 정보를 바탕으로 시세를 추정하세요.
+  const prompt = `당신은 대한민국 부동산 감정평가 전문가입니다. 국토교통부 실거래가 데이터와 주택 정보를 바탕으로 시세를 추정하세요.
 
 [대상 주택 정보]
 - 주소: ${address}
@@ -47,34 +39,53 @@ ${realTradeText}
   "note": "참고사항 한 문장"
 }`
 
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      messages: [
+        { role: 'system', content: '당신은 한국 부동산 감정평가 전문가입니다. 제공된 실거래 데이터를 반드시 활용하여 근거 있는 시세를 추정합니다. JSON만 반환합니다.' },
+        { role: 'user', content: prompt },
+      ],
+      max_tokens: 512,
+      temperature: 0.2,
+    }),
+  })
+
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error?.message || 'API 오류')
+
+  const text = data.choices?.[0]?.message?.content ?? ''
+  const jsonMatch = text.match(/\{[\s\S]*\}/)
+  if (!jsonMatch) throw new Error('응답 파싱 실패')
+
+  return JSON.parse(jsonMatch[0])
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const { address, houseType, buildYear, area } = await req.json()
+
+    const cacheKey = `valuation-ai-${address}-${houseType}-${buildYear}-${Math.round(area ?? 0)}`
+    const baseUrl = process.env.NEXTAUTH_URL ?? 'https://www.housekit.kr'
+
+    const cached = unstable_cache(
+      async () => {
+        const realRes = await fetch(
+          `${baseUrl}/api/realprice?address=${encodeURIComponent(address)}&houseType=${encodeURIComponent(houseType)}&area=${area ?? 0}`
+        )
+        const realTrades = realRes.ok ? await realRes.json() : null
+        return runValuationAi(address, houseType, buildYear, area, realTrades)
       },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [
-          {
-            role: 'system',
-            content: '당신은 한국 부동산 감정평가 전문가입니다. 제공된 실거래 데이터를 반드시 활용하여 근거 있는 시세를 추정합니다. JSON만 반환합니다.',
-          },
-          { role: 'user', content: prompt },
-        ],
-        max_tokens: 512,
-        temperature: 0.2,
-      }),
-    })
+      [cacheKey],
+      { revalidate: 60 * 60 * 24 }
+    )
 
-    const data = await res.json()
-    if (!res.ok) throw new Error(data.error?.message || 'API 오류')
-
-    const text = data.choices?.[0]?.message?.content ?? ''
-    const jsonMatch = text.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) throw new Error('응답 파싱 실패')
-
-    const result = JSON.parse(jsonMatch[0])
+    const result = await cached()
     return NextResponse.json(result)
   } catch (e: unknown) {
     return NextResponse.json({ error: e instanceof Error ? e.message : '오류 발생' }, { status: 500 })

@@ -11,6 +11,7 @@ interface Props {
 
 export default function AiValuation({ address, houseType, buildYear, area }: Props) {
   const [loading, setLoading] = useState(false)
+  const [loadingMsg, setLoadingMsg] = useState('')
   const [result, setResult] = useState<{
     minPrice: number
     maxPrice: number
@@ -35,16 +36,20 @@ export default function AiValuation({ address, houseType, buildYear, area }: Pro
     setLoading(true)
     setError(null)
     setResult(null)
-    try {
-      // 1. 국토부 실거래 데이터 먼저 가져오기
-      const realRes = await fetch(`/api/realprice?address=${encodeURIComponent(address)}&houseType=${encodeURIComponent(houseType)}&area=${area ?? 0}`)
-      const realTrades = realRes.ok ? await realRes.json() : null
 
-      // 2. 실거래 데이터를 AI에 함께 전달
+    const msgs = ['🏘️ 실거래 데이터 수집 중...', '🤖 AI 시세 분석 중...', '📊 추정가 계산 중...']
+    let mi = 0
+    setLoadingMsg(msgs[0])
+    const timer = setInterval(() => {
+      mi = (mi + 1) % msgs.length
+      setLoadingMsg(msgs[mi])
+    }, 2500)
+
+    try {
       const res = await fetch('/api/valuation-ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ address, houseType, buildYear, area, realTrades }),
+        body: JSON.stringify({ address, houseType, buildYear, area }),
       })
       const data = await res.json()
       if (data.error) throw new Error(data.error)
@@ -52,6 +57,7 @@ export default function AiValuation({ address, houseType, buildYear, area }: Pro
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : '오류가 발생했어요')
     } finally {
+      clearInterval(timer)
       setLoading(false)
     }
   }
@@ -75,7 +81,7 @@ export default function AiValuation({ address, houseType, buildYear, area }: Pro
           {loading ? (
             <>
               <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>⟳</span>
-              AI 시세 분석 중...
+              {loadingMsg}
             </>
           ) : (
             <>
