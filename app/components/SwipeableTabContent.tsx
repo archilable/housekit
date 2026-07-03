@@ -34,10 +34,10 @@ export default function SwipeableTabContent({
       if (Math.abs(dx) < 60 || dy > 100) return
 
       const idx = TABS.indexOf(currentTab)
-      if (dx < 0 && idx < TABS.length - 1) {
-        router.push(`/houses/${houseId}?tab=${TABS[idx + 1]}`)
-      } else if (dx > 0 && idx > 0) {
-        router.push(`/houses/${houseId}?tab=${TABS[idx - 1]}`)
+      if (dx < 0) {
+        router.push(`/houses/${houseId}?tab=${TABS[(idx + 1) % TABS.length]}`)
+      } else if (dx > 0) {
+        router.push(`/houses/${houseId}?tab=${TABS[(idx - 1 + TABS.length) % TABS.length]}`)
       }
     }
 
