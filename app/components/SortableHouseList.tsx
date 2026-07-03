@@ -113,7 +113,7 @@ export default function SortableHouseList({ initialHouses }: { initialHouses: Ho
   return (
     <div>
       {saving && (
-        <p style={{ fontSize: 12, color: '#60a5fa', textAlign: 'center', padding: '4px 0 6px' }}>순서 저장 중...</p>
+        <p style={{ fontSize: 14, color: '#60a5fa', textAlign: 'center', padding: '4px 0 6px' }}>순서 저장 중...</p>
       )}
 
       {/* 가로 스크롤 카드 컨테이너 */}
@@ -166,40 +166,40 @@ export default function SortableHouseList({ initialHouses }: { initialHouses: Ho
             >
               {/* 드래그 힌트 */}
               <div style={{ padding: '10px 16px 0', display: 'flex', justifyContent: 'flex-end' }}>
-                <span style={{ fontSize: 11, color: '#333' }}>← 밀어서 순서 변경 →</span>
+                <span style={{ fontSize: 13, color: '#333' }}>← 밀어서 순서 변경 →</span>
               </div>
 
               <Link href={`/houses/${house.id}`} style={{ display: 'block', padding: '8px 18px 14px', textDecoration: 'none', color: 'inherit' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                      <span style={{ fontSize: 12, background: '#0d1a2e', color: '#60a5fa', padding: '2px 8px', borderRadius: 20, border: '0.5px solid #1e3a5f' }}>
+                      <span style={{ fontSize: 14, background: '#0d1a2e', color: '#60a5fa', padding: '2px 8px', borderRadius: 20, border: '0.5px solid #1e3a5f' }}>
                         {house.houseType}
                       </span>
-                      {house.buildYear && <span style={{ fontSize: 12, color: '#555' }}>{house.buildYear}년 건축</span>}
+                      {house.buildYear && <span style={{ fontSize: 14, color: '#555' }}>{house.buildYear}년 건축</span>}
                     </div>
-                    <p style={{ fontSize: 17, fontWeight: 500, marginBottom: 2 }}>{house.address}</p>
-                    {house.addressDetail && <p style={{ fontSize: 14, color: '#666' }}>{house.addressDetail}</p>}
+                    <p style={{ fontSize: 19, fontWeight: 500, marginBottom: 2 }}>{house.address}</p>
+                    {house.addressDetail && <p style={{ fontSize: 16, color: '#666' }}>{house.addressDetail}</p>}
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <p style={{ fontSize: 23, fontWeight: 500, color: scoreColor }}>{score}</p>
-                    <p style={{ fontSize: 11, color: '#555' }}>건강점수</p>
+                    <p style={{ fontSize: 25, fontWeight: 500, color: scoreColor }}>{score}</p>
+                    <p style={{ fontSize: 13, color: '#555' }}>건강점수</p>
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: 16, marginTop: 10 }}>
-                  <span style={{ fontSize: 13, color: '#555' }}>
-                    <i className="ti ti-package" style={{ fontSize: 13, marginRight: 4 }} />
+                  <span style={{ fontSize: 15, color: '#555' }}>
+                    <i className="ti ti-package" style={{ fontSize: 15, marginRight: 4 }} />
                     설비 {house._count.inventories}
                   </span>
-                  <span style={{ fontSize: 13, color: '#555' }}>
-                    <i className="ti ti-tool" style={{ fontSize: 13, marginRight: 4 }} />
+                  <span style={{ fontSize: 15, color: '#555' }}>
+                    <i className="ti ti-tool" style={{ fontSize: 15, marginRight: 4 }} />
                     이력 {house._count.histories}
                   </span>
                 </div>
               </Link>
 
               <div style={{ borderTop: '0.5px solid #1a1a22', display: 'flex' }}>
-                <Link href={`/houses/${house.id}`} style={{ flex: 1, padding: '10px 0', textAlign: 'center', fontSize: 13, color: '#60a5fa', textDecoration: 'none' }}>
+                <Link href={`/houses/${house.id}`} style={{ flex: 1, padding: '10px 0', textAlign: 'center', fontSize: 15, color: '#60a5fa', textDecoration: 'none' }}>
                   대시보드 열기
                 </Link>
                 <div style={{ width: '0.5px', background: '#1a1a22' }} />

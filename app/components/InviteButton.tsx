@@ -32,7 +32,7 @@ export default function InviteButton({ houseId }: { houseId: string }) {
       <button
         onClick={generate}
         disabled={loading}
-        style={{ background: 'none', border: 'none', color: '#a78bfa', fontSize: 19, cursor: 'pointer', padding: 0 }}
+        style={{ background: 'none', border: 'none', color: '#a78bfa', fontSize: 21, cursor: 'pointer', padding: 0 }}
         title="초대 링크 생성"
       >
         <i className="ti ti-user-plus" aria-hidden="true" />
@@ -48,15 +48,15 @@ export default function InviteButton({ houseId }: { houseId: string }) {
             background: '#111828', border: '0.5px solid #1e3a5f', borderRadius: 20,
             padding: 24, width: '100%', maxWidth: 340,
           }} onClick={e => e.stopPropagation()}>
-            <p style={{ fontSize: 17, fontWeight: 600, marginBottom: 8 }}>초대 링크 생성됨 🎉</p>
-            <p style={{ fontSize: 13, color: '#555', marginBottom: 16 }}>링크를 공유하면 상대방이 로그인 후 이 집을 볼 수 있어요</p>
-            <div style={{ background: '#0a0a0f', borderRadius: 10, padding: '10px 14px', marginBottom: 12, wordBreak: 'break-all', fontSize: 12, color: '#60a5fa' }}>
+            <p style={{ fontSize: 19, fontWeight: 600, marginBottom: 8 }}>초대 링크 생성됨 🎉</p>
+            <p style={{ fontSize: 15, color: '#555', marginBottom: 16 }}>링크를 공유하면 상대방이 로그인 후 이 집을 볼 수 있어요</p>
+            <div style={{ background: '#0a0a0f', borderRadius: 10, padding: '10px 14px', marginBottom: 12, wordBreak: 'break-all', fontSize: 14, color: '#60a5fa' }}>
               {link}
             </div>
             <button onClick={copy} style={{
               width: '100%', background: copied ? '#1a3d28' : '#1d4ed8',
               color: copied ? '#34d399' : '#fff', border: 'none', borderRadius: 12,
-              padding: '12px', fontSize: 15, fontWeight: 600, cursor: 'pointer',
+              padding: '12px', fontSize: 17, fontWeight: 600, cursor: 'pointer',
             }}>
               {copied ? '복사됨 ✓' : '링크 복사하기'}
             </button>

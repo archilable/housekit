@@ -10,7 +10,7 @@ export default function Loading() {
       {/* 탭 */}
       <div style={{ display: 'flex', gap: 0, borderBottom: '0.5px solid #1e1e28', padding: '0 16px', marginBottom: 16 }}>
         {['홈','이력','설비','닥터','공과금','시세'].map(t => (
-          <div key={t} style={{ flex: 1, padding: '10px 0', textAlign: 'center', fontSize: 14, color: '#222' }}>{t}</div>
+          <div key={t} style={{ flex: 1, padding: '10px 0', textAlign: 'center', fontSize: 16, color: '#222' }}>{t}</div>
         ))}
       </div>
       {/* 콘텐츠 스켈레톤 */}

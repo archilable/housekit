@@ -30,11 +30,11 @@ export default async function AdminPage() {
             border: '0.5px solid #2a2a5a', display: 'flex', alignItems: 'center',
             justifyContent: 'center', margin: '0 auto 20px',
           }}>
-            <i className="ti ti-shield-lock" style={{ fontSize: 33, color: '#818cf8' }} />
+            <i className="ti ti-shield-lock" style={{ fontSize: 35, color: '#818cf8' }} />
           </div>
-          <p style={{ fontSize: 13, color: '#555', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>HouseKit</p>
-          <h1 style={{ fontSize: 29, fontWeight: 700, color: '#fff', marginBottom: 8 }}>관리자 센터</h1>
-          <p style={{ fontSize: 15, color: '#555' }}>관리자 권한이 있는 계정으로 로그인하세요</p>
+          <p style={{ fontSize: 15, color: '#555', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>HouseKit</p>
+          <h1 style={{ fontSize: 31, fontWeight: 700, color: '#fff', marginBottom: 8 }}>관리자 센터</h1>
+          <p style={{ fontSize: 17, color: '#555' }}>관리자 권한이 있는 계정으로 로그인하세요</p>
         </div>
 
         <form action={async () => {
@@ -44,7 +44,7 @@ export default async function AdminPage() {
           <button type="submit" style={{
             display: 'flex', alignItems: 'center', gap: 12,
             background: '#fff', color: '#111', border: 'none',
-            borderRadius: 14, padding: '14px 28px', fontSize: 16,
+            borderRadius: 14, padding: '14px 28px', fontSize: 18,
             fontWeight: 600, cursor: 'pointer', width: '100%', justifyContent: 'center',
           }}>
             <svg width="20" height="20" viewBox="0 0 24 24">
@@ -69,10 +69,10 @@ export default async function AdminPage() {
         alignItems: 'center', justifyContent: 'center',
         background: '#0a0a0f', padding: '0 32px', textAlign: 'center',
       }}>
-        <i className="ti ti-lock" style={{ fontSize: 49, color: '#f87171', marginBottom: 16 }} />
-        <h1 style={{ fontSize: 23, fontWeight: 700, marginBottom: 8 }}>접근 권한 없음</h1>
-        <p style={{ fontSize: 15, color: '#555' }}>{session.user.email}</p>
-        <p style={{ fontSize: 14, color: '#444', marginTop: 8 }}>관리자에게 권한 요청하세요</p>
+        <i className="ti ti-lock" style={{ fontSize: 51, color: '#f87171', marginBottom: 16 }} />
+        <h1 style={{ fontSize: 25, fontWeight: 700, marginBottom: 8 }}>접근 권한 없음</h1>
+        <p style={{ fontSize: 17, color: '#555' }}>{session.user.email}</p>
+        <p style={{ fontSize: 16, color: '#444', marginTop: 8 }}>관리자에게 권한 요청하세요</p>
       </div>
     )
   }

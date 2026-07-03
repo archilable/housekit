@@ -4,10 +4,10 @@ import { useState, useRef } from 'react'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
-  borderRadius: 10, padding: '12px 14px', fontSize: 16, color: '#fff',
+  borderRadius: 10, padding: '12px 14px', fontSize: 18, color: '#fff',
   outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' as const,
 }
-const labelStyle = { fontSize: 13, color: '#888', display: 'block', marginBottom: 8 }
+const labelStyle = { fontSize: 15, color: '#888', display: 'block', marginBottom: 8 }
 
 interface Props {
   defaultName?: string
@@ -53,18 +53,18 @@ function ImageUpload({ label, name, icon, color, defaultImage = '' }: {
             <img src={`data:image/jpeg;base64,${image}`} alt={label}
               style={{ width: 72, height: 50, objectFit: 'cover', borderRadius: 8, flexShrink: 0 }} />
             <div>
-              <p style={{ fontSize: 13, color, fontWeight: 500 }}>✓ {label} 첨부됨</p>
-              <p style={{ fontSize: 12, color: '#555', marginTop: 2 }}>탭해서 다시 첨부</p>
+              <p style={{ fontSize: 15, color, fontWeight: 500 }}>✓ {label} 첨부됨</p>
+              <p style={{ fontSize: 14, color: '#555', marginTop: 2 }}>탭해서 다시 첨부</p>
             </div>
           </>
         ) : (
           <>
             <div style={{ width: 40, height: 40, borderRadius: 10, background: color + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <i className={`ti ${icon}`} style={{ fontSize: 21, color }} />
+              <i className={`ti ${icon}`} style={{ fontSize: 23, color }} />
             </div>
             <div>
-              <p style={{ fontSize: 14, color: '#888' }}>{loading ? '처리 중...' : `${label} 촬영 / 업로드`}</p>
-              <p style={{ fontSize: 12, color: '#444', marginTop: 2 }}>사진 또는 파일 이미지</p>
+              <p style={{ fontSize: 16, color: '#888' }}>{loading ? '처리 중...' : `${label} 촬영 / 업로드`}</p>
+              <p style={{ fontSize: 14, color: '#444', marginTop: 2 }}>사진 또는 파일 이미지</p>
             </div>
           </>
         )}
@@ -112,7 +112,7 @@ export default function HistoryContactForm({
       {/* 구분선 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '4px 0' }}>
         <div style={{ flex: 1, height: 1, background: '#1e1e28' }} />
-        <p style={{ fontSize: 12, color: '#444', whiteSpace: 'nowrap' }}>업체 / 담당자 정보</p>
+        <p style={{ fontSize: 14, color: '#444', whiteSpace: 'nowrap' }}>업체 / 담당자 정보</p>
         <div style={{ flex: 1, height: 1, background: '#1e1e28' }} />
       </div>
 
@@ -135,20 +135,20 @@ export default function HistoryContactForm({
                 style={{ width: 72, height: 50, objectFit: 'cover', borderRadius: 8, flexShrink: 0 }} />
               <div>
                 {extracting
-                  ? <p style={{ fontSize: 13, color: '#60a5fa' }}>AI 분석 중...</p>
-                  : <p style={{ fontSize: 13, color: '#34d399', fontWeight: 500 }}>✓ 명함 인식 완료</p>
+                  ? <p style={{ fontSize: 15, color: '#60a5fa' }}>AI 분석 중...</p>
+                  : <p style={{ fontSize: 15, color: '#34d399', fontWeight: 500 }}>✓ 명함 인식 완료</p>
                 }
-                <p style={{ fontSize: 12, color: '#555', marginTop: 2 }}>탭해서 다시 촬영</p>
+                <p style={{ fontSize: 14, color: '#555', marginTop: 2 }}>탭해서 다시 촬영</p>
               </div>
             </>
           ) : (
             <>
               <div style={{ width: 40, height: 40, borderRadius: 10, background: '#60a5fa22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <i className="ti ti-id-badge" style={{ fontSize: 21, color: '#60a5fa' }} />
+                <i className="ti ti-id-badge" style={{ fontSize: 23, color: '#60a5fa' }} />
               </div>
               <div>
-                <p style={{ fontSize: 14, color: '#888' }}>명함 촬영 / 업로드</p>
-                <p style={{ fontSize: 12, color: '#444', marginTop: 2 }}>AI가 자동으로 정보를 읽어와요</p>
+                <p style={{ fontSize: 16, color: '#888' }}>명함 촬영 / 업로드</p>
+                <p style={{ fontSize: 14, color: '#444', marginTop: 2 }}>AI가 자동으로 정보를 읽어와요</p>
               </div>
             </>
           )}
@@ -175,7 +175,7 @@ export default function HistoryContactForm({
       {/* 구분선 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '4px 0' }}>
         <div style={{ flex: 1, height: 1, background: '#1e1e28' }} />
-        <p style={{ fontSize: 12, color: '#444', whiteSpace: 'nowrap' }}>서류 첨부</p>
+        <p style={{ fontSize: 14, color: '#444', whiteSpace: 'nowrap' }}>서류 첨부</p>
         <div style={{ flex: 1, height: 1, background: '#1e1e28' }} />
       </div>
 

@@ -52,7 +52,7 @@ export default function UtilityChart({ data, thisMonth }: Props) {
 
   return (
     <div style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 14, padding: 16, marginBottom: 10 }}>
-      <p style={{ fontSize: 12, color: '#555', marginBottom: 12 }}>최근 6개월 추이</p>
+      <p style={{ fontSize: 14, color: '#555', marginBottom: 12 }}>최근 6개월 추이</p>
 
       <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 160, display: 'block' }}>
 
@@ -119,22 +119,22 @@ export default function UtilityChart({ data, thisMonth }: Props) {
       <div style={{ display: 'flex', gap: 16, marginTop: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
           <div style={{ width: 10, height: 10, borderRadius: 2, background: '#1e3a5f' }} />
-          <span style={{ fontSize: 11, color: '#555' }}>월별 합계</span>
+          <span style={{ fontSize: 13, color: '#555' }}>월별 합계</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
           <div style={{ width: 18, height: 2, background: '#60a5fa', borderRadius: 1 }} />
-          <span style={{ fontSize: 11, color: '#555' }}>추이선</span>
+          <span style={{ fontSize: 13, color: '#555' }}>추이선</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
           <div style={{ width: 10, height: 10, borderRadius: 2, background: '#2563eb' }} />
-          <span style={{ fontSize: 11, color: '#60a5fa' }}>이번달</span>
+          <span style={{ fontSize: 13, color: '#60a5fa' }}>이번달</span>
         </div>
       </div>
 
       {/* 누적 */}
       <div style={{ marginTop: 12, paddingTop: 12, borderTop: '0.5px solid #1e1e28', display: 'flex', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: 12, color: '#555' }}>6개월 누적</span>
-        <span style={{ fontSize: 14, fontWeight: 600, color: '#fbbf24' }}>
+        <span style={{ fontSize: 14, color: '#555' }}>6개월 누적</span>
+        <span style={{ fontSize: 16, fontWeight: 600, color: '#fbbf24' }}>
           {totals.reduce((a, b) => a + b, 0).toLocaleString()}원
         </span>
       </div>

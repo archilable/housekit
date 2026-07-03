@@ -15,7 +15,7 @@ export default function SubmitButton({ label, loadingLabel }: { label: string; l
         border: 'none',
         borderRadius: 14,
         padding: '15px',
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 500,
         cursor: pending ? 'not-allowed' : 'pointer',
         width: '100%',

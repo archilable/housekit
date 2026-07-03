@@ -29,7 +29,7 @@ export default function AddressSearch({ defaultAddress = '', defaultAddressDetai
 
   const inputStyle: React.CSSProperties = {
     width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
-    borderRadius: 10, padding: '12px 14px', fontSize: 16, color: '#fff',
+    borderRadius: 10, padding: '12px 14px', fontSize: 18, color: '#fff',
     outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', display: 'block',
   }
 
@@ -82,7 +82,7 @@ export default function AddressSearch({ defaultAddress = '', defaultAddressDetai
           <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {address || '주소 검색 (예: 연희동, 연희로)'}
           </span>
-          <i className="ti ti-search" style={{ fontSize: 17, color: '#60a5fa', flexShrink: 0 }} />
+          <i className="ti ti-search" style={{ fontSize: 19, color: '#60a5fa', flexShrink: 0 }} />
         </div>
       </div>
 
@@ -99,9 +99,9 @@ export default function AddressSearch({ defaultAddress = '', defaultAddressDetai
           }}>
             {/* 헤더 */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '0.5px solid #1e1e28', flexShrink: 0 }}>
-              <span style={{ fontSize: 16, fontWeight: 500 }}>주소 검색</span>
+              <span style={{ fontSize: 18, fontWeight: 500 }}>주소 검색</span>
               <button onClick={() => setShowSearch(false)}
-                style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', fontSize: 23, padding: 4, lineHeight: 1 }}>
+                style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', fontSize: 25, padding: 4, lineHeight: 1 }}>
                 ✕
               </button>
             </div>

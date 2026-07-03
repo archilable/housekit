@@ -128,14 +128,14 @@ export default async function NotificationsPage({ searchParams }: { searchParams
           <BackHomeButtons houseId={houseId} />
         </div>
       )}
-      <p style={{ fontSize: 12, color: '#555', marginBottom: 4 }}>알림</p>
-      <h1 style={{ fontSize: 23, fontWeight: 700, marginBottom: 24 }}>{warrantyOnly ? '보증 관리' : '알림 센터'}</h1>
+      <p style={{ fontSize: 14, color: '#555', marginBottom: 4 }}>알림</p>
+      <h1 style={{ fontSize: 25, fontWeight: 700, marginBottom: 24 }}>{warrantyOnly ? '보증 관리' : '알림 센터'}</h1>
 
       {warrantyItems.length === 0 && recentHistories.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', textAlign: 'center', color: '#444' }}>
-          <div style={{ fontSize: 49, marginBottom: 16 }}>🔔</div>
-          <p style={{ fontSize: 17, fontWeight: 500, marginBottom: 8 }}>새 알림이 없어요</p>
-          <p style={{ fontSize: 14, color: '#555' }}>설비에 보증기간을 등록하면 여기서 관리할 수 있어요</p>
+          <div style={{ fontSize: 51, marginBottom: 16 }}>🔔</div>
+          <p style={{ fontSize: 19, fontWeight: 500, marginBottom: 8 }}>새 알림이 없어요</p>
+          <p style={{ fontSize: 16, color: '#555' }}>설비에 보증기간을 등록하면 여기서 관리할 수 있어요</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -143,7 +143,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
           {/* 보증 유효 중인 설비 */}
           {activeItems.length > 0 && (
             <div>
-              <p style={{ fontSize: 12, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>보증 추적 중 ({activeItems.length}개)</p>
+              <p style={{ fontSize: 14, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>보증 추적 중 ({activeItems.length}개)</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {activeItems.map((item, i) => {
                   const color = getWarrantyColor(item.daysLeft)
@@ -151,18 +151,18 @@ export default async function NotificationsPage({ searchParams }: { searchParams
                   return (
                     <Link key={i} href={item.href} style={{ textDecoration: 'none' }}>
                       <div style={{ background: getWarrantyBg(item.daysLeft), border: `0.5px solid ${getWarrantyBorder(item.daysLeft)}`, borderRadius: 16, padding: '14px 16px', display: 'flex', gap: 12, alignItems: 'center' }}>
-                        <div style={{ width: 40, height: 40, borderRadius: 12, background: color + '20', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 21, flexShrink: 0 }}>
+                        <div style={{ width: 40, height: 40, borderRadius: 12, background: color + '20', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 23, flexShrink: 0 }}>
                           {CATEGORY_ICON[item.category] || '🔧'}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <p style={{ fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 2 }}>
+                          <p style={{ fontSize: 17, fontWeight: 600, color: '#fff', marginBottom: 2 }}>
                             {item.name}
-                            {item.brand && <span style={{ fontSize: 12, color: '#555', fontWeight: 400, marginLeft: 6 }}>{item.brand}</span>}
+                            {item.brand && <span style={{ fontSize: 14, color: '#555', fontWeight: 400, marginLeft: 6 }}>{item.brand}</span>}
                           </p>
-                          <p style={{ fontSize: 12, color: '#555', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.houseName}</p>
-                          <p style={{ fontSize: 11, color: '#444', marginTop: 2 }}>만료 {expiryStr}</p>
+                          <p style={{ fontSize: 14, color: '#555', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.houseName}</p>
+                          <p style={{ fontSize: 13, color: '#444', marginTop: 2 }}>만료 {expiryStr}</p>
                         </div>
-                        <div style={{ background: color + '20', color, borderRadius: 10, padding: '5px 10px', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap', textAlign: 'center', flexShrink: 0 }}>
+                        <div style={{ background: color + '20', color, borderRadius: 10, padding: '5px 10px', fontSize: 14, fontWeight: 700, whiteSpace: 'nowrap', textAlign: 'center', flexShrink: 0 }}>
                           {formatTimeLeft(item.daysLeft)}
                         </div>
                       </div>
@@ -176,25 +176,25 @@ export default async function NotificationsPage({ searchParams }: { searchParams
           {/* 보증 만료된 설비 */}
           {expiredItems.length > 0 && (
             <div>
-              <p style={{ fontSize: 12, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>보증 만료됨 ({expiredItems.length}개)</p>
+              <p style={{ fontSize: 14, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>보증 만료됨 ({expiredItems.length}개)</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {expiredItems.map((item, i) => {
                   const expiryStr = item.expiryDate.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })
                   return (
                     <Link key={i} href={item.href} style={{ textDecoration: 'none' }}>
                       <div style={{ background: 'rgba(248,113,113,0.05)', border: '0.5px solid rgba(248,113,113,0.2)', borderRadius: 16, padding: '14px 16px', display: 'flex', gap: 12, alignItems: 'center', opacity: 0.8 }}>
-                        <div style={{ width: 40, height: 40, borderRadius: 12, background: '#f8717120', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 21, flexShrink: 0 }}>
+                        <div style={{ width: 40, height: 40, borderRadius: 12, background: '#f8717120', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 23, flexShrink: 0 }}>
                           {CATEGORY_ICON[item.category] || '🔧'}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <p style={{ fontSize: 15, fontWeight: 600, color: '#aaa', marginBottom: 2 }}>
+                          <p style={{ fontSize: 17, fontWeight: 600, color: '#aaa', marginBottom: 2 }}>
                             {item.name}
-                            {item.brand && <span style={{ fontSize: 12, color: '#444', fontWeight: 400, marginLeft: 6 }}>{item.brand}</span>}
+                            {item.brand && <span style={{ fontSize: 14, color: '#444', fontWeight: 400, marginLeft: 6 }}>{item.brand}</span>}
                           </p>
-                          <p style={{ fontSize: 12, color: '#444', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.houseName}</p>
-                          <p style={{ fontSize: 11, color: '#333', marginTop: 2 }}>만료 {expiryStr}</p>
+                          <p style={{ fontSize: 14, color: '#444', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.houseName}</p>
+                          <p style={{ fontSize: 13, color: '#333', marginTop: 2 }}>만료 {expiryStr}</p>
                         </div>
-                        <div style={{ background: '#f8717120', color: '#f87171', borderRadius: 10, padding: '5px 10px', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap', textAlign: 'center', flexShrink: 0 }}>
+                        <div style={{ background: '#f8717120', color: '#f87171', borderRadius: 10, padding: '5px 10px', fontSize: 14, fontWeight: 700, whiteSpace: 'nowrap', textAlign: 'center', flexShrink: 0 }}>
                           {formatTimeLeft(item.daysLeft)}
                         </div>
                       </div>
@@ -208,19 +208,19 @@ export default async function NotificationsPage({ searchParams }: { searchParams
           {/* 최근 이력 */}
           {!warrantyOnly && recentHistories.length > 0 && (
             <div>
-              <p style={{ fontSize: 12, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>최근 이력 (14일)</p>
+              <p style={{ fontSize: 14, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>최근 이력 (14일)</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {recentHistories.map((h, i) => (
                   <Link key={i} href={h.href} style={{ textDecoration: 'none' }}>
                     <div style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 16, padding: '14px 16px', display: 'flex', gap: 12, alignItems: 'center' }}>
-                      <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(96,165,250,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 21, flexShrink: 0 }}>
+                      <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(96,165,250,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 23, flexShrink: 0 }}>
                         🔧
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 2 }}>{h.title}</p>
-                        <p style={{ fontSize: 12, color: '#555', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{h.houseName}</p>
+                        <p style={{ fontSize: 17, fontWeight: 600, color: '#fff', marginBottom: 2 }}>{h.title}</p>
+                        <p style={{ fontSize: 14, color: '#555', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{h.houseName}</p>
                       </div>
-                      <div style={{ color: '#60a5fa', fontSize: 12, fontWeight: 600, flexShrink: 0 }}>
+                      <div style={{ color: '#60a5fa', fontSize: 14, fontWeight: 600, flexShrink: 0 }}>
                         {h.daysAgo === 0 ? '오늘' : `${h.daysAgo}일 전`}
                       </div>
                     </div>

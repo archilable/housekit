@@ -178,7 +178,7 @@ export default function SortableInventoryList({ initialItems, houseId, highlight
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, userSelect: 'none' }}>
-      {saving && <p style={{ fontSize: 12, color: '#60a5fa', textAlign: 'center', padding: '2px 0' }}>순서 저장 중...</p>}
+      {saving && <p style={{ fontSize: 14, color: '#60a5fa', textAlign: 'center', padding: '2px 0' }}>순서 저장 중...</p>}
       {items.map((item) => {
         const w = getWarrantyStatus(item.installedAt, item.warrantyMonths)
         const iconColor = INVENTORY_COLORS[item.category] || '#888'
@@ -207,31 +207,31 @@ export default function SortableInventoryList({ initialItems, houseId, highlight
             }}
           >
             <div style={{ width: 36, height: 36, borderRadius: 10, background: iconColor + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <i className={`ti ${icon}`} style={{ fontSize: 19, color: iconColor }} />
+              <i className={`ti ${icon}`} style={{ fontSize: 21, color: iconColor }} />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2, flexWrap: 'wrap' }}>
-                <p style={{ fontSize: 15, fontWeight: 500 }}>{item.name}</p>
-                {w && <span style={{ fontSize: 11, color: w.color, background: w.bg, padding: '1px 6px', borderRadius: 10, border: `0.5px solid ${w.border}` }}>{w.label}</span>}
+                <p style={{ fontSize: 17, fontWeight: 500 }}>{item.name}</p>
+                {w && <span style={{ fontSize: 13, color: w.color, background: w.bg, padding: '1px 6px', borderRadius: 10, border: `0.5px solid ${w.border}` }}>{w.label}</span>}
               </div>
-              {item.brand && <p style={{ fontSize: 13, color: '#666' }}>{item.brand} {item.model}</p>}
-              {item.installedAt && <p style={{ fontSize: 12, color: '#444', marginTop: 1 }}>설치 {new Date(item.installedAt).toLocaleDateString('ko-KR')}</p>}
+              {item.brand && <p style={{ fontSize: 15, color: '#666' }}>{item.brand} {item.model}</p>}
+              {item.installedAt && <p style={{ fontSize: 14, color: '#444', marginTop: 1 }}>설치 {new Date(item.installedAt).toLocaleDateString('ko-KR')}</p>}
               {(item.contactCompany || item.contactPhone) && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 5, flexWrap: 'wrap' }}>
-                  {item.contactCompany && <span style={{ fontSize: 12, color: '#555' }}>{item.contactCompany}</span>}
+                  {item.contactCompany && <span style={{ fontSize: 14, color: '#555' }}>{item.contactCompany}</span>}
                   {item.contactPhone && (
-                    <a href={`tel:${item.contactPhone}`} style={{ fontSize: 12, color: '#60a5fa', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 3 }}>
-                      <i className="ti ti-phone" style={{ fontSize: 12 }} />{item.contactPhone}
+                    <a href={`tel:${item.contactPhone}`} style={{ fontSize: 14, color: '#60a5fa', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 3 }}>
+                      <i className="ti ti-phone" style={{ fontSize: 14 }} />{item.contactPhone}
                     </a>
                   )}
                 </div>
               )}
             </div>
             <div style={{ display: 'flex', gap: 8, flexShrink: 0, alignItems: 'center' }}>
-              <a href={`/houses/${houseId}/inventory/${item.id}/edit`} style={{ color: '#60a5fa', fontSize: 19, padding: 4, textDecoration: 'none' }}>
+              <a href={`/houses/${houseId}/inventory/${item.id}/edit`} style={{ color: '#60a5fa', fontSize: 21, padding: 4, textDecoration: 'none' }}>
                 <i className="ti ti-pencil" />
               </a>
-              <button onClick={() => handleDelete(item.id, item.name)} style={{ background: 'none', border: 'none', color: '#f87171', fontSize: 19, padding: 4, cursor: 'pointer' }}>
+              <button onClick={() => handleDelete(item.id, item.name)} style={{ background: 'none', border: 'none', color: '#f87171', fontSize: 21, padding: 4, cursor: 'pointer' }}>
                 <i className="ti ti-trash" />
               </button>
             </div>
