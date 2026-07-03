@@ -50,15 +50,18 @@ export default async function NotificationsPage({ searchParams }: { searchParams
   const userId = session?.user?.id
   if (!userId) redirect('/login')
 
-  const houses = await prisma.house.findMany({
-    where: { userId },
-    include: {
-      inventories: {
-        select: { id: true, name: true, category: true, brand: true, installedAt: true, warrantyMonths: true, houseId: true },
-      },
-      histories: { orderBy: { doneAt: 'desc' }, take: 5, select: { id: true, title: true, category: true, doneAt: true, houseId: true } },
+  const houseInclude = {
+    inventories: {
+      select: { id: true, name: true, category: true, brand: true, installedAt: true, warrantyMonths: true, houseId: true },
     },
-  })
+    histories: { orderBy: { doneAt: 'desc' as const }, take: 5, select: { id: true, title: true, category: true, doneAt: true, houseId: true } },
+  }
+
+  const [ownedHouses, sharedAccess] = await Promise.all([
+    prisma.house.findMany({ where: { userId }, include: houseInclude }),
+    prisma.houseAccess.findMany({ where: { userId }, include: { house: { include: houseInclude } } }),
+  ])
+  const houses = [...ownedHouses, ...sharedAccess.map(a => a.house)]
 
   const now = new Date()
 

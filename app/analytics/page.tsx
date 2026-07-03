@@ -11,14 +11,17 @@ export default async function AnalyticsPage() {
   const userId = session?.user?.id
   if (!userId) redirect('/login')
 
-  const houses = await prisma.house.findMany({
-    where: { userId },
-    include: {
-      utilities: { orderBy: { month: 'desc' }, take: 7 },
-      valuation: true,
-      _count: { select: { histories: true, inventories: true } },
-    },
-  })
+  const houseInclude = {
+    utilities: { orderBy: { month: 'desc' as const }, take: 7 },
+    valuation: true,
+    _count: { select: { histories: true, inventories: true } },
+  }
+
+  const [ownedHouses, sharedAccess] = await Promise.all([
+    prisma.house.findMany({ where: { userId }, include: houseInclude }),
+    prisma.houseAccess.findMany({ where: { userId }, include: { house: { include: houseInclude } } }),
+  ])
+  const houses = [...ownedHouses, ...sharedAccess.map(a => a.house)]
 
   const fmt = (n: number) => n >= 100000000
     ? `${(n / 100000000).toFixed(1)}억`
