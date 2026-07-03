@@ -5,11 +5,11 @@ import AddressSearch from '@/app/components/AddressSearch'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
-  borderRadius: 10, padding: '12px 14px', fontSize: 18, color: '#fff',
+  borderRadius: 10, padding: '12px 14px', fontSize: 17, color: '#fff',
   outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' as const,
   display: 'block' as const,
 }
-const labelStyle = { fontSize: 15, color: '#888', display: 'block', marginBottom: 8 }
+const labelStyle = { fontSize: 14, color: '#888', display: 'block', marginBottom: 8 }
 const fieldStyle = { display: 'flex', flexDirection: 'column' as const }
 
 const currentYear = new Date().getFullYear()
@@ -19,11 +19,11 @@ export default function NewHousePage() {
   return (
     <div style={{ padding: '20px 16px', maxWidth: '100%' }}>
       <div style={{ marginBottom: 28 }}>
-        <Link href="/houses" style={{ color: '#555', textDecoration: 'none', fontSize: 16 }}>
-          <i className="ti ti-arrow-left" style={{ fontSize: 23, verticalAlign: -3 }} aria-hidden="true" />
+        <Link href="/houses" style={{ color: '#555', textDecoration: 'none', fontSize: 15 }}>
+          <i className="ti ti-arrow-left" style={{ fontSize: 22, verticalAlign: -3 }} aria-hidden="true" />
         </Link>
-        <h1 style={{ fontSize: 23, fontWeight: 500, marginTop: 14, marginBottom: 4 }}>주택 등록</h1>
-        <p style={{ fontSize: 16, color: '#666' }}>집의 이력서를 시작하세요</p>
+        <h1 style={{ fontSize: 22, fontWeight: 500, marginTop: 14, marginBottom: 4 }}>주택 등록</h1>
+        <p style={{ fontSize: 15, color: '#666' }}>집의 이력서를 시작하세요</p>
       </div>
 
       <form action={createHouse} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>

@@ -14,15 +14,15 @@ export default function OfflinePage() {
           <polyline points="39,58 45,65 57,50" stroke="#34d399" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
-      <h1 style={{ fontSize: 25, fontWeight: 600, marginBottom: 12 }}>오프라인 상태예요</h1>
-      <p style={{ fontSize: 17, color: '#666', lineHeight: 1.6 }}>
+      <h1 style={{ fontSize: 24, fontWeight: 600, marginBottom: 12 }}>오프라인 상태예요</h1>
+      <p style={{ fontSize: 16, color: '#666', lineHeight: 1.6 }}>
         인터넷 연결을 확인하고<br />다시 시도해주세요.
       </p>
       <button
         onClick={() => window.location.reload()}
         style={{
           marginTop: 32, background: '#1d4ed8', color: '#fff', border: 'none',
-          borderRadius: 12, padding: '14px 32px', fontSize: 18, cursor: 'pointer',
+          borderRadius: 12, padding: '14px 32px', fontSize: 17, cursor: 'pointer',
         }}
       >
         다시 시도

@@ -4,10 +4,10 @@ import { useState, useRef } from 'react'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
-  borderRadius: 10, padding: '12px 14px', fontSize: 18, color: '#fff',
+  borderRadius: 10, padding: '12px 14px', fontSize: 17, color: '#fff',
   outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' as const,
 }
-const labelStyle = { fontSize: 15, color: '#888', display: 'block', marginBottom: 8 }
+const labelStyle = { fontSize: 14, color: '#888', display: 'block', marginBottom: 8 }
 
 interface Props {
   defaultName?: string
@@ -52,7 +52,7 @@ export default function ContactForm({ defaultName = '', defaultPhone = '', defau
       {/* 구분선 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '4px 0' }}>
         <div style={{ flex: 1, height: 1, background: '#1e1e28' }} />
-        <p style={{ fontSize: 14, color: '#444', whiteSpace: 'nowrap' }}>설치업체 / 담당자 정보</p>
+        <p style={{ fontSize: 13, color: '#444', whiteSpace: 'nowrap' }}>설치업체 / 담당자 정보</p>
         <div style={{ flex: 1, height: 1, background: '#1e1e28' }} />
       </div>
 
@@ -76,19 +76,19 @@ export default function ContactForm({ defaultName = '', defaultPhone = '', defau
               <img src={`data:image/jpeg;base64,${image}`} alt="명함" style={{ width: 80, height: 50, objectFit: 'cover', borderRadius: 6 }} />
               <div style={{ flex: 1 }}>
                 {extracting ? (
-                  <p style={{ fontSize: 15, color: '#60a5fa' }}>AI 분석 중...</p>
+                  <p style={{ fontSize: 14, color: '#60a5fa' }}>AI 분석 중...</p>
                 ) : (
-                  <p style={{ fontSize: 15, color: '#34d399' }}>✓ 명함 인식 완료</p>
+                  <p style={{ fontSize: 14, color: '#34d399' }}>✓ 명함 인식 완료</p>
                 )}
-                <p style={{ fontSize: 14, color: '#555', marginTop: 2 }}>탭해서 다시 촬영</p>
+                <p style={{ fontSize: 13, color: '#555', marginTop: 2 }}>탭해서 다시 촬영</p>
               </div>
             </div>
           ) : (
             <>
-              <i className="ti ti-camera" style={{ fontSize: 25, color: '#555' }} />
+              <i className="ti ti-camera" style={{ fontSize: 24, color: '#555' }} />
               <div>
-                <p style={{ fontSize: 16, color: '#888' }}>명함 촬영 / 업로드</p>
-                <p style={{ fontSize: 14, color: '#444', marginTop: 2 }}>AI가 자동으로 정보를 읽어와요</p>
+                <p style={{ fontSize: 15, color: '#888' }}>명함 촬영 / 업로드</p>
+                <p style={{ fontSize: 13, color: '#444', marginTop: 2 }}>AI가 자동으로 정보를 읽어와요</p>
               </div>
             </>
           )}

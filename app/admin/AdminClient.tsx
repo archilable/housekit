@@ -47,32 +47,32 @@ export default function AdminClient({ users, todayCount, totalHouses, myId }: {
           background: 'linear-gradient(135deg, #1e1e3a 0%, #0d0d1f 100%)',
           border: '0.5px solid #2a2a5a', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <i className="ti ti-shield-lock" style={{ fontSize: 25, color: '#818cf8' }} />
+          <i className="ti ti-shield-lock" style={{ fontSize: 24, color: '#818cf8' }} />
         </div>
         <div>
-          <p style={{ fontSize: 14, color: '#555', textTransform: 'uppercase', letterSpacing: 1 }}>관리자</p>
-          <h1 style={{ fontSize: 23, fontWeight: 700 }}>HouseKit Admin</h1>
+          <p style={{ fontSize: 13, color: '#555', textTransform: 'uppercase', letterSpacing: 1 }}>관리자</p>
+          <h1 style={{ fontSize: 22, fontWeight: 700 }}>HouseKit Admin</h1>
         </div>
       </div>
 
       {/* 요약 카드 */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 28 }}>
         <div style={{ background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 14, padding: '14px 12px', textAlign: 'center' }}>
-          <p style={{ fontSize: 27, fontWeight: 700, color: '#60a5fa' }}>{userList.length}</p>
-          <p style={{ fontSize: 14, color: '#666', marginTop: 2 }}>전체 가입자</p>
+          <p style={{ fontSize: 26, fontWeight: 700, color: '#60a5fa' }}>{userList.length}</p>
+          <p style={{ fontSize: 13, color: '#666', marginTop: 2 }}>전체 가입자</p>
         </div>
         <div style={{ background: '#0d1f14', border: '0.5px solid #1a3d28', borderRadius: 14, padding: '14px 12px', textAlign: 'center' }}>
-          <p style={{ fontSize: 27, fontWeight: 700, color: '#34d399' }}>{todayCount}</p>
-          <p style={{ fontSize: 14, color: '#666', marginTop: 2 }}>오늘 가입</p>
+          <p style={{ fontSize: 26, fontWeight: 700, color: '#34d399' }}>{todayCount}</p>
+          <p style={{ fontSize: 13, color: '#666', marginTop: 2 }}>오늘 가입</p>
         </div>
         <div style={{ background: '#1a0f00', border: '0.5px solid #3d2000', borderRadius: 14, padding: '14px 12px', textAlign: 'center' }}>
-          <p style={{ fontSize: 27, fontWeight: 700, color: '#f97316' }}>{totalHouses}</p>
-          <p style={{ fontSize: 14, color: '#666', marginTop: 2 }}>등록 자산</p>
+          <p style={{ fontSize: 26, fontWeight: 700, color: '#f97316' }}>{totalHouses}</p>
+          <p style={{ fontSize: 13, color: '#666', marginTop: 2 }}>등록 자산</p>
         </div>
       </div>
 
       {/* 가입자 목록 */}
-      <p style={{ fontSize: 14, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>가입자 목록</p>
+      <p style={{ fontSize: 13, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>가입자 목록</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {userList.map((user) => {
           const isToday = user.createdAt && new Date(user.createdAt) >= today
@@ -95,23 +95,23 @@ export default function AdminClient({ users, todayCount, totalHouses, myId }: {
                 }}>
                   {user.image
                     ? <img src={user.image} width={40} height={40} style={{ borderRadius: 12, objectFit: 'cover' }} alt="" />
-                    : <i className="ti ti-user" style={{ color: isToday ? '#34d399' : '#60a5fa', fontSize: 21 }} />}
+                    : <i className="ti ti-user" style={{ color: isToday ? '#34d399' : '#60a5fa', fontSize: 20 }} />}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2, flexWrap: 'wrap' }}>
-                    <p style={{ fontSize: 17, fontWeight: 500 }}>{user.name || '이름 없음'}</p>
-                    {isToday && <span style={{ fontSize: 13, color: '#34d399', background: '#0d1f14', border: '0.5px solid #1a3d28', padding: '1px 6px', borderRadius: 8 }}>NEW</span>}
-                    {user.isAdmin && <span style={{ fontSize: 13, color: '#818cf8', background: '#0d0d1f', border: '0.5px solid #2a2a5a', padding: '1px 6px', borderRadius: 8 }}>관리자</span>}
+                    <p style={{ fontSize: 16, fontWeight: 500 }}>{user.name || '이름 없음'}</p>
+                    {isToday && <span style={{ fontSize: 12, color: '#34d399', background: '#0d1f14', border: '0.5px solid #1a3d28', padding: '1px 6px', borderRadius: 8 }}>NEW</span>}
+                    {user.isAdmin && <span style={{ fontSize: 12, color: '#818cf8', background: '#0d0d1f', border: '0.5px solid #2a2a5a', padding: '1px 6px', borderRadius: 8 }}>관리자</span>}
                   </div>
-                  <p style={{ fontSize: 15, color: '#555' }}>
+                  <p style={{ fontSize: 14, color: '#555' }}>
                     {user.email ?? (user.accounts.some(a => a.provider === 'kakao') ? '카카오 계정' : '이메일 없음')}
                     {user.accounts.map(a => (
-                      <span key={a.provider} style={{ marginLeft: 5, fontSize: 13, color: a.provider === 'kakao' ? '#FEE500' : '#60a5fa', background: '#111', border: '0.5px solid #222', borderRadius: 6, padding: '1px 5px' }}>
+                      <span key={a.provider} style={{ marginLeft: 5, fontSize: 12, color: a.provider === 'kakao' ? '#FEE500' : '#60a5fa', background: '#111', border: '0.5px solid #222', borderRadius: 6, padding: '1px 5px' }}>
                         {a.provider}
                       </span>
                     ))}
                   </p>
-                  <p style={{ fontSize: 14, color: '#444', marginTop: 1 }}>{joinDate}</p>
+                  <p style={{ fontSize: 13, color: '#444', marginTop: 1 }}>{joinDate}</p>
                 </div>
                 {/* 관리자 권한 토글 */}
                 {!isMe && (
@@ -122,7 +122,7 @@ export default function AdminClient({ users, todayCount, totalHouses, myId }: {
                       background: user.isAdmin ? '#1e1e3a' : '#1a1a1a',
                       border: user.isAdmin ? '0.5px solid #2a2a5a' : '0.5px solid #2a2a2a',
                       borderRadius: 10, padding: '6px 10px', cursor: 'pointer',
-                      fontSize: 14, color: user.isAdmin ? '#818cf8' : '#555',
+                      fontSize: 13, color: user.isAdmin ? '#818cf8' : '#555',
                       flexShrink: 0, opacity: loading === user.id ? 0.5 : 1,
                     }}
                   >
@@ -134,10 +134,10 @@ export default function AdminClient({ users, todayCount, totalHouses, myId }: {
               {(user.houses.length > 0 || user.houseAccess.length > 0) && (
                 <div style={{ marginTop: 10, paddingTop: 10, borderTop: '0.5px solid #1e1e28', display: 'flex', flexDirection: 'column', gap: 4 }}>
                   {user.houses.map(h => (
-                    <span key={h.id} style={{ fontSize: 14, color: '#60a5fa' }}>🏠 {h.address}</span>
+                    <span key={h.id} style={{ fontSize: 13, color: '#60a5fa' }}>🏠 {h.address}</span>
                   ))}
                   {user.houseAccess.map((a, i) => (
-                    <span key={i} style={{ fontSize: 14, color: '#555' }}>🔗 {a.house.address} (공유)</span>
+                    <span key={i} style={{ fontSize: 13, color: '#555' }}>🔗 {a.house.address} (공유)</span>
                   ))}
                 </div>
               )}

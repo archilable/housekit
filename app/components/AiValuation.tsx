@@ -71,7 +71,7 @@ export default function AiValuation({ address, houseType, buildYear, area }: Pro
           disabled={loading}
           style={{
             width: '100%', border: 'none', borderRadius: 14,
-            padding: '15px', fontSize: 18, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer',
+            padding: '15px', fontSize: 17, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer',
             background: loading ? '#1a2a1a' : 'linear-gradient(135deg, #14532d, #166534)',
             color: loading ? '#555' : '#4ade80',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -85,7 +85,7 @@ export default function AiValuation({ address, houseType, buildYear, area }: Pro
             </>
           ) : (
             <>
-              <i className="ti ti-sparkles" style={{ fontSize: 21 }} />
+              <i className="ti ti-sparkles" style={{ fontSize: 20 }} />
               AI 실거래 시세 추정
             </>
           )}
@@ -93,7 +93,7 @@ export default function AiValuation({ address, houseType, buildYear, area }: Pro
       )}
 
       {error && (
-        <p style={{ color: '#f87171', fontSize: 16, textAlign: 'center', marginTop: 8 }}>{error}</p>
+        <p style={{ color: '#f87171', fontSize: 15, textAlign: 'center', marginTop: 8 }}>{error}</p>
       )}
 
       {result && (
@@ -101,11 +101,11 @@ export default function AiValuation({ address, houseType, buildYear, area }: Pro
           {/* 헤더 */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <i className="ti ti-sparkles" style={{ fontSize: 19, color: '#4ade80' }} />
-              <span style={{ fontSize: 16, color: '#4ade80', fontWeight: 500 }}>AI 시세 추정</span>
+              <i className="ti ti-sparkles" style={{ fontSize: 18, color: '#4ade80' }} />
+              <span style={{ fontSize: 15, color: '#4ade80', fontWeight: 500 }}>AI 시세 추정</span>
             </div>
             <span style={{
-              fontSize: 14, padding: '2px 10px', borderRadius: 20,
+              fontSize: 13, padding: '2px 10px', borderRadius: 20,
               color: confidenceColor[result.confidence] ?? '#888',
               background: (confidenceColor[result.confidence] ?? '#888') + '22',
               border: `0.5px solid ${(confidenceColor[result.confidence] ?? '#888')}44`,
@@ -116,14 +116,14 @@ export default function AiValuation({ address, houseType, buildYear, area }: Pro
 
           {/* 추정가 */}
           <div style={{ textAlign: 'center', marginBottom: 20 }}>
-            <p style={{ fontSize: 14, color: '#555', marginBottom: 6 }}>추정 시세 범위</p>
-            <p style={{ fontSize: 17, color: '#888', marginBottom: 4 }}>
+            <p style={{ fontSize: 13, color: '#555', marginBottom: 6 }}>추정 시세 범위</p>
+            <p style={{ fontSize: 16, color: '#888', marginBottom: 4 }}>
               {fmt(result.minPrice)} ~ {fmt(result.maxPrice)}
             </p>
-            <p style={{ fontSize: 39, fontWeight: 700, color: '#4ade80', letterSpacing: -1 }}>
+            <p style={{ fontSize: 38, fontWeight: 700, color: '#4ade80', letterSpacing: -1 }}>
               {fmt(result.midPrice)}
             </p>
-            <p style={{ fontSize: 14, color: '#555', marginTop: 4 }}>중간 추정가</p>
+            <p style={{ fontSize: 13, color: '#555', marginTop: 4 }}>중간 추정가</p>
           </div>
 
           {/* 범위 바 */}
@@ -136,23 +136,23 @@ export default function AiValuation({ address, houseType, buildYear, area }: Pro
               }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-              <span style={{ fontSize: 14, color: '#555' }}>최저 {fmt(result.minPrice)}</span>
-              <span style={{ fontSize: 14, color: '#555' }}>최고 {fmt(result.maxPrice)}</span>
+              <span style={{ fontSize: 13, color: '#555' }}>최저 {fmt(result.minPrice)}</span>
+              <span style={{ fontSize: 13, color: '#555' }}>최고 {fmt(result.maxPrice)}</span>
             </div>
           </div>
 
           {/* 추정 근거 */}
           <div style={{ background: '#0a0a0f', borderRadius: 12, padding: 14, marginBottom: 12 }}>
-            <p style={{ fontSize: 14, color: '#4ade80', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>추정 근거</p>
-            <p style={{ fontSize: 16, color: '#aaa', lineHeight: 1.7 }}>{result.basis}</p>
+            <p style={{ fontSize: 13, color: '#4ade80', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>추정 근거</p>
+            <p style={{ fontSize: 15, color: '#aaa', lineHeight: 1.7 }}>{result.basis}</p>
           </div>
 
-          <p style={{ fontSize: 14, color: '#555', lineHeight: 1.6 }}>⚠️ {result.note}</p>
+          <p style={{ fontSize: 13, color: '#555', lineHeight: 1.6 }}>⚠️ {result.note}</p>
 
           {/* 다시 추정 버튼 */}
           <button
             onClick={estimate}
-            style={{ marginTop: 14, width: '100%', background: 'none', border: '0.5px solid #166534', borderRadius: 10, padding: '10px', fontSize: 16, color: '#4ade80', cursor: 'pointer', boxSizing: 'border-box' }}
+            style={{ marginTop: 14, width: '100%', background: 'none', border: '0.5px solid #166534', borderRadius: 10, padding: '10px', fontSize: 15, color: '#4ade80', cursor: 'pointer', boxSizing: 'border-box' }}
           >
             다시 추정하기
           </button>

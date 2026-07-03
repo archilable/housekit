@@ -37,7 +37,7 @@ export default async function LandingPage() {
       {/* 로고 텍스트 */}
       <div style={{ marginBottom: 12 }}>
         <h1 style={{
-          fontSize: 45, fontWeight: 700, letterSpacing: -2,
+          fontSize: 44, fontWeight: 700, letterSpacing: -2,
           background: 'linear-gradient(135deg, #ffffff 0%, #60a5fa 100%)',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           backgroundClip: 'text', lineHeight: 1,
@@ -45,7 +45,7 @@ export default async function LandingPage() {
           HouseKit
         </h1>
         <p style={{
-          fontSize: 16, letterSpacing: 6, color: '#1e3a5f',
+          fontSize: 15, letterSpacing: 6, color: '#1e3a5f',
           textTransform: 'uppercase', marginTop: 8, fontWeight: 500,
         }}>
           집의 이력서
@@ -54,7 +54,7 @@ export default async function LandingPage() {
 
       {/* 태그라인 */}
       <p style={{
-        fontSize: 18, color: '#555', lineHeight: 1.8, marginBottom: 56,
+        fontSize: 17, color: '#555', lineHeight: 1.8, marginBottom: 56,
         maxWidth: 260,
       }}>
         오늘 고친 것도, 10년 후 팔 때도.<br />HouseKit이 기억합니다.
@@ -65,14 +65,14 @@ export default async function LandingPage() {
         display: 'block', width: '100%', maxWidth: 280,
         background: 'linear-gradient(135deg, #1d4ed8, #2563eb)',
         color: '#fff', padding: '17px 0', borderRadius: 16,
-        fontSize: 19, fontWeight: 600, textDecoration: 'none',
+        fontSize: 18, fontWeight: 600, textDecoration: 'none',
         letterSpacing: 0.5,
         boxShadow: '0 8px 32px rgba(29,78,216,0.35)',
       }}>
         시작하기
       </Link>
 
-      <p style={{ fontSize: 15, color: '#2a2a38', marginTop: 24 }}>
+      <p style={{ fontSize: 14, color: '#2a2a38', marginTop: 24 }}>
         v0.2 · made with ♥
       </p>
     </div>

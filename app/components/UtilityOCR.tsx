@@ -65,7 +65,7 @@ export default function UtilityOCR({ onResult }: Props) {
         disabled={loading}
         style={{
           width: '100%', border: loading ? '0.5px solid #1a3d28' : '0.5px dashed #2a2a38',
-          borderRadius: 14, padding: '16px', fontSize: 17, fontWeight: 500,
+          borderRadius: 14, padding: '16px', fontSize: 16, fontWeight: 500,
           cursor: loading ? 'not-allowed' : 'pointer',
           background: loading ? '#0d1f14' : '#0a0a0f',
           color: loading ? '#34d399' : '#888',
@@ -80,19 +80,19 @@ export default function UtilityOCR({ onResult }: Props) {
           </>
         ) : (
           <>
-            <i className="ti ti-camera" style={{ fontSize: 23 }} />
+            <i className="ti ti-camera" style={{ fontSize: 22 }} />
             고지서 사진 찍어서 자동 입력
           </>
         )}
       </button>
 
       {memo && (
-        <div style={{ marginTop: 10, background: '#0d1f14', border: '0.5px solid #1a3d28', borderRadius: 10, padding: '10px 14px', fontSize: 15, color: '#34d399' }}>
+        <div style={{ marginTop: 10, background: '#0d1f14', border: '0.5px solid #1a3d28', borderRadius: 10, padding: '10px 14px', fontSize: 14, color: '#34d399' }}>
           ✅ {memo}
         </div>
       )}
       {error && (
-        <p style={{ marginTop: 8, fontSize: 15, color: '#f87171', textAlign: 'center' }}>{error}</p>
+        <p style={{ marginTop: 8, fontSize: 14, color: '#f87171', textAlign: 'center' }}>{error}</p>
       )}
     </div>
   )

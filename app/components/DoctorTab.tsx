@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
-  borderRadius: 10, padding: '12px 14px', fontSize: 18, color: '#fff',
+  borderRadius: 10, padding: '12px 14px', fontSize: 17, color: '#fff',
   outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box',
 }
 
@@ -111,7 +111,7 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
     const lines = text.split('\n')
     return lines.map((line, i) => {
       if (line.startsWith('## ')) {
-        return <p key={i} style={{ fontSize: 17, fontWeight: 600, color: '#60a5fa', marginTop: 16, marginBottom: 4 }}>{line.replace('## ', '')}</p>
+        return <p key={i} style={{ fontSize: 16, fontWeight: 600, color: '#60a5fa', marginTop: 16, marginBottom: 4 }}>{line.replace('## ', '')}</p>
       }
       // 숨고 섹션은 버튼으로 대체하므로 숨김
       if (line.includes('숨고 검색')) return null
@@ -127,14 +127,14 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
           return (
             <a key={i} href={coupangUrl} target="_blank" rel="noopener noreferrer"
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#1a1a2e', border: '0.5px solid #2a2a38', borderRadius: 8, padding: '8px 12px', marginTop: 6, textDecoration: 'none' }}>
-              <span style={{ fontSize: 16, color: '#ccc' }}>🛒 {mat}</span>
-              <span style={{ fontSize: 14, color: '#f97316', fontWeight: 500, flexShrink: 0, marginLeft: 8 }}>쿠팡 →</span>
+              <span style={{ fontSize: 15, color: '#ccc' }}>🛒 {mat}</span>
+              <span style={{ fontSize: 13, color: '#f97316', fontWeight: 500, flexShrink: 0, marginLeft: 8 }}>쿠팡 →</span>
             </a>
           )
         }
       }
       if (!line.trim()) return <br key={i} />
-      return <p key={i} style={{ fontSize: 16, color: '#ccc', lineHeight: 1.7, margin: '2px 0', wordBreak: 'keep-all', overflowWrap: 'break-word' }}>{line}</p>
+      return <p key={i} style={{ fontSize: 15, color: '#ccc', lineHeight: 1.7, margin: '2px 0', wordBreak: 'keep-all', overflowWrap: 'break-word' }}>{line}</p>
     })
   }
 
@@ -146,28 +146,28 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
       {/* 헤더 */}
       <div style={{ background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 16, padding: 16, marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-          <i className="ti ti-stethoscope" style={{ color: '#60a5fa', fontSize: 23 }} />
-          <span style={{ fontSize: 17, fontWeight: 500, color: '#60a5fa' }}>AI 하우스 닥터</span>
+          <i className="ti ti-stethoscope" style={{ color: '#60a5fa', fontSize: 22 }} />
+          <span style={{ fontSize: 16, fontWeight: 500, color: '#60a5fa' }}>AI 하우스 닥터</span>
         </div>
-        <p style={{ fontSize: 15, color: '#666', lineHeight: 1.6, margin: 0 }}>
+        <p style={{ fontSize: 14, color: '#666', lineHeight: 1.6, margin: 0 }}>
           문제 부위 사진을 찍거나 증상을 설명하면 AI가 진단하고 수리 방법과 필요한 자재를 알려드려요.
         </p>
       </div>
 
       {/* 사진 */}
       <div style={{ marginBottom: 16 }}>
-        <p style={{ fontSize: 15, color: '#888', marginBottom: 8, marginTop: 0 }}>사진 (선택)</p>
+        <p style={{ fontSize: 14, color: '#888', marginBottom: 8, marginTop: 0 }}>사진 (선택)</p>
         {preview ? (
           <div style={{ position: 'relative', width: '100%' }}>
             <img src={preview} alt="업로드 사진" style={{ width: '100%', borderRadius: 12, maxHeight: 220, objectFit: 'cover', display: 'block' }} />
             <button onClick={() => { setPreview(null); setImageBase64(null) }}
-              style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.7)', border: 'none', color: '#f87171', borderRadius: 20, padding: '4px 10px', cursor: 'pointer', fontSize: 15 }}>
+              style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.7)', border: 'none', color: '#f87171', borderRadius: 20, padding: '4px 10px', cursor: 'pointer', fontSize: 14 }}>
               삭제
             </button>
           </div>
         ) : (
-          <label style={{ display: 'block', width: '100%', background: '#1a1a24', border: '1px dashed #2a2a38', borderRadius: 12, padding: '24px 0', color: '#555', cursor: 'pointer', fontSize: 16, boxSizing: 'border-box', textAlign: 'center' }}>
-            <i className="ti ti-camera" style={{ fontSize: 27, display: 'block', marginBottom: 6, color: '#444' }} />
+          <label style={{ display: 'block', width: '100%', background: '#1a1a24', border: '1px dashed #2a2a38', borderRadius: 12, padding: '24px 0', color: '#555', cursor: 'pointer', fontSize: 15, boxSizing: 'border-box', textAlign: 'center' }}>
+            <i className="ti ti-camera" style={{ fontSize: 26, display: 'block', marginBottom: 6, color: '#444' }} />
             사진 촬영 또는 갤러리에서 선택
             <input type="file" accept="image/*" onChange={handleFile} style={{ display: 'none' }} />
           </label>
@@ -176,7 +176,7 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
 
       {/* 증상 설명 */}
       <div style={{ marginBottom: 16 }}>
-        <p style={{ fontSize: 15, color: '#888', marginBottom: 8, marginTop: 0 }}>증상 설명</p>
+        <p style={{ fontSize: 14, color: '#888', marginBottom: 8, marginTop: 0 }}>증상 설명</p>
         <textarea
           value={description}
           onChange={e => setDescription(e.target.value)}
@@ -186,10 +186,10 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
         />
       </div>
 
-      {error && <p style={{ color: '#f87171', fontSize: 16, marginBottom: 12, wordBreak: 'break-all' }}>{error}</p>}
+      {error && <p style={{ color: '#f87171', fontSize: 15, marginBottom: 12, wordBreak: 'break-all' }}>{error}</p>}
 
       <button onClick={handleSubmit} disabled={loading}
-        style={{ width: '100%', background: loading ? '#1a2a4a' : '#1d4ed8', color: '#fff', border: 'none', borderRadius: 14, padding: '15px', fontSize: 18, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', boxSizing: 'border-box' }}>
+        style={{ width: '100%', background: loading ? '#1a2a4a' : '#1d4ed8', color: '#fff', border: 'none', borderRadius: 14, padding: '15px', fontSize: 17, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', boxSizing: 'border-box' }}>
         {loading ? loadingMsg : '🏥 AI 진단 시작'}
       </button>
 
@@ -197,21 +197,21 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
         <div style={{ marginTop: 24, overflow: 'hidden' }}>
           {/* 진단 결과 */}
           <div style={{ background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 16, padding: 16, marginBottom: 12, wordBreak: 'keep-all', overflowWrap: 'break-word' }}>
-            <p style={{ fontSize: 17, fontWeight: 600, color: '#34d399', marginBottom: 12, marginTop: 0 }}>✅ 진단 완료</p>
+            <p style={{ fontSize: 16, fontWeight: 600, color: '#34d399', marginBottom: 12, marginTop: 0 }}>✅ 진단 완료</p>
             {renderResult(result)}
           </div>
 
           {/* 자재 쿠팡 검색 버튼 (추가로) */}
           {materials.length > 0 && (
             <div style={{ background: '#1a0f00', border: '0.5px solid #f9731622', borderRadius: 14, padding: 14, marginBottom: 12 }}>
-              <p style={{ fontSize: 15, color: '#f97316', marginBottom: 10, fontWeight: 500 }}>🛒 쿠팡에서 자재 바로 구매</p>
+              <p style={{ fontSize: 14, color: '#f97316', marginBottom: 10, fontWeight: 500 }}>🛒 쿠팡에서 자재 바로 구매</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {materials.map((mat, i) => (
                   <a key={i} href={`https://www.coupang.com/np/search?q=${encodeURIComponent(mat)}`}
                     target="_blank" rel="noopener noreferrer"
                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#111', border: '0.5px solid #f9731633', borderRadius: 10, padding: '10px 14px', textDecoration: 'none' }}>
-                    <span style={{ fontSize: 16, color: '#ddd' }}>{mat}</span>
-                    <span style={{ fontSize: 15, color: '#f97316', fontWeight: 600, flexShrink: 0 }}>쿠팡 검색 →</span>
+                    <span style={{ fontSize: 15, color: '#ddd' }}>{mat}</span>
+                    <span style={{ fontSize: 14, color: '#f97316', fontWeight: 600, flexShrink: 0 }}>쿠팡 검색 →</span>
                   </a>
                 ))}
               </div>
@@ -223,16 +223,16 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
             <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(soomgoKeyword + ' DIY 수리 방법')}`}
               target="_blank" rel="noopener noreferrer"
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: '#111828', border: '0.5px solid #1e3a5f', borderRadius: 14, padding: '16px 12px', textDecoration: 'none' }}>
-              <span style={{ fontSize: 27 }}>🔧</span>
-              <span style={{ fontSize: 16, fontWeight: 600, color: '#fff' }}>DIY 수리</span>
-              <span style={{ fontSize: 14, color: '#555', textAlign: 'center' }}>유튜브 영상으로 직접 수리하기</span>
+              <span style={{ fontSize: 26 }}>🔧</span>
+              <span style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>DIY 수리</span>
+              <span style={{ fontSize: 13, color: '#555', textAlign: 'center' }}>유튜브 영상으로 직접 수리하기</span>
             </a>
             <a href={`https://search.naver.com/search.naver?query=${encodeURIComponent(soomgoKeyword + ' 전문가')}`}
               target="_blank" rel="noopener noreferrer"
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 14, padding: '16px 12px', textDecoration: 'none' }}>
-              <span style={{ fontSize: 27 }}>👷</span>
-              <span style={{ fontSize: 16, fontWeight: 600, color: '#60a5fa' }}>전문가 찾기</span>
-              <span style={{ fontSize: 14, color: '#555', textAlign: 'center' }}>네이버에서 전문가 검색</span>
+              <span style={{ fontSize: 26 }}>👷</span>
+              <span style={{ fontSize: 15, fontWeight: 600, color: '#60a5fa' }}>전문가 찾기</span>
+              <span style={{ fontSize: 13, color: '#555', textAlign: 'center' }}>네이버에서 전문가 검색</span>
             </a>
           </div>
         </div>

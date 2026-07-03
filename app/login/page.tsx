@@ -28,14 +28,14 @@ export default function LoginPage() {
       </div>
 
       <h1 style={{
-        fontSize: 35, fontWeight: 700, letterSpacing: -1,
+        fontSize: 34, fontWeight: 700, letterSpacing: -1,
         background: 'linear-gradient(135deg, #ffffff 0%, #60a5fa 100%)',
         WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
         backgroundClip: 'text', marginBottom: 8,
       }}>
         HouseKit
       </h1>
-      <p style={{ fontSize: 16, color: '#444', marginBottom: 48 }}>
+      <p style={{ fontSize: 15, color: '#444', marginBottom: 48 }}>
         오늘 고친 것도, 10년 후 팔 때도.<br />HouseKit이 기억합니다.
       </p>
 
@@ -45,7 +45,7 @@ export default function LoginPage() {
           <button type="submit" style={{
             width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
             background: '#fff', color: '#111', border: 'none', borderRadius: 14,
-            padding: '15px 0', fontSize: 18, fontWeight: 600, cursor: 'pointer',
+            padding: '15px 0', fontSize: 17, fontWeight: 600, cursor: 'pointer',
             boxSizing: 'border-box',
           }}>
             <svg width="20" height="20" viewBox="0 0 24 24">
@@ -63,7 +63,7 @@ export default function LoginPage() {
           <button type="submit" style={{
             width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
             background: '#FEE500', color: '#191919', border: 'none', borderRadius: 14,
-            padding: '15px 0', fontSize: 18, fontWeight: 600, cursor: 'pointer',
+            padding: '15px 0', fontSize: 17, fontWeight: 600, cursor: 'pointer',
             boxSizing: 'border-box',
           }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="#191919">
@@ -74,7 +74,7 @@ export default function LoginPage() {
         </form>
       </div>
 
-      <p style={{ fontSize: 14, color: '#2a2a38', marginTop: 40 }}>
+      <p style={{ fontSize: 13, color: '#2a2a38', marginTop: 40 }}>
         로그인 시 서비스 이용약관에 동의하게 됩니다
       </p>
     </div>

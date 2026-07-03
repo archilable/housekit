@@ -11,7 +11,7 @@ export default function DeleteUtilityButton({ utilityId, houseId, month }: { uti
   }
 
   return (
-    <button onClick={handleDelete} style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', fontSize: 21, padding: 0, display: 'flex', alignItems: 'center' }}>
+    <button onClick={handleDelete} style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', fontSize: 20, padding: 0, display: 'flex', alignItems: 'center' }}>
       <i className="ti ti-trash" />
     </button>
   )
