@@ -6,6 +6,8 @@ export default function BottomNav() {
   const pathname = usePathname()
   if (pathname.startsWith('/admin')) return null
 
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/')
+
   return (
     <nav style={{
       position: 'fixed', bottom: 0, left: 0, right: 0,
@@ -23,10 +25,12 @@ export default function BottomNav() {
         { href: '/houses/new', icon: 'ti-plus', label: '등록' },
         { href: '/notifications', icon: 'ti-bell', label: '알림' },
         { href: '/analytics', icon: 'ti-chart-bar', label: '분석' },
+        { href: '/profile', icon: 'ti-user-circle', label: '내 정보' },
       ].map(({ href, icon, label }) => (
         <Link key={label} href={href} style={{
           display: 'flex', flexDirection: 'column', alignItems: 'center',
-          gap: 3, textDecoration: 'none', color: '#555',
+          gap: 3, textDecoration: 'none',
+          color: isActive(href) ? '#60a5fa' : '#555',
         }}>
           <i className={`ti ${icon}`} style={{ fontSize: 22 }} aria-hidden="true" />
           <span style={{ fontSize: 10 }}>{label}</span>
