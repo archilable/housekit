@@ -15,6 +15,7 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
   const [description, setDescription] = useState('')
   const [result, setResult] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [loadingMsg, setLoadingMsg] = useState('')
   const [error, setError] = useState<string | null>(null)
   void houseId
 
@@ -51,6 +52,17 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
     setLoading(true)
     setError(null)
     setResult(null)
+
+    const msgs = imageBase64
+      ? ['📸 이미지 분석 중...', '🔍 문제 파악 중...', '💊 진단서 작성 중...']
+      : ['🔍 문제 파악 중...', '💊 진단서 작성 중...']
+    let mi = 0
+    setLoadingMsg(msgs[0])
+    const timer = setInterval(() => {
+      mi = (mi + 1) % msgs.length
+      setLoadingMsg(msgs[mi])
+    }, 2000)
+
     try {
       const res = await fetch('/api/doctor', {
         method: 'POST',
@@ -63,6 +75,7 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : '오류가 발생했습니다.')
     } finally {
+      clearInterval(timer)
       setLoading(false)
     }
   }
@@ -177,7 +190,7 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
 
       <button onClick={handleSubmit} disabled={loading}
         style={{ width: '100%', background: loading ? '#1a2a4a' : '#1d4ed8', color: '#fff', border: 'none', borderRadius: 14, padding: '15px', fontSize: 15, fontWeight: 500, cursor: loading ? 'not-allowed' : 'pointer', boxSizing: 'border-box' }}>
-        {loading ? '🔍 AI 진단 중...' : '🏥 AI 진단 시작'}
+        {loading ? loadingMsg : '🏥 AI 진단 시작'}
       </button>
 
       {result && (

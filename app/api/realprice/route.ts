@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { unstable_cache } from 'next/cache'
 
 // 법정동코드 앞 5자리 추출 (주소 기반)
 function getLawdCd(address: string): string {
@@ -113,16 +114,10 @@ async function fetchSingleTrade(lawdCd: string, dealYmd: string, key: string) {
   return parseTrades(text, 'totalFloorAr')
 }
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url)
-  const address = searchParams.get('address') || ''
-  const houseType = searchParams.get('houseType') || ''
-  const area = parseFloat(searchParams.get('area') || '0')
-
+async function fetchRealPrice(address: string, houseType: string, area: number) {
   const key = process.env.PUBLIC_DATA_API_KEY!
   const lawdCd = getLawdCd(address)
 
-  // 최근 12개월 데이터 수집 (API 반영 지연 감안)
   const months: string[] = []
   const now = new Date()
   for (let i = 2; i < 14; i++) {
@@ -130,49 +125,51 @@ export async function GET(req: NextRequest) {
     months.push(`${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}`)
   }
 
+  let allTrades: { price: number; area: number }[] = []
+
+  if (houseType === '아파트') {
+    const results = await Promise.all(months.map(m => fetchAptTrade(lawdCd, m, key)))
+    allTrades = results.flat()
+  } else if (houseType === '단독주택' || houseType === '다가구') {
+    const results = await Promise.all(months.map(m => fetchSingleTrade(lawdCd, m, key)))
+    allTrades = results.flat()
+  } else {
+    const results = await Promise.all(months.flatMap(m => [
+      fetchVillaTrade(lawdCd, m, key),
+      fetchSingleTrade(lawdCd, m, key),
+    ]))
+    allTrades = results.flat()
+  }
+
+  if (allTrades.length === 0) return { error: '해당 지역 실거래 데이터가 없습니다.' }
+
+  let filtered = area > 0
+    ? allTrades.filter(t => t.area > 0 && Math.abs(t.area - area) / area < 0.3)
+    : allTrades
+  if (filtered.length < 3) filtered = allTrades
+
+  const prices = filtered.map(t => t.price).sort((a, b) => a - b)
+  const avg = Math.round(prices.reduce((s, p) => s + p, 0) / prices.length)
+
+  return { lawdCd, count: prices.length, avg, min: prices[0], max: prices[prices.length - 1], median: prices[Math.floor(prices.length / 2)], months }
+}
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url)
+  const address = searchParams.get('address') || ''
+  const houseType = searchParams.get('houseType') || ''
+  const area = parseFloat(searchParams.get('area') || '0')
+
   try {
-    let allTrades: { price: number; area: number }[] = []
-
-    if (houseType === '아파트') {
-      const results = await Promise.all(months.map(m => fetchAptTrade(lawdCd, m, key)))
-      allTrades = results.flat()
-    } else if (houseType === '단독주택' || houseType === '다가구') {
-      const results = await Promise.all(months.map(m => fetchSingleTrade(lawdCd, m, key)))
-      allTrades = results.flat()
-    } else {
-      const results = await Promise.all(months.flatMap(m => [
-        fetchVillaTrade(lawdCd, m, key),
-        fetchSingleTrade(lawdCd, m, key),
-      ]))
-      allTrades = results.flat()
-    }
-
-    if (allTrades.length === 0) {
-      return NextResponse.json({ error: '해당 지역 실거래 데이터가 없습니다.' }, { status: 404 })
-    }
-
-    // 면적 유사한 거래 필터링 (±30%)
-    let filtered = area > 0
-      ? allTrades.filter(t => t.area > 0 && Math.abs(t.area - area) / area < 0.3)
-      : allTrades
-
-    if (filtered.length < 3) filtered = allTrades
-
-    const prices = filtered.map(t => t.price).sort((a, b) => a - b)
-    const avg = Math.round(prices.reduce((s, p) => s + p, 0) / prices.length)
-    const min = prices[0]
-    const max = prices[prices.length - 1]
-    const median = prices[Math.floor(prices.length / 2)]
-
-    return NextResponse.json({
-      lawdCd,
-      count: prices.length,
-      avg,
-      min,
-      max,
-      median,
-      months,
-    })
+    // 같은 주소+타입 조합 24시간 캐싱 (국토부 데이터는 매달 업데이트)
+    const cached = unstable_cache(
+      () => fetchRealPrice(address, houseType, area),
+      [`realprice-${address}-${houseType}-${Math.round(area)}`],
+      { revalidate: 60 * 60 * 24 }
+    )
+    const result = await cached()
+    if ('error' in result) return NextResponse.json(result, { status: 404 })
+    return NextResponse.json(result)
   } catch (e) {
     const message = e instanceof Error ? e.message : 'Unknown error'
     return NextResponse.json({ error: message }, { status: 500 })
