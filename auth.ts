@@ -8,6 +8,7 @@ import { prisma } from '@/lib/db'
 // 카카오 ID → 연결할 userId 수동 매핑
 const KAKAO_USER_MAP: Record<string, string> = {
   '4973954832': 'cmr20pkhp00000fqsshn05yyg', // archiry@archilable.com
+  '4973991655': 'cmr25k6d800020fk38c594zog', // kochab77@gmail.com (와이프)
 }
 
 const baseAdapter = PrismaAdapter(prisma)
