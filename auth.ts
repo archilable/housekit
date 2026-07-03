@@ -34,7 +34,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const existingAccount = await prisma.account.findUnique({
           where: { provider_providerAccountId: { provider: 'kakao', providerAccountId: kakaoId } },
         })
-        if (existingAccount) return true
+        if (existingAccount) {
+          user.id = existingAccount.userId
+          return true
+        }
 
         // 카카오 이메일로 기존 유저 찾기
         let targetUser = kakaoEmail
