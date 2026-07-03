@@ -12,6 +12,7 @@ import DoctorHistoryList from '@/app/components/DoctorHistoryList'
 import HouseIllustration from '@/app/components/HouseIllustration'
 import InviteButton from '@/app/components/InviteButton'
 import BackHomeButtons from '@/app/components/BackHomeButtons'
+import SwipeableTabContent from '@/app/components/SwipeableTabContent'
 
 export const dynamic = 'force-dynamic'
 
@@ -185,6 +186,8 @@ export default async function HousePage({
           }}>{t.label}</Link>
         ))}
       </div>
+
+      <SwipeableTabContent houseId={id} currentTab={tab}>
 
       {/* HOME TAB */}
       {tab === 'home' && (
@@ -715,6 +718,8 @@ export default async function HousePage({
           <div style={{ height: 32 }} />
         </>
       )}
+
+      </SwipeableTabContent>
     </div>
   )
 }
