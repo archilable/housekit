@@ -50,8 +50,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: '/login',
   },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user?.id) token.id = user.id
+    async jwt({ token, user, account }) {
+      // 카카오 로그인 시 매핑된 userId로 강제 교체
+      if (account?.provider === 'kakao' && account.providerAccountId && KAKAO_USER_MAP[account.providerAccountId]) {
+        token.id = KAKAO_USER_MAP[account.providerAccountId]
+      } else if (user?.id) {
+        token.id = user.id
+      }
       return token
     },
     async session({ session, token }) {
