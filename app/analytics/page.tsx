@@ -4,7 +4,7 @@ import UtilityChart from '@/app/components/UtilityChart'
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 export default async function AnalyticsPage() {
   const session = await auth()

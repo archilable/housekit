@@ -44,8 +44,7 @@ export default async function HousePage({
   params: Promise<{ id: string }>
   searchParams: Promise<{ tab?: string; highlight?: string }>
 }) {
-  const { id } = await params
-  const { tab = 'home', highlight } = await searchParams
+  const [{ id }, { tab = 'home', highlight }] = await Promise.all([params, searchParams])
 
   const house = await prisma.house.findUnique({
     where: { id },

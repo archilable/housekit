@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import BackHomeButtons from '@/app/components/BackHomeButtons'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 function formatTimeLeft(daysLeft: number): string {
   if (daysLeft < 0) {
