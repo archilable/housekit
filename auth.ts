@@ -23,13 +23,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   callbacks: {
     async jwt({ token, user, account }) {
+      console.log('[JWT]', JSON.stringify({ userId: user?.id, provider: account?.provider, providerAccountId: account?.providerAccountId, tokenId: token.id, tokenSub: token.sub }))
       if (user?.id) {
         token.id = user.id
       } else if (account?.provider === 'kakao' && account.providerAccountId) {
-        // 어댑터가 user를 못 찾은 경우 직접 DB에서 조회
         const linked = await prisma.account.findUnique({
           where: { provider_providerAccountId: { provider: 'kakao', providerAccountId: account.providerAccountId } },
         })
+        console.log('[JWT KAKAO LOOKUP]', JSON.stringify({ providerAccountId: account.providerAccountId, found: linked?.userId }))
         if (linked) token.id = linked.userId
       }
       return token
