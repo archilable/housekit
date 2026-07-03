@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth'
 import { PrismaAdapter } from '@auth/prisma-adapter'
+import type { AdapterUser } from '@auth/core/adapters'
 import Google from 'next-auth/providers/google'
 import Kakao from 'next-auth/providers/kakao'
 import { prisma } from '@/lib/db'
@@ -13,12 +14,12 @@ const baseAdapter = PrismaAdapter(prisma)
 
 const customAdapter = {
   ...baseAdapter,
-  async getUserByAccount({ provider, providerAccountId }: { provider: string; providerAccountId: string }) {
+  async getUserByAccount({ provider, providerAccountId }: { provider: string; providerAccountId: string }): Promise<AdapterUser | null> {
     // 카카오 수동 매핑: DB 상태와 무관하게 지정 유저 반환
     if (provider === 'kakao' && KAKAO_USER_MAP[providerAccountId]) {
       const userId = KAKAO_USER_MAP[providerAccountId]
       const user = await prisma.user.findUnique({ where: { id: userId } })
-      return user
+      return user as AdapterUser | null
     }
     return baseAdapter.getUserByAccount?.({ provider, providerAccountId }) ?? null
   },
