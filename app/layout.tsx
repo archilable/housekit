@@ -29,6 +29,7 @@ export const metadata: Metadata = {
   },
   other: {
     "mobile-web-app-capable": "yes",
+    "naver-site-verification": "600bb7179a0554f938032c39ce7e421575512d23",
   },
 };
 
