@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 const TABS = ['home', 'history', 'inventory', 'doctor', 'utility', 'valuation']
@@ -15,30 +15,42 @@ export default function SwipeableTabContent({
   children: React.ReactNode
 }) {
   const router = useRouter()
-  const touchStartX = useRef(0)
-  const touchStartY = useRef(0)
+  const ref = useRef<HTMLDivElement>(null)
+  const startX = useRef(0)
+  const startY = useRef(0)
 
-  function onTouchStart(e: React.TouchEvent) {
-    touchStartX.current = e.touches[0].clientX
-    touchStartY.current = e.touches[0].clientY
-  }
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
 
-  function onTouchEnd(e: React.TouchEvent) {
-    const dx = e.changedTouches[0].clientX - touchStartX.current
-    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current)
-
-    if (Math.abs(dx) < 60 || dy > 80) return
-
-    const idx = TABS.indexOf(currentTab)
-    if (dx < 0 && idx < TABS.length - 1) {
-      router.push(`/houses/${houseId}?tab=${TABS[idx + 1]}`)
-    } else if (dx > 0 && idx > 0) {
-      router.push(`/houses/${houseId}?tab=${TABS[idx - 1]}`)
+    function onStart(e: TouchEvent) {
+      startX.current = e.touches[0].clientX
+      startY.current = e.touches[0].clientY
     }
-  }
+
+    function onEnd(e: TouchEvent) {
+      const dx = e.changedTouches[0].clientX - startX.current
+      const dy = Math.abs(e.changedTouches[0].clientY - startY.current)
+      if (Math.abs(dx) < 60 || dy > 100) return
+
+      const idx = TABS.indexOf(currentTab)
+      if (dx < 0 && idx < TABS.length - 1) {
+        router.push(`/houses/${houseId}?tab=${TABS[idx + 1]}`)
+      } else if (dx > 0 && idx > 0) {
+        router.push(`/houses/${houseId}?tab=${TABS[idx - 1]}`)
+      }
+    }
+
+    el.addEventListener('touchstart', onStart, { passive: true })
+    el.addEventListener('touchend', onEnd, { passive: true })
+    return () => {
+      el.removeEventListener('touchstart', onStart)
+      el.removeEventListener('touchend', onEnd)
+    }
+  }, [currentTab, houseId, router])
 
   return (
-    <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} style={{ touchAction: 'pan-y' }}>
+    <div ref={ref}>
       {children}
     </div>
   )
