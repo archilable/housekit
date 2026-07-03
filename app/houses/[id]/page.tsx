@@ -202,9 +202,9 @@ export default async function HousePage({
         {house.addressDetail && <p style={{ fontSize: 17, color: '#666' }}>{house.addressDetail}</p>}
         {(house.landArea || house.buildArea || house.exclusiveArea) && (
           <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 10, flexWrap: 'wrap' }}>
-            {house.landArea && <span style={{ fontSize: 15, color: '#555' }}>대지 <span style={{ color: '#aaa' }}>{house.landArea}㎡ ({(house.landArea / 3.305785).toFixed(1)}평)</span></span>}
-            {house.buildArea && <span style={{ fontSize: 15, color: '#555' }}>건축 <span style={{ color: '#aaa' }}>{house.buildArea}㎡ ({(house.buildArea / 3.305785).toFixed(1)}평)</span></span>}
-            {house.exclusiveArea && <span style={{ fontSize: 15, color: '#60a5fa' }}>전용 <span style={{ fontWeight: 600 }}>{house.exclusiveArea}㎡ ({(house.exclusiveArea / 3.305785).toFixed(1)}평)</span></span>}
+            {house.landArea && <span style={{ fontSize: 14, color: '#555' }}>대지 <span style={{ color: '#aaa' }}>{house.landArea}㎡ ({(house.landArea / 3.305785).toFixed(1)}평)</span></span>}
+            {house.buildArea && <span style={{ fontSize: 14, color: '#555' }}>건축 <span style={{ color: '#aaa' }}>{house.buildArea}㎡ ({(house.buildArea / 3.305785).toFixed(1)}평)</span></span>}
+            {house.exclusiveArea && <span style={{ fontSize: 14, color: '#60a5fa' }}>전용 <span style={{ fontWeight: 600 }}>{house.exclusiveArea}㎡ ({(house.exclusiveArea / 3.305785).toFixed(1)}평)</span></span>}
           </div>
         )}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 12 }}>
