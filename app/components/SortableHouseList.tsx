@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import DeleteHouseButton from './DeleteHouseButton'
 
@@ -21,15 +21,38 @@ function calcHealthScore(inv: number, hist: number) {
 export default function SortableHouseList({ initialHouses }: { initialHouses: House[] }) {
   const [houses, setHouses] = useState(initialHouses)
   const [saving, setSaving] = useState(false)
+  const [activeIdx, setActiveIdx] = useState(0)
   const [draggingIdx, setDraggingIdx] = useState<number | null>(null)
   const [dragOffset, setDragOffset] = useState(0)
 
   const touchStartX = useRef(0)
-  const touchStartTime = useRef(0)
   const dragStartX = useRef(0)
   const isDragging = useRef(false)
   const cardWidth = useRef(0)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  // 스크롤 위치로 현재 카드 감지
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const onScroll = () => {
+      const gap = 12
+      const cw = el.querySelector('div')?.offsetWidth ?? 0
+      const idx = Math.round(el.scrollLeft / (cw + gap))
+      setActiveIdx(idx)
+    }
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [])
+
+  // 특정 카드로 스크롤
+  function scrollTo(idx: number) {
+    const el = containerRef.current
+    if (!el) return
+    const cw = el.querySelector('div')?.offsetWidth ?? 0
+    el.scrollTo({ left: idx * (cw + 12), behavior: 'smooth' })
+    setActiveIdx(idx)
+  }
 
   const saveOrder = useCallback(async (ordered: House[]) => {
     setSaving(true)
@@ -43,7 +66,6 @@ export default function SortableHouseList({ initialHouses }: { initialHouses: Ho
 
   function onTouchStart(idx: number, e: React.TouchEvent<HTMLDivElement>) {
     touchStartX.current = e.touches[0].clientX
-    touchStartTime.current = Date.now()
     dragStartX.current = e.touches[0].clientX
     isDragging.current = false
     cardWidth.current = (e.currentTarget as HTMLDivElement).offsetWidth
@@ -72,15 +94,15 @@ export default function SortableHouseList({ initialHouses }: { initialHouses: Ho
     const next = [...houses]
 
     if (dragOffset < -threshold && idx > 0) {
-      // 왼쪽으로 → 앞으로 이동
       ;[next[idx - 1], next[idx]] = [next[idx], next[idx - 1]]
       setHouses(next)
       saveOrder(next)
+      scrollTo(idx - 1)
     } else if (dragOffset > threshold && idx < houses.length - 1) {
-      // 오른쪽으로 → 뒤로 이동
       ;[next[idx], next[idx + 1]] = [next[idx + 1], next[idx]]
       setHouses(next)
       saveOrder(next)
+      scrollTo(idx + 1)
     }
 
     setDraggingIdx(null)
@@ -91,7 +113,7 @@ export default function SortableHouseList({ initialHouses }: { initialHouses: Ho
   return (
     <div>
       {saving && (
-        <p style={{ fontSize: 11, color: '#60a5fa', textAlign: 'center', padding: '4px 0 8px' }}>순서 저장 중...</p>
+        <p style={{ fontSize: 11, color: '#60a5fa', textAlign: 'center', padding: '4px 0 6px' }}>순서 저장 중...</p>
       )}
 
       {/* 가로 스크롤 카드 컨테이너 */}
@@ -101,7 +123,7 @@ export default function SortableHouseList({ initialHouses }: { initialHouses: Ho
           display: 'flex',
           gap: 12,
           overflowX: draggingIdx !== null ? 'hidden' : 'auto',
-          padding: '4px 16px 12px',
+          padding: '4px 16px 4px',
           marginLeft: -16,
           marginRight: -16,
           scrollSnapType: 'x mandatory',
@@ -142,23 +164,12 @@ export default function SortableHouseList({ initialHouses }: { initialHouses: Ho
                 touchAction: 'pan-y',
               }}
             >
-              {/* 순서 표시 + 드래그 힌트 */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px 0' }}>
-                <div style={{ display: 'flex', gap: 4 }}>
-                  {houses.map((_, i) => (
-                    <div key={i} style={{
-                      width: i === idx ? 16 : 6,
-                      height: 4,
-                      borderRadius: 2,
-                      background: i === idx ? '#60a5fa' : '#1e1e2e',
-                      transition: 'width 0.2s',
-                    }} />
-                  ))}
-                </div>
+              {/* 드래그 힌트 */}
+              <div style={{ padding: '10px 16px 0', display: 'flex', justifyContent: 'flex-end' }}>
                 <span style={{ fontSize: 10, color: '#333' }}>← 밀어서 순서 변경 →</span>
               </div>
 
-              <Link href={`/houses/${house.id}`} style={{ display: 'block', padding: '10px 18px 14px', textDecoration: 'none', color: 'inherit' }}>
+              <Link href={`/houses/${house.id}`} style={{ display: 'block', padding: '8px 18px 14px', textDecoration: 'none', color: 'inherit' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
@@ -200,6 +211,38 @@ export default function SortableHouseList({ initialHouses }: { initialHouses: Ho
           )
         })}
       </div>
+
+      {/* 하단 집 선택 버튼 */}
+      {houses.length > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, padding: '10px 0 4px' }}>
+          {houses.map((house, i) => (
+            <button
+              key={house.id}
+              onClick={() => scrollTo(i)}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 4,
+                opacity: i === activeIdx ? 1 : 0.4,
+                transition: 'opacity 0.2s',
+              }}
+            >
+              <div style={{
+                width: i === activeIdx ? 24 : 8,
+                height: 4,
+                borderRadius: 2,
+                background: '#60a5fa',
+                transition: 'width 0.25s ease',
+              }} />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
