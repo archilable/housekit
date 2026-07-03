@@ -5,11 +5,11 @@ import SubmitButton from '@/app/components/SubmitButton'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
-  borderRadius: 10, padding: '12px 14px', fontSize: 15, color: '#fff',
+  borderRadius: 10, padding: '12px 14px', fontSize: 16, color: '#fff',
   outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' as const,
   display: 'block' as const,
 }
-const labelStyle = { fontSize: 12, color: '#888', display: 'block', marginBottom: 8 }
+const labelStyle = { fontSize: 13, color: '#888', display: 'block', marginBottom: 8 }
 const fieldStyle = { display: 'flex', flexDirection: 'column' as const }
 
 const UTILITY_ITEMS = [
@@ -68,11 +68,11 @@ export default function UtilityForm({ houseId, selectedMonth, months, existing, 
         <div key={name} style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 14, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
             <div style={{ width: 32, height: 32, borderRadius: 9, background: color + '22', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <i className={`ti ${icon}`} style={{ fontSize: 16, color }} />
+              <i className={`ti ${icon}`} style={{ fontSize: 17, color }} />
             </div>
-            <span style={{ fontSize: 14, fontWeight: 500, color: '#fff' }}>{label}</span>
+            <span style={{ fontSize: 15, fontWeight: 500, color: '#fff' }}>{label}</span>
             {values[name] && (
-              <span style={{ fontSize: 11, color: '#34d399', marginLeft: 'auto' }}>✅ 자동입력</span>
+              <span style={{ fontSize: 12, color: '#34d399', marginLeft: 'auto' }}>✅ 자동입력</span>
             )}
           </div>
           <div style={fieldStyle}>

@@ -52,24 +52,24 @@ export default async function AnalyticsPage() {
   return (
     <div style={{ padding: '24px 16px 0', width: '100%', boxSizing: 'border-box' }}>
       <div style={{ marginBottom: 20 }}>
-        <p style={{ fontSize: 11, color: '#555', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>분석</p>
-        <h1 style={{ fontSize: 22, fontWeight: 500 }}>자산 분석</h1>
+        <p style={{ fontSize: 12, color: '#555', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>분석</p>
+        <h1 style={{ fontSize: 23, fontWeight: 500 }}>자산 분석</h1>
       </div>
 
       {/* 총 자산 카드 */}
       {totalAssets > 0 && (
         <div style={{ background: 'linear-gradient(135deg, #0d1a2e 0%, #111828 100%)', border: '0.5px solid #1e3a5f', borderRadius: 20, padding: 20, marginBottom: 24 }}>
-          <p style={{ fontSize: 12, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 10 }}>총 부동산 자산 추정</p>
-          <p style={{ fontSize: 34, fontWeight: 700, color: '#fff', letterSpacing: -1, marginBottom: 4 }}>{fmt(totalAssets)}</p>
-          <p style={{ fontSize: 12, color: '#555' }}>{houses.filter(h => calcEstimated(h) != null).length}개 주택 합산 · 참고용</p>
+          <p style={{ fontSize: 13, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 10 }}>총 부동산 자산 추정</p>
+          <p style={{ fontSize: 35, fontWeight: 700, color: '#fff', letterSpacing: -1, marginBottom: 4 }}>{fmt(totalAssets)}</p>
+          <p style={{ fontSize: 13, color: '#555' }}>{houses.filter(h => calcEstimated(h) != null).length}개 주택 합산 · 참고용</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
             {houses.map(h => {
               const est = calcEstimated(h)
               if (!est) return null
               return (
                 <div key={h.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 13, color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, marginRight: 8 }}>{h.address}</span>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: '#60a5fa', flexShrink: 0 }}>{fmt(est)}</span>
+                  <span style={{ fontSize: 14, color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, marginRight: 8 }}>{h.address}</span>
+                  <span style={{ fontSize: 15, fontWeight: 600, color: '#60a5fa', flexShrink: 0 }}>{fmt(est)}</span>
                 </div>
               )
             })}
@@ -77,11 +77,11 @@ export default async function AnalyticsPage() {
         </div>
       )}
 
-      <p style={{ fontSize: 13, color: '#666', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }}>공과금 분석</p>
+      <p style={{ fontSize: 14, color: '#666', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }}>공과금 분석</p>
 
       {houses.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '60px 0', color: '#555' }}>
-          <i className="ti ti-chart-bar" style={{ fontSize: 40, display: 'block', marginBottom: 8 }} />
+          <i className="ti ti-chart-bar" style={{ fontSize: 41, display: 'block', marginBottom: 8 }} />
           <p>등록된 주택이 없습니다</p>
         </div>
       ) : (
@@ -100,10 +100,10 @@ export default async function AnalyticsPage() {
             <div key={house.id} style={{ marginBottom: 24 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <div>
-                  <p style={{ fontSize: 15, fontWeight: 500 }}>{house.address}</p>
-                  <p style={{ fontSize: 11, color: '#555' }}>{house.houseType}</p>
+                  <p style={{ fontSize: 16, fontWeight: 500 }}>{house.address}</p>
+                  <p style={{ fontSize: 12, color: '#555' }}>{house.houseType}</p>
                 </div>
-                <Link href={`/houses/${house.id}?tab=utility`} style={{ fontSize: 12, color: '#60a5fa', textDecoration: 'none', background: '#0d1a2e', padding: '6px 12px', borderRadius: 8, border: '0.5px solid #1e3a5f' }}>
+                <Link href={`/houses/${house.id}?tab=utility`} style={{ fontSize: 13, color: '#60a5fa', textDecoration: 'none', background: '#0d1a2e', padding: '6px 12px', borderRadius: 8, border: '0.5px solid #1e3a5f' }}>
                   입력하기
                 </Link>
               </div>
@@ -113,13 +113,13 @@ export default async function AnalyticsPage() {
                 <div style={{ background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 14, padding: 16, marginBottom: 10 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                     <div>
-                      <p style={{ fontSize: 11, color: '#60a5fa', marginBottom: 4 }}>이번달 합계</p>
-                      <p style={{ fontSize: 24, fontWeight: 600, color: '#fff' }}>{thisTotal.toLocaleString()}원</p>
+                      <p style={{ fontSize: 12, color: '#60a5fa', marginBottom: 4 }}>이번달 합계</p>
+                      <p style={{ fontSize: 25, fontWeight: 600, color: '#fff' }}>{thisTotal.toLocaleString()}원</p>
                     </div>
                     {diff != null && (
                       <div style={{ textAlign: 'right' }}>
-                        <p style={{ fontSize: 11, color: '#555', marginBottom: 4 }}>전월 대비</p>
-                        <p style={{ fontSize: 16, fontWeight: 500, color: diff > 0 ? '#f87171' : '#34d399' }}>
+                        <p style={{ fontSize: 12, color: '#555', marginBottom: 4 }}>전월 대비</p>
+                        <p style={{ fontSize: 17, fontWeight: 500, color: diff > 0 ? '#f87171' : '#34d399' }}>
                           {diff > 0 ? '▲ +' : '▼ '}{diff.toLocaleString()}원
                         </p>
                       </div>
@@ -138,11 +138,11 @@ export default async function AnalyticsPage() {
                       return (
                         <div key={label} style={{ background: '#111828', borderRadius: 10, padding: 10 }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                            <i className={`ti ${icon}`} style={{ fontSize: 14, color }} />
-                            {d != null && <span style={{ fontSize: 9, color: d > 0 ? '#f87171' : '#34d399' }}>{d > 0 ? '▲' : '▼'}{Math.abs(d / 1000).toFixed(0)}K</span>}
+                            <i className={`ti ${icon}`} style={{ fontSize: 15, color }} />
+                            {d != null && <span style={{ fontSize: 10, color: d > 0 ? '#f87171' : '#34d399' }}>{d > 0 ? '▲' : '▼'}{Math.abs(d / 1000).toFixed(0)}K</span>}
                           </div>
-                          <p style={{ fontSize: 10, color: '#555', marginBottom: 2 }}>{label}</p>
-                          <p style={{ fontSize: 13, fontWeight: 500 }}>{val != null ? val.toLocaleString() + '원' : '—'}</p>
+                          <p style={{ fontSize: 11, color: '#555', marginBottom: 2 }}>{label}</p>
+                          <p style={{ fontSize: 14, fontWeight: 500 }}>{val != null ? val.toLocaleString() + '원' : '—'}</p>
                         </div>
                       )
                     })}
@@ -157,8 +157,8 @@ export default async function AnalyticsPage() {
 
               {house.utilities.length === 0 && (
                 <div style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 14, padding: 24, textAlign: 'center', color: '#555' }}>
-                  <i className="ti ti-bolt" style={{ fontSize: 28, display: 'block', marginBottom: 6 }} />
-                  <p style={{ fontSize: 13 }}>공과금 데이터가 없어요</p>
+                  <i className="ti ti-bolt" style={{ fontSize: 29, display: 'block', marginBottom: 6 }} />
+                  <p style={{ fontSize: 14 }}>공과금 데이터가 없어요</p>
                 </div>
               )}
 

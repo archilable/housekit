@@ -8,10 +8,10 @@ import BackHomeButtons from '@/app/components/BackHomeButtons'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
-  borderRadius: 10, padding: '12px 14px', fontSize: 15, color: '#fff',
+  borderRadius: 10, padding: '12px 14px', fontSize: 16, color: '#fff',
   outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' as const,
 }
-const labelStyle = { fontSize: 12, color: '#888', display: 'block', marginBottom: 8 }
+const labelStyle = { fontSize: 13, color: '#888', display: 'block', marginBottom: 8 }
 const fieldStyle = { display: 'flex', flexDirection: 'column' as const }
 
 export default async function EditInventoryPage({ params }: { params: Promise<{ id: string; itemId: string }> }) {
@@ -25,7 +25,7 @@ export default async function EditInventoryPage({ params }: { params: Promise<{ 
     <div style={{ padding: '20px 16px', maxWidth: '100%' }}>
       <div style={{ marginBottom: 28 }}>
         <BackHomeButtons houseId={id} />
-        <h1 style={{ fontSize: 20, fontWeight: 500, marginTop: 14, marginBottom: 0 }}>설비 수정</h1>
+        <h1 style={{ fontSize: 21, fontWeight: 500, marginTop: 14, marginBottom: 0 }}>설비 수정</h1>
       </div>
 
       <form action={updateInventory.bind(null, itemId)} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>

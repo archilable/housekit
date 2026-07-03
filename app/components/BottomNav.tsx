@@ -32,8 +32,8 @@ export default function BottomNav() {
           gap: 3, textDecoration: 'none',
           color: isActive(href) ? '#60a5fa' : '#555',
         }}>
-          <i className={`ti ${icon}`} style={{ fontSize: 22 }} aria-hidden="true" />
-          <span style={{ fontSize: 10 }}>{label}</span>
+          <i className={`ti ${icon}`} style={{ fontSize: 23 }} aria-hidden="true" />
+          <span style={{ fontSize: 11 }}>{label}</span>
         </Link>
       ))}
     </nav>

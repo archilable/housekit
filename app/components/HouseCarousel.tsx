@@ -169,16 +169,16 @@ export default function HouseCarousel({ houses: initialHouses }: { houses: House
         }}>
           <div style={{ padding: '20px 20px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <span style={{ fontSize: 11, background: '#1e3a5f', color: '#60a5fa', padding: '3px 10px', borderRadius: 20, border: '0.5px solid #2a4a80' }}>
+              <span style={{ fontSize: 12, background: '#1e3a5f', color: '#60a5fa', padding: '3px 10px', borderRadius: 20, border: '0.5px solid #2a4a80' }}>
                 {house.houseType}
               </span>
               {house.buildYear && (
-                <span style={{ fontSize: 11, color: '#444', marginLeft: 8 }}>{house.buildYear}년</span>
+                <span style={{ fontSize: 12, color: '#444', marginLeft: 8 }}>{house.buildYear}년</span>
               )}
             </div>
             <div style={{ textAlign: 'right' }}>
-              <p style={{ fontSize: 28, fontWeight: 700, color: scoreColor, lineHeight: 1 }}>{score}</p>
-              <p style={{ fontSize: 10, color: '#555', marginTop: 2 }}>건강점수</p>
+              <p style={{ fontSize: 29, fontWeight: 700, color: scoreColor, lineHeight: 1 }}>{score}</p>
+              <p style={{ fontSize: 11, color: '#555', marginTop: 2 }}>건강점수</p>
             </div>
           </div>
 
@@ -187,25 +187,25 @@ export default function HouseCarousel({ houses: initialHouses }: { houses: House
           </div>
 
           <div style={{ padding: '0 20px 20px', textAlign: 'center' }}>
-            <p style={{ fontSize: 17, fontWeight: 600, color: '#fff', marginBottom: 2 }}>{house.address}</p>
-            {house.addressDetail && <p style={{ fontSize: 13, color: '#555' }}>{house.addressDetail}</p>}
+            <p style={{ fontSize: 18, fontWeight: 600, color: '#fff', marginBottom: 2 }}>{house.address}</p>
+            {house.addressDetail && <p style={{ fontSize: 14, color: '#555' }}>{house.addressDetail}</p>}
 
             <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 16 }}>
               <div style={{ textAlign: 'center' }}>
-                <p style={{ fontSize: 18, fontWeight: 600, color: '#a78bfa' }}>{house._count.histories}</p>
-                <p style={{ fontSize: 11, color: '#555' }}>이력</p>
+                <p style={{ fontSize: 19, fontWeight: 600, color: '#a78bfa' }}>{house._count.histories}</p>
+                <p style={{ fontSize: 12, color: '#555' }}>이력</p>
               </div>
               <div style={{ width: 1, background: '#1e1e28' }} />
               <div style={{ textAlign: 'center' }}>
-                <p style={{ fontSize: 18, fontWeight: 600, color: '#60a5fa' }}>{house._count.inventories}</p>
-                <p style={{ fontSize: 11, color: '#555' }}>설비</p>
+                <p style={{ fontSize: 19, fontWeight: 600, color: '#60a5fa' }}>{house._count.inventories}</p>
+                <p style={{ fontSize: 12, color: '#555' }}>설비</p>
               </div>
               {(house.exclusiveArea ?? house.area) && (
                 <>
                   <div style={{ width: 1, background: '#1e1e28' }} />
                   <div style={{ textAlign: 'center' }}>
-                    <p style={{ fontSize: 18, fontWeight: 600, color: '#34d399' }}>{house.exclusiveArea ?? house.area}</p>
-                    <p style={{ fontSize: 11, color: '#555' }}>㎡</p>
+                    <p style={{ fontSize: 19, fontWeight: 600, color: '#34d399' }}>{house.exclusiveArea ?? house.area}</p>
+                    <p style={{ fontSize: 12, color: '#555' }}>㎡</p>
                   </div>
                 </>
               )}
@@ -215,7 +215,7 @@ export default function HouseCarousel({ houses: initialHouses }: { houses: House
           <Link href={`/houses/${house.id}`} style={{
             display: 'block', background: '#1d4ed8',
             padding: '15px', textAlign: 'center',
-            fontSize: 15, fontWeight: 600, color: '#fff', textDecoration: 'none',
+            fontSize: 16, fontWeight: 600, color: '#fff', textDecoration: 'none',
             letterSpacing: 0.3,
           }}>
             대시보드 열기 →
@@ -244,7 +244,7 @@ export default function HouseCarousel({ houses: initialHouses }: { houses: House
 
       {/* 스와이프 힌트 */}
       {houses.length > 1 && (
-        <p style={{ textAlign: 'center', fontSize: 11, color: '#2a2a38', marginBottom: 12 }}>
+        <p style={{ textAlign: 'center', fontSize: 12, color: '#2a2a38', marginBottom: 12 }}>
           ← 좌우로 밀어서 다른 집 보기 →
         </p>
       )}
@@ -252,7 +252,7 @@ export default function HouseCarousel({ houses: initialHouses }: { houses: House
       {/* 집 목록 썸네일 — 꾹 누르고 드래그로 순서 변경 */}
       {houses.length > 1 && (
         <>
-          {saving && <p style={{ fontSize: 10, color: '#60a5fa', textAlign: 'center', marginBottom: 4 }}>순서 저장 중...</p>}
+          {saving && <p style={{ fontSize: 11, color: '#60a5fa', textAlign: 'center', marginBottom: 4 }}>순서 저장 중...</p>}
           <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4, position: 'relative' }}>
             {houses.map((h, i) => {
               const isDrag = dragIdx === i
@@ -287,21 +287,21 @@ export default function HouseCarousel({ houses: initialHouses }: { houses: House
                     touchAction: 'pan-x',
                   }}
                 >
-                  <p style={{ fontSize: 11, color: i === current ? '#60a5fa' : '#555', marginBottom: 3 }}>{h.houseType}</p>
+                  <p style={{ fontSize: 12, color: i === current ? '#60a5fa' : '#555', marginBottom: 3 }}>{h.houseType}</p>
                   <p style={{
-                    fontSize: 12, fontWeight: 500, color: i === current ? '#fff' : '#888',
+                    fontSize: 13, fontWeight: 500, color: i === current ? '#fff' : '#888',
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 110,
                   }}>
                     {h.address.replace(/^[가-힣]+(특별시|광역시|도|특별자치시|특별자치도)\s*/, '').split(' ').slice(0, 2).join(' ')}
                   </p>
                   {isDrag && (
-                    <p style={{ fontSize: 9, color: '#60a5fa', marginTop: 3 }}>← 드래그 →</p>
+                    <p style={{ fontSize: 10, color: '#60a5fa', marginTop: 3 }}>← 드래그 →</p>
                   )}
                 </button>
               )
             })}
           </div>
-          <p style={{ fontSize: 10, color: '#1e1e28', textAlign: 'center', marginTop: 6 }}>꾹 누르고 드래그하면 순서 변경</p>
+          <p style={{ fontSize: 11, color: '#1e1e28', textAlign: 'center', marginTop: 6 }}>꾹 누르고 드래그하면 순서 변경</p>
         </>
       )}
     </div>

@@ -18,9 +18,9 @@ export default async function InvitePage({ params }: { params: Promise<{ token: 
   if (!invite) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0a0a0f', color: '#fff', textAlign: 'center', padding: 24 }}>
-        <p style={{ fontSize: 48, marginBottom: 16 }}>😕</p>
-        <h1 style={{ fontSize: 20, marginBottom: 8 }}>유효하지 않은 초대 링크예요</h1>
-        <p style={{ color: '#555', fontSize: 14 }}>링크가 만료됐거나 잘못됐어요</p>
+        <p style={{ fontSize: 49, marginBottom: 16 }}>😕</p>
+        <h1 style={{ fontSize: 21, marginBottom: 8 }}>유효하지 않은 초대 링크예요</h1>
+        <p style={{ color: '#555', fontSize: 15 }}>링크가 만료됐거나 잘못됐어요</p>
       </div>
     )
   }

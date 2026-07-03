@@ -31,8 +31,8 @@ export default async function NewUtilityPage({
     <div style={{ padding: '20px 16px', maxWidth: '100%' }}>
       <div style={{ marginBottom: 28 }}>
         <BackHomeButtons houseId={id} />
-        <h1 style={{ fontSize: 20, fontWeight: 500, marginTop: 14, marginBottom: 0 }}>공과금 입력</h1>
-        <p style={{ fontSize: 13, color: '#555', marginTop: 6 }}>고지서 사진을 찍으면 AI가 자동으로 입력해드려요</p>
+        <h1 style={{ fontSize: 21, fontWeight: 500, marginTop: 14, marginBottom: 0 }}>공과금 입력</h1>
+        <p style={{ fontSize: 14, color: '#555', marginTop: 6 }}>고지서 사진을 찍으면 AI가 자동으로 입력해드려요</p>
       </div>
 
       <UtilityForm
