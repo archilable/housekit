@@ -25,6 +25,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user, account, profile }) {
       // 카카오 로그인: 이메일 없어도 처리 + 기존 계정 연결
       if (account?.provider === 'kakao') {
+        console.log('[KAKAO DEBUG]', JSON.stringify({ user, account, profile }, null, 2))
         const kakaoProfile = profile as any
         const kakaoEmail = kakaoProfile?.kakao_account?.email as string | undefined
         const kakaoId = account.providerAccountId
