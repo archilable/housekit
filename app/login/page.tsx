@@ -58,6 +58,20 @@ export default function LoginPage() {
           </button>
         </form>
 
+        {/* 카카오 로그인 */}
+        <form action={async () => { 'use server'; await signIn('kakao', { redirectTo: '/houses' }) }} style={{ width: '100%' }}>
+          <button type="submit" style={{
+            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+            background: '#FEE500', color: '#191919', border: 'none', borderRadius: 14,
+            padding: '15px 0', fontSize: 15, fontWeight: 600, cursor: 'pointer',
+            boxSizing: 'border-box',
+          }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#191919">
+              <path d="M12 3C6.477 3 2 6.477 2 10.5c0 2.632 1.553 4.95 3.9 6.364l-.995 3.716a.375.375 0 0 0 .545.415L9.85 18.54A11.1 11.1 0 0 0 12 18c5.523 0 10-3.477 10-7.5S17.523 3 12 3z"/>
+            </svg>
+            카카오로 시작하기
+          </button>
+        </form>
       </div>
 
       <p style={{ fontSize: 11, color: '#2a2a38', marginTop: 40 }}>
