@@ -15,14 +15,16 @@ export default function SwipeableTabContent({
   children: React.ReactNode
 }) {
   const router = useRouter()
-  const ref = useRef<HTMLDivElement>(null)
   const startX = useRef(0)
   const startY = useRef(0)
+  const currentTabRef = useRef(currentTab)
+
+  // currentTab이 바뀔 때마다 ref 동기화 (클로저 문제 방지)
+  useEffect(() => {
+    currentTabRef.current = currentTab
+  }, [currentTab])
 
   useEffect(() => {
-    const el = ref.current
-    if (!el) return
-
     function onStart(e: TouchEvent) {
       startX.current = e.touches[0].clientX
       startY.current = e.touches[0].clientY
@@ -31,27 +33,25 @@ export default function SwipeableTabContent({
     function onEnd(e: TouchEvent) {
       const dx = e.changedTouches[0].clientX - startX.current
       const dy = Math.abs(e.changedTouches[0].clientY - startY.current)
-      if (Math.abs(dx) < 60 || dy > 100) return
+      if (Math.abs(dx) < 50 || dy > 120) return
 
-      const idx = TABS.indexOf(currentTab)
+      const idx = TABS.indexOf(currentTabRef.current)
+      if (idx === -1) return
+
       if (dx < 0) {
         router.push(`/houses/${houseId}?tab=${TABS[(idx + 1) % TABS.length]}`)
-      } else if (dx > 0) {
+      } else {
         router.push(`/houses/${houseId}?tab=${TABS[(idx - 1 + TABS.length) % TABS.length]}`)
       }
     }
 
-    el.addEventListener('touchstart', onStart, { passive: true })
-    el.addEventListener('touchend', onEnd, { passive: true })
+    document.addEventListener('touchstart', onStart, { passive: true })
+    document.addEventListener('touchend', onEnd, { passive: true })
     return () => {
-      el.removeEventListener('touchstart', onStart)
-      el.removeEventListener('touchend', onEnd)
+      document.removeEventListener('touchstart', onStart)
+      document.removeEventListener('touchend', onEnd)
     }
-  }, [currentTab, houseId, router])
+  }, [houseId, router])
 
-  return (
-    <div ref={ref}>
-      {children}
-    </div>
-  )
+  return <>{children}</>
 }
