@@ -93,7 +93,7 @@ export default async function HousePage({
       where: { houseId: id },
       orderBy: { doneAt: 'desc' },
       take: 50,
-      include: { inventory: { select: { name: true, category: true } } },
+      include: { inventory: { select: { id: true, name: true, category: true } } },
     }).then(histories => ({ histories })) :
     tab === 'utility' ? prisma.house.findUnique({
       where: { id },

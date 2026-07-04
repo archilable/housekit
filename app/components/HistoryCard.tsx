@@ -111,10 +111,10 @@ export default function HistoryCard({ h, houseId, highlight, deleteAction }: Pro
             </div>
           )}
           {h.inventory && (
-            <span style={{ fontSize: 12, color: '#60a5fa', background: '#0d1a2e', border: '0.5px solid #1d3a6e', borderRadius: 6, padding: '2px 8px', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <Link href={`/houses/${houseId}?tab=inventory&highlight=${h.inventory.id}`} style={{ fontSize: 12, color: '#60a5fa', background: '#0d1a2e', border: '0.5px solid #1d3a6e', borderRadius: 6, padding: '2px 8px', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
               <i className="ti ti-tool" style={{ fontSize: 11 }} />
               {h.inventory.name}
-            </span>
+            </Link>
           )}
           {(h.estimateImageBase64 || h.contractImageBase64) && (
             <div style={{ display: 'flex', gap: 6 }}>
