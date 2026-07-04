@@ -48,33 +48,13 @@ export default async function HousePage({
   const [{ id }, { tab = 'home', highlight }] = await Promise.all([params, searchParams])
 
   // 모든 주요 탭 데이터를 병렬로 한 번에 로드 → 탭 전환 즉시 처리
-  const [house, homeData, inventoryData, historyData, utilityData, doctorData, valuationData] = await Promise.all([
+  const [house, inventoryData, historyData, utilityData, doctorData, valuationData] = await Promise.all([
     prisma.house.findUnique({
       where: { id },
       select: {
         id: true, address: true, addressDetail: true, houseType: true,
         buildYear: true, landArea: true, buildArea: true, exclusiveArea: true, area: true,
         _count: { select: { inventories: true, histories: true, doctorHistories: true } },
-      },
-    }),
-    // 홈 탭
-    prisma.house.findUnique({
-      where: { id },
-      select: {
-        inventories: {
-          select: { id: true, name: true, installedAt: true, warrantyMonths: true, brand: true },
-          orderBy: [{ sortOrder: 'asc' }, { installedAt: 'desc' }],
-        },
-        histories: {
-          select: { id: true, title: true, category: true, doneAt: true, cost: true, company: true },
-          orderBy: { doneAt: 'desc' },
-        },
-        utilities: { orderBy: { month: 'desc' }, take: 2 },
-        doctorHistories: {
-          select: { id: true, resolved: true, createdAt: true },
-          orderBy: { createdAt: 'desc' },
-          take: 20,
-        },
       },
     }),
     // 설비 탭
@@ -119,26 +99,16 @@ export default async function HousePage({
     prisma.valuation.findUnique({ where: { houseId: id } }),
   ])
 
-  // 이전 코드 호환용 (탭별 렌더링에서 사용)
-  const tabData =
-    tab === 'home'      ? homeData :
-    tab === 'inventory' ? { inventories: inventoryData } :
-    tab === 'history'   ? { histories: historyData } :
-    tab === 'utility'   ? { utilities: utilityData } :
-    tab === 'doctor'    ? { doctorHistories: doctorData } :
-    tab === 'valuation' ? { valuation: valuationData } :
-    null
-
   if (!house) notFound()
 
   const score = calcHealthScore(house._count.inventories, house._count.histories)
   const scoreColor = score >= 70 ? '#34d399' : score >= 40 ? '#fbbf24' : '#f87171'
 
-  // 홈 탭 데이터
-  const homeInventories = tab === 'home' ? (tabData as any)?.inventories ?? [] : []
-  const homeHistories   = tab === 'home' ? (tabData as any)?.histories ?? [] : []
-  const homeUtilities   = tab === 'home' ? (tabData as any)?.utilities ?? [] : []
-  const homeDoctors     = tab === 'home' ? (tabData as any)?.doctorHistories ?? [] : []
+  // 홈 탭에서 개별 탭 데이터 재사용 (별도 homeData 쿼리 제거)
+  const homeInventories = inventoryData
+  const homeHistories   = historyData
+  const homeUtilities   = utilityData
+  const homeDoctors     = doctorData
 
   const thisMonth = new Date().toISOString().slice(0, 7)
   const prevMonth = (() => { const d = new Date(); d.setMonth(d.getMonth() - 1); return d.toISOString().slice(0, 7) })()
