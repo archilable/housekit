@@ -24,11 +24,14 @@ export async function POST(req: NextRequest) {
     })
 
     const text = message.content[0].type === 'text' ? message.content[0].text : '{}'
+    console.log('[extract-contact] Claude raw:', text)
     const match = text.match(/\{[\s\S]*\}/)
     const contact = match ? JSON.parse(match[0]) : {}
+    console.log('[extract-contact] parsed:', JSON.stringify(contact))
 
     return NextResponse.json(contact)
-  } catch {
+  } catch (e) {
+    console.error('[extract-contact] error:', e)
     return NextResponse.json({ name: '', phone: '', company: '' })
   }
 }
