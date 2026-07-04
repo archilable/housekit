@@ -148,6 +148,8 @@ export async function createHistory(formData: FormData) {
       contactImageBase64: (formData.get('contactImageBase64') as string) || null,
       contractImageBase64: (formData.get('contractImageBase64') as string) || null,
       estimateImageBase64: (formData.get('estimateImageBase64') as string) || null,
+      hasEstimate: !!(formData.get('estimateImageBase64') as string),
+      hasContract: !!(formData.get('contractImageBase64') as string),
     },
   })
 
@@ -173,6 +175,8 @@ export async function updateHistory(id: string, formData: FormData) {
       contactImageBase64: (formData.get('contactImageBase64') as string) || null,
       contractImageBase64: (formData.get('contractImageBase64') as string) || null,
       estimateImageBase64: (formData.get('estimateImageBase64') as string) || null,
+      hasEstimate: !!(formData.get('estimateImageBase64') as string),
+      hasContract: !!(formData.get('contractImageBase64') as string),
     },
   })
   revalidatePath(`/houses/${houseId}`)

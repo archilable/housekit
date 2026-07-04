@@ -13,7 +13,7 @@ import DoctorHistoryList from '@/app/components/DoctorHistoryList'
 import HouseIllustration from '@/app/components/HouseIllustration'
 import InviteButton from '@/app/components/InviteButton'
 import BackHomeButtons from '@/app/components/BackHomeButtons'
-import SwipeableTabContent from '@/app/components/SwipeableTabContent'
+import FastTabNav from '@/app/components/FastTabNav'
 
 export const dynamic = 'force-dynamic'
 
@@ -47,26 +47,18 @@ export default async function HousePage({
 }) {
   const [{ id }, { tab = 'home', highlight }] = await Promise.all([params, searchParams])
 
-  // 탭에 따라 필요한 데이터만 가져오기
-  const [house, tabData] = await Promise.all([
-    // 모든 탭 공통: 기본 정보 + 카운트만
+  // 모든 주요 탭 데이터를 병렬로 한 번에 로드 → 탭 전환 즉시 처리
+  const [house, homeData, inventoryData, historyData, utilityData, doctorData, valuationData] = await Promise.all([
     prisma.house.findUnique({
       where: { id },
       select: {
-        id: true,
-        address: true,
-        addressDetail: true,
-        houseType: true,
-        buildYear: true,
-        landArea: true,
-        buildArea: true,
-        exclusiveArea: true,
-        area: true,
+        id: true, address: true, addressDetail: true, houseType: true,
+        buildYear: true, landArea: true, buildArea: true, exclusiveArea: true, area: true,
         _count: { select: { inventories: true, histories: true, doctorHistories: true } },
       },
     }),
-    // 탭별 데이터
-    tab === 'home' ? prisma.house.findUnique({
+    // 홈 탭
+    prisma.house.findUnique({
       where: { id },
       select: {
         inventories: {
@@ -84,37 +76,58 @@ export default async function HousePage({
           take: 20,
         },
       },
-    }) :
-    tab === 'inventory' ? prisma.house.findUnique({
-      where: { id },
-      select: { inventories: { orderBy: [{ sortOrder: 'asc' }, { installedAt: 'desc' }] } },
-    }) :
-    tab === 'history' ? prisma.history.findMany({
+    }),
+    // 설비 탭
+    prisma.inventory.findMany({
+      where: { houseId: id },
+      orderBy: [{ sortOrder: 'asc' }, { installedAt: 'desc' }],
+      select: {
+        id: true, category: true, name: true, brand: true, model: true,
+        installedAt: true, warrantyMonths: true, notes: true, sortOrder: true,
+        contactName: true, contactPhone: true, contactCompany: true,
+        contactImageBase64: true,
+        houseId: true,
+      },
+    }),
+    // 이력 탭
+    prisma.history.findMany({
       where: { houseId: id },
       orderBy: { doneAt: 'desc' },
       take: 50,
-      include: { inventory: { select: { id: true, name: true, category: true } } },
-    }).then(histories => ({ histories })) :
-    tab === 'utility' ? prisma.house.findUnique({
-      where: { id },
-      select: { utilities: { orderBy: { month: 'desc' }, take: 12 } },
-    }) :
-    tab === 'doctor' ? prisma.house.findUnique({
-      where: { id },
       select: {
-        doctorHistories: {
-          orderBy: { createdAt: 'desc' },
-          take: 20,
-          select: { id: true, description: true, result: true, createdAt: true, houseId: true, resolved: true, resolvedAt: true },
-        },
+        id: true, title: true, category: true, doneAt: true, cost: true,
+        description: true, company: true,
+        contactName: true, contactPhone: true, contactCompany: true,
+        hasEstimate: true, hasContract: true,
+        inventory: { select: { id: true, name: true, category: true } },
       },
-    }) :
-    tab === 'valuation' ? prisma.house.findUnique({
-      where: { id },
-      select: { valuation: true },
-    }) :
-    null,
+    }).catch(() => []),
+    // 공과금 탭
+    prisma.utility.findMany({
+      where: { houseId: id },
+      orderBy: { month: 'desc' },
+      take: 12,
+    }),
+    // 닥터 탭
+    prisma.doctorHistory.findMany({
+      where: { houseId: id },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+      select: { id: true, description: true, result: true, createdAt: true, houseId: true, resolved: true, resolvedAt: true },
+    }),
+    // 시세 탭
+    prisma.valuation.findUnique({ where: { houseId: id } }),
   ])
+
+  // 이전 코드 호환용 (탭별 렌더링에서 사용)
+  const tabData =
+    tab === 'home'      ? homeData :
+    tab === 'inventory' ? { inventories: inventoryData } :
+    tab === 'history'   ? { histories: historyData } :
+    tab === 'utility'   ? { utilities: utilityData } :
+    tab === 'doctor'    ? { doctorHistories: doctorData } :
+    tab === 'valuation' ? { valuation: valuationData } :
+    null
 
   if (!house) notFound()
 
@@ -218,31 +231,14 @@ export default async function HousePage({
         </div>
       </div>
 
-      {/* Tab Nav */}
-      <div style={{ display: 'flex', gap: 0, borderBottom: '0.5px solid #1e1e28', marginBottom: 16, padding: '0 16px', overflowX: 'auto' }}>
-        {[
-          { key: 'home', label: '홈' },
-          { key: 'history', label: '이력' },
-          { key: 'inventory', label: '설비' },
-          { key: 'doctor', label: '닥터' },
-          { key: 'utility', label: '공과금' },
-          { key: 'valuation', label: '시세' },
-        ].map((t) => (
-          <Link key={t.key} href={`/houses/${id}?tab=${t.key}`} style={{
-            flex: 1, textAlign: 'center', padding: '10px 0', fontSize: 17,
-            color: tab === t.key ? '#60a5fa' : '#555',
-            borderBottom: tab === t.key ? '2px solid #60a5fa' : '2px solid transparent',
-            textDecoration: 'none', fontWeight: tab === t.key ? 500 : 400,
-            marginBottom: -0.5,
-          }}>{t.label}</Link>
-        ))}
-      </div>
+      {/* Tab Nav - 클라이언트 컴포넌트 (즉시 전환) */}
+      <FastTabNav houseId={id} initialTab={tab} />
 
-      <SwipeableTabContent houseId={id} currentTab={tab}>
+      {/* 탭 컨텐츠 컨테이너 - CSS show/hide */}
+      <div id={`tab-container-${id}`} data-active-tab={tab}>
 
-      {/* HOME TAB */}
-      {tab === 'home' && (
-        <div style={{ padding: '0 16px' }}>
+      {/* HOME TAB - 항상 렌더, CSS show/hide */}
+      <div className="fast-tab fast-tab-home" style={{ padding: '0 16px' }}>
           <p style={{ fontSize: 13, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>실시간 현황</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
             {/* 보증 알림 카드 */}
@@ -420,43 +416,39 @@ export default async function HousePage({
             </>
           )}
         </div>
-      )}
 
-      {/* INVENTORY TAB */}
-      {tab === 'inventory' && (
-        <div style={{ padding: '0 16px' }}>
+      {/* INVENTORY TAB - 항상 렌더, CSS show/hide */}
+      <div className="fast-tab fast-tab-inventory" style={{ padding: '0 16px' }}>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
             <Link href={`/houses/${id}/inventory/new`} style={{ background: '#1d4ed8', color: '#fff', padding: '8px 16px', borderRadius: 10, fontSize: 15, textDecoration: 'none', fontWeight: 500 }}>
               + 설비 추가
             </Link>
           </div>
-          {(tabData as any)?.inventories?.length === 0 ? (
+          {inventoryData.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '48px 0', color: '#555' }}>
               <i className="ti ti-package" style={{ fontSize: 42, display: 'block', marginBottom: 8 }} />
               <p>등록된 설비가 없습니다</p>
             </div>
           ) : (
-            <SortableInventoryList initialItems={(tabData as any)?.inventories ?? []} houseId={id} highlightId={highlight} />
+            <SortableInventoryList initialItems={inventoryData} houseId={id} highlightId={highlight} />
           )}
         </div>
-      )}
 
-      {/* HISTORY TAB */}
-      {tab === 'history' && (
-        <div style={{ padding: '0 16px' }}>
+      {/* HISTORY TAB - 항상 렌더, CSS show/hide */}
+      <div className="fast-tab fast-tab-history" style={{ padding: '0 16px' }}>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
             <Link href={`/houses/${id}/history/new`} style={{ background: '#1d4ed8', color: '#fff', padding: '8px 16px', borderRadius: 10, fontSize: 15, textDecoration: 'none', fontWeight: 500 }}>
               + 이력 추가
             </Link>
           </div>
-          {(tabData as any)?.histories?.length === 0 ? (
+          {historyData.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '48px 0', color: '#555' }}>
               <i className="ti ti-clipboard-list" style={{ fontSize: 42, display: 'block', marginBottom: 8 }} />
               <p>등록된 이력이 없습니다</p>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {((tabData as any)?.histories ?? []).map((h: any) => (
+              {historyData.map((h: any) => (
                 <HistoryCard
                   key={h.id}
                   h={h}
@@ -468,15 +460,14 @@ export default async function HousePage({
             </div>
           )}
         </div>
-      )}
 
       {/* UTILITY TAB */}
-      {tab === 'utility' && (() => {
-        const utilities = (tabData as any)?.utilities ?? []
+      {(() => {
+        const utilities = utilityData
         const tu = utilities.find((u: any) => u.month === thisMonth)
         const pu = utilities.find((u: any) => u.month === prevMonth)
         return (
-          <div style={{ padding: '0 16px' }}>
+          <div className="fast-tab fast-tab-utility" style={{ padding: '0 16px' }}>
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
               <Link href={`/houses/${id}/utility/new`} style={{ background: '#1d4ed8', color: '#fff', padding: '10px 18px', borderRadius: 10, fontSize: 16, textDecoration: 'none', fontWeight: 500 }}>
                 + 공과금 입력
@@ -550,8 +541,8 @@ export default async function HousePage({
       })()}
 
       {/* VALUATION TAB */}
-      {tab === 'valuation' && (() => {
-        const v = (tabData as any)?.valuation
+      {(() => {
+        const v = valuationData
         const isApt = house.houseType === '아파트'
         const buildYear = house.buildYear ?? new Date().getFullYear()
         const age = new Date().getFullYear() - buildYear
@@ -568,7 +559,7 @@ export default async function HousePage({
         }
         const fmt = (n: number) => n >= 100000000 ? `${(n / 100000000).toFixed(1)}억` : n >= 10000 ? `${Math.round(n / 10000).toLocaleString()}만원` : n.toLocaleString() + '원'
         return (
-          <div style={{ padding: '0 16px' }}>
+          <div className="fast-tab fast-tab-valuation" style={{ padding: '0 16px' }}>
             {v && estimatedPrice > 0 ? (
               <>
                 <div style={{ background: 'linear-gradient(135deg, #0d1a2e 0%, #111828 100%)', border: '0.5px solid #1e3a5f', borderRadius: 20, padding: 24, marginBottom: 16, textAlign: 'center' }}>
@@ -635,16 +626,14 @@ export default async function HousePage({
         )
       })()}
 
-      {/* DOCTOR TAB */}
-      {tab === 'doctor' && (
-        <>
-          <DoctorTab houseId={id} />
-          <DoctorHistoryList histories={(tabData as any)?.doctorHistories ?? []} />
-          <div style={{ height: 32 }} />
-        </>
-      )}
+      {/* DOCTOR TAB - 항상 렌더, CSS show/hide */}
+      <div className="fast-tab fast-tab-doctor">
+        <DoctorTab houseId={id} />
+        <DoctorHistoryList histories={doctorData} />
+        <div style={{ height: 32 }} />
+      </div>
 
-      </SwipeableTabContent>
+      </div>{/* tab-container */}
     </div>
   )
 }

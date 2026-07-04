@@ -190,6 +190,8 @@ model History {
   contactImageBase64   String?
   contractImageBase64  String?
   estimateImageBase64  String?
+  hasEstimate          Boolean    @default(false)
+  hasContract          Boolean    @default(false)
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
 }

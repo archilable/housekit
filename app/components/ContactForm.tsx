@@ -25,7 +25,7 @@ export default function ContactForm({ defaultName = '', defaultPhone = '', defau
   const [extractMsg, setExtractMsg] = useState<{ ok: boolean; text: string } | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
-  async function compressImage(file: File, maxSizeKB = 1024): Promise<string> {
+  async function compressImage(file: File, maxSizeKB = 300): Promise<string> {
     return new Promise((resolve) => {
       const img = new Image()
       const url = URL.createObjectURL(file)
@@ -33,7 +33,7 @@ export default function ContactForm({ defaultName = '', defaultPhone = '', defau
         URL.revokeObjectURL(url)
         const canvas = document.createElement('canvas')
         let { width, height } = img
-        const maxDim = 1600
+        const maxDim = 1200
         if (width > maxDim || height > maxDim) {
           const ratio = Math.min(maxDim / width, maxDim / height)
           width = Math.round(width * ratio)
@@ -42,9 +42,9 @@ export default function ContactForm({ defaultName = '', defaultPhone = '', defau
         canvas.width = width
         canvas.height = height
         canvas.getContext('2d')!.drawImage(img, 0, 0, width, height)
-        let quality = 0.85
+        let quality = 0.80
         let dataUrl = canvas.toDataURL('image/jpeg', quality)
-        while (dataUrl.length > maxSizeKB * 1024 * 1.37 && quality > 0.3) {
+        while (dataUrl.length > maxSizeKB * 1024 * 1.37 && quality > 0.2) {
           quality -= 0.1
           dataUrl = canvas.toDataURL('image/jpeg', quality)
         }

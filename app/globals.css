@@ -80,3 +80,12 @@ input::placeholder, textarea::placeholder {
   display: none;
 }
 
+
+/* FastTabSwitcher: 빠른 탭 전환을 위한 show/hide */
+.fast-tab { display: none; }
+[data-active-tab="home"]      .fast-tab-home      { display: block; }
+[data-active-tab="inventory"] .fast-tab-inventory { display: block; }
+[data-active-tab="history"]   .fast-tab-history   { display: block; }
+[data-active-tab="utility"]   .fast-tab-utility   { display: block; }
+[data-active-tab="doctor"]    .fast-tab-doctor    { display: block; }
+[data-active-tab="valuation"] .fast-tab-valuation { display: block; }

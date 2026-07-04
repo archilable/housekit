@@ -18,6 +18,34 @@ interface Props {
   defaultEstimateImage?: string
 }
 
+async function compressToBase64(file: File, maxSizeKB = 300): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      const canvas = document.createElement('canvas')
+      let { width, height } = img
+      const maxDim = 1200
+      if (width > maxDim || height > maxDim) {
+        const ratio = Math.min(maxDim / width, maxDim / height)
+        width = Math.round(width * ratio)
+        height = Math.round(height * ratio)
+      }
+      canvas.width = width; canvas.height = height
+      canvas.getContext('2d')!.drawImage(img, 0, 0, width, height)
+      let quality = 0.80
+      let dataUrl = canvas.toDataURL('image/jpeg', quality)
+      while (dataUrl.length > maxSizeKB * 1024 * 1.37 && quality > 0.2) {
+        quality -= 0.1
+        dataUrl = canvas.toDataURL('image/jpeg', quality)
+      }
+      resolve(dataUrl.split(',')[1])
+    }
+    img.src = url
+  })
+}
+
 function ImageUpload({ label, name, icon, color, defaultImage = '' }: {
   label: string; name: string; icon: string; color: string; defaultImage?: string
 }) {
@@ -26,13 +54,9 @@ function ImageUpload({ label, name, icon, color, defaultImage = '' }: {
 
   async function handleFile(file: File) {
     setLoading(true)
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const base64 = (e.target?.result as string).split(',')[1]
-      setImage(base64)
-      setLoading(false)
-    }
-    reader.readAsDataURL(file)
+    const base64 = await compressToBase64(file)
+    setImage(base64)
+    setLoading(false)
   }
 
   return (
@@ -92,7 +116,7 @@ export default function HistoryContactForm({
         URL.revokeObjectURL(url)
         const canvas = document.createElement('canvas')
         let { width, height } = img
-        const maxDim = 1600
+        const maxDim = 1200
         if (width > maxDim || height > maxDim) {
           const ratio = Math.min(maxDim / width, maxDim / height)
           width = Math.round(width * ratio)
@@ -101,9 +125,9 @@ export default function HistoryContactForm({
         canvas.width = width
         canvas.height = height
         canvas.getContext('2d')!.drawImage(img, 0, 0, width, height)
-        let quality = 0.85
+        let quality = 0.80
         let dataUrl = canvas.toDataURL('image/jpeg', quality)
-        while (dataUrl.length > 1024 * 1024 * 1.37 && quality > 0.3) {
+        while (dataUrl.length > 300 * 1024 * 1.37 && quality > 0.2) {
           quality -= 0.1
           dataUrl = canvas.toDataURL('image/jpeg', quality)
         }

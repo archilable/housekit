@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 function ImageModal({ src, label, onClose }: { src: string; label: string; onClose: () => void }) {
@@ -53,11 +53,23 @@ interface Props {
 export default function HistoryCard({ h, houseId, highlight, deleteAction }: Props) {
   const [expanded, setExpanded] = useState(false)
   const [modalImage, setModalImage] = useState<{ src: string; label: string } | null>(null)
+  const [images, setImages] = useState<{ estimateImageBase64?: string; contractImageBase64?: string } | null>(null)
+  const [loadingImages, setLoadingImages] = useState(false)
   const icon = CATEGORY_ICONS[h.category] || 'ti-pin'
   const color = CATEGORY_COLORS[h.category] || '#888'
   const isHighlighted = highlight === h.id
 
-  const hasDetail = h.description || h.contactCompany || h.company || h.contactName || h.contactPhone || h.inventory || h.estimateImageBase64 || h.contractImageBase64
+  const hasDetail = h.description || h.contactCompany || h.company || h.contactName || h.contactPhone || h.inventory || h.hasEstimate || h.hasContract
+
+  useEffect(() => {
+    if (!expanded || !(h.hasEstimate || h.hasContract) || images || loadingImages) return
+    setLoadingImages(true)
+    fetch(`/api/history-image/${h.id}`)
+      .then(r => r.json())
+      .then(data => { setImages(data); setLoadingImages(false) })
+      .catch(() => setLoadingImages(false))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expanded])
 
   return (
     <div
@@ -140,15 +152,18 @@ export default function HistoryCard({ h, houseId, highlight, deleteAction }: Pro
               {h.inventory.name}
             </Link>
           )}
-          {(h.estimateImageBase64 || h.contractImageBase64) && (
+          {(h.hasEstimate || h.hasContract) && (
             <div style={{ display: 'flex', gap: 10, marginTop: 4, flexWrap: 'wrap' }}>
-              {h.estimateImageBase64 && (
+              {loadingImages && (
+                <p style={{ fontSize: 13, color: '#555' }}>이미지 불러오는 중...</p>
+              )}
+              {h.hasEstimate && images?.estimateImageBase64 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-start' }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={`data:image/jpeg;base64,${h.estimateImageBase64}`}
+                    src={`data:image/jpeg;base64,${images.estimateImageBase64}`}
                     alt="견적서"
-                    onClick={() => setModalImage({ src: `data:image/jpeg;base64,${h.estimateImageBase64}`, label: '견적서' })}
+                    onClick={() => setModalImage({ src: `data:image/jpeg;base64,${images!.estimateImageBase64!}`, label: '견적서' })}
                     style={{ width: 100, height: 70, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', border: '1px solid #2a1a5e' }}
                   />
                   <span style={{ fontSize: 12, color: '#a78bfa', display: 'flex', alignItems: 'center', gap: 3 }}>
@@ -156,13 +171,13 @@ export default function HistoryCard({ h, houseId, highlight, deleteAction }: Pro
                   </span>
                 </div>
               )}
-              {h.contractImageBase64 && (
+              {h.hasContract && images?.contractImageBase64 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-start' }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={`data:image/jpeg;base64,${h.contractImageBase64}`}
+                    src={`data:image/jpeg;base64,${images.contractImageBase64}`}
                     alt="계약서"
-                    onClick={() => setModalImage({ src: `data:image/jpeg;base64,${h.contractImageBase64}`, label: '계약서' })}
+                    onClick={() => setModalImage({ src: `data:image/jpeg;base64,${images!.contractImageBase64!}`, label: '계약서' })}
                     style={{ width: 100, height: 70, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', border: '1px solid #0d3020' }}
                   />
                   <span style={{ fontSize: 12, color: '#34d399', display: 'flex', alignItems: 'center', gap: 3 }}>
