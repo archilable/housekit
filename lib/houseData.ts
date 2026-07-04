@@ -29,7 +29,7 @@ export async function getHousePageData(id: string) {
                   (SELECT COUNT(*) FROM Inventory WHERE houseId = h.id) as inventoryCount,
                   (SELECT COUNT(*) FROM History WHERE houseId = h.id) as historyCount,
                   (SELECT COUNT(*) FROM DoctorHistory WHERE houseId = h.id) as doctorCount
-                FROM House WHERE h.id = ?`,
+                FROM House h WHERE h.id = ?`,
           args: [id],
         },
         // 1. 설비
