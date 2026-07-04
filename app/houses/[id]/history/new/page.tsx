@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { createHistory } from '@/lib/actions'
 import { prisma } from '@/lib/db'
 import BackHomeButtons from '@/app/components/BackHomeButtons'
@@ -36,19 +38,17 @@ export default async function NewHistoryPage({ params, searchParams }: {
       <form action={createHistory} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         <input type="hidden" name="houseId" value={id} />
 
-        {inventories.length > 0 && (
-          <div style={fieldStyle}>
-            <label style={labelStyle}>관련 설비</label>
-            <select name="inventoryId" defaultValue={sp.inventoryId ?? ''} style={{ ...inputStyle, appearance: 'none' as const }}>
-              <option value="">설비 선택 (선택사항)</option>
-              {inventories.map(inv => (
-                <option key={inv.id} value={inv.id}>
-                  [{inv.category}] {inv.name}{inv.brand ? ` · ${inv.brand}` : ''}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        <div style={fieldStyle}>
+          <label style={labelStyle}>관련 설비</label>
+          <select name="inventoryId" defaultValue={sp.inventoryId ?? ''} style={{ ...inputStyle, appearance: 'none' as const }}>
+            <option value="">설비 선택 (선택사항)</option>
+            {inventories.map(inv => (
+              <option key={inv.id} value={inv.id}>
+                [{inv.category}] {inv.name}{inv.brand ? ` · ${inv.brand}` : ''}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div style={fieldStyle}>
           <label style={labelStyle}>구분 <span style={{ color: '#f87171' }}>*</span></label>
