@@ -41,8 +41,10 @@ function parseContact(ocrText: string): { name: string; phone: string; company: 
   // 직함 키워드 앞의 텍스트에서 회사명 찾기
   const beforeTitle = ocrText.match(/^(.+?)(?:대표|팀장|과장|부장|차장|매니저|Manager|Director|CEO|이사|사원|주임|선임|책임|수석|원장|소장|실장|본부장)/i)
   if (beforeTitle) {
-    // 회사명에서 이름 제거
-    company = beforeTitle[1].replace(name, '').trim().replace(/\s+/g, ' ')
+    company = beforeTitle[1]
+      .replace(name, '')
+      .replace(/[a-z]+\s+[a-z]+/gi, '') // 영문 로마자 표기 제거
+      .trim().replace(/\s+/g, ' ')
   }
   if (!company) {
     // 이메일 도메인에서 회사명
