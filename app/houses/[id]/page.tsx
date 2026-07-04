@@ -73,7 +73,7 @@ export default async function HousePage({
           orderBy: [{ sortOrder: 'asc' }, { installedAt: 'desc' }],
         },
         histories: {
-          select: { id: true, title: true, category: true, doneAt: true, cost: true, company: true, inventory: { select: { name: true, category: true } } },
+          select: { id: true, title: true, category: true, doneAt: true, cost: true, company: true },
           orderBy: { doneAt: 'desc' },
           take: 5,
         },
@@ -89,10 +89,12 @@ export default async function HousePage({
       where: { id },
       select: { inventories: { orderBy: [{ sortOrder: 'asc' }, { installedAt: 'desc' }] } },
     }) :
-    tab === 'history' ? prisma.house.findUnique({
-      where: { id },
-      select: { histories: { orderBy: { doneAt: 'desc' }, take: 50, include: { inventory: { select: { name: true, category: true } } } } },
-    }) :
+    tab === 'history' ? prisma.history.findMany({
+      where: { houseId: id },
+      orderBy: { doneAt: 'desc' },
+      take: 50,
+      include: { inventory: { select: { name: true, category: true } } },
+    }).then(histories => ({ histories })) :
     tab === 'utility' ? prisma.house.findUnique({
       where: { id },
       select: { utilities: { orderBy: { month: 'desc' }, take: 12 } },
