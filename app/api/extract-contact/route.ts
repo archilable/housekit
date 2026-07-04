@@ -27,20 +27,19 @@ function parseContact(ocrText: string): { name: string; phone: string; company: 
   const phoneMatch = ocrText.match(/\+?82[-\s]?10[-\s]?\d{3,4}[-\s]?\d{4}|0\d{1,2}[-\s.]?\d{3,4}[-\s.]?\d{4}|\d{4}-\d{4}/)
   const phone = phoneMatch ? phoneMatch[0] : ''
 
-  // 2. 이름: 직함 바로 앞 한글 추출 (OCR 띄어쓰기 오류 합치기)
+  // 2. 이름: 로마자 표기 패턴 우선 (박규남 gyunam park), 없으면 직함 앞 한글
   let name = ''
   let nameIndex = -1
-  const titleMatch = ocrText.match(new RegExp(`([가-힣\\s]{2,10})\\s*(${TITLE_KEYWORDS})`, 'i'))
-  if (titleMatch && titleMatch.index !== undefined) {
-    // 직함 앞 한글만 추출하여 공백 제거 (김시 현 → 김시현)
-    name = titleMatch[1].replace(/\s/g, '').trim()
-    nameIndex = titleMatch.index
+  const nameRoman = ocrText.match(/([가-힣]{2,4})\s+[a-z]{2,}\s+[a-z]{2,}/)
+  if (nameRoman && nameRoman.index !== undefined) {
+    name = nameRoman[1]
+    nameIndex = nameRoman.index
   } else {
-    // 직함 없으면 로마자 앞 한글 이름
-    const nameRoman = ocrText.match(/([가-힣]{2,4})\s+[a-z]{2,}\s+[a-z]{2,}/)
-    if (nameRoman && nameRoman.index !== undefined) {
-      name = nameRoman[1]
-      nameIndex = nameRoman.index
+    // 직함 바로 앞 한글 (공백 합치기 — 김시 현 → 김시현)
+    const titleMatch = ocrText.match(new RegExp(`([가-힣][가-힣\\s]{1,8})\\s+(${TITLE_KEYWORDS})`, 'i'))
+    if (titleMatch && titleMatch.index !== undefined) {
+      name = titleMatch[1].replace(/\s/g, '').trim()
+      nameIndex = titleMatch.index
     }
   }
 
