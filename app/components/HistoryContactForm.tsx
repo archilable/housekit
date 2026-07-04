@@ -66,11 +66,10 @@ function MultiImageUpload({ label, namePrefix, icon, color, defaultImages = [] }
   return (
     <div>
       <label style={labelStyle}>{label}</label>
-      {/* hidden inputs for each image */}
+      {/* hidden inputs — 같은 name으로 여러 개, getAll()로 읽음 */}
       {images.map((img, i) => (
-        <input key={i} type="hidden" name={`${namePrefix}_${i}`} value={img} />
+        <input key={i} type="hidden" name={namePrefix} value={img} />
       ))}
-      <input type="hidden" name={`${namePrefix}_count`} value={images.length} />
 
       {/* 썸네일 목록 */}
       {images.length > 0 && (

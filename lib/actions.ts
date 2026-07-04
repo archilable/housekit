@@ -122,14 +122,8 @@ export async function deleteInventory(id: string, houseId: string) {
 }
 
 // History actions
-function extractImages(formData: FormData, prefix: string): string[] {
-  const count = parseInt((formData.get(`${prefix}_count`) as string) || '0')
-  const images: string[] = []
-  for (let i = 0; i < count; i++) {
-    const val = formData.get(`${prefix}_${i}`) as string
-    if (val) images.push(val)
-  }
-  return images
+function extractImages(formData: FormData, name: string): string[] {
+  return (formData.getAll(name) as string[]).filter(Boolean)
 }
 
 export async function createHistory(formData: FormData) {
