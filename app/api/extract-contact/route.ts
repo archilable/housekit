@@ -28,11 +28,13 @@ export async function POST(req: NextRequest) {
     })
 
     const data = await res.json()
+    console.log('[extract-contact] OpenRouter response:', JSON.stringify(data).slice(0, 500))
     const text = data.choices?.[0]?.message?.content ?? '{}'
     const match = text.match(/\{[\s\S]*\}/)
     const contact = match ? JSON.parse(match[0]) : {}
     return NextResponse.json(contact)
-  } catch {
+  } catch (e) {
+    console.error('[extract-contact] error:', e)
     return NextResponse.json({ name: '', phone: '', company: '' })
   }
 }
