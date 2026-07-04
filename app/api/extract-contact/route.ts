@@ -21,33 +21,41 @@ async function ocrExtract(base64Data: string, mediaType: string): Promise<string
 }
 
 function parseContact(ocrText: string): { name: string; phone: string; company: string } {
-  const lines = ocrText.split(/\n/).map(l => l.trim()).filter(Boolean)
+  // 전화번호 추출 (T 1544-7777, +82 10 xxxx, 010-xxxx 등)
+  const phoneMatch = ocrText.match(/(?:T\.?\s*)?(\+?82[-\s]?10[-\s]?\d{3,4}[-\s]?\d{4}|0\d{1,2}[-\s.]?\d{3,4}[-\s.]?\d{4}|\d{4}-\d{4})/)
+  const phone = phoneMatch ? phoneMatch[1] ?? phoneMatch[0] : ''
 
-  // 전화번호 추출
-  const phoneMatch = ocrText.match(/(\+?82[-\s]?10[-\s]?\d{3,4}[-\s]?\d{4}|0\d{1,2}[-\s]?\d{3,4}[-\s]?\d{4}|\d{4}-\d{4})/)
-  const phone = phoneMatch ? phoneMatch[0].replace(/\s/g, '-').replace(/--/g, '-') : ''
+  // 이름: 한글 2~4자이면서 영문 이름이 바로 뒤에 오는 패턴 (박규남 gyunam park)
+  let name = ''
+  const nameWithRoman = ocrText.match(/([가-힣]{2,4})\s+[a-z]{2,}\s+[a-z]{2,}/i)
+  if (nameWithRoman) {
+    name = nameWithRoman[1]
+  } else {
+    // 단독 한글 이름 (줄바꿈 전후로 2~4자)
+    const nameOnly = ocrText.match(/(?:^|\s)([가-힣]{2,4})(?:\s|$)/)
+    if (nameOnly) name = nameOnly[1]
+  }
 
-  // 이메일에서 도메인으로 회사명 추출
-  const emailMatch = ocrText.match(/[\w.+-]+@[\w-]+\.[\w.]+/)
+  // 회사명: 첫 번째 의미있는 덩어리 (이름보다 앞에 나오는 경우 많음)
   let company = ''
-  if (emailMatch) {
-    const domain = emailMatch[0].split('@')[1].split('.')[0]
-    company = domain
+  // 직함 키워드 앞의 텍스트에서 회사명 찾기
+  const beforeTitle = ocrText.match(/^(.+?)(?:대표|팀장|과장|부장|차장|매니저|Manager|Director|CEO|이사|사원|주임|선임|책임|수석|원장|소장|실장|본부장)/i)
+  if (beforeTitle) {
+    // 회사명에서 이름 제거
+    company = beforeTitle[1].replace(name, '').trim().replace(/\s+/g, ' ')
+  }
+  if (!company) {
+    // 이메일 도메인에서 회사명
+    const emailMatch = ocrText.match(/[\w.+-]+@([\w-]+)\./)
+    if (emailMatch) company = emailMatch[1]
+  }
+  if (!company) {
+    // 첫 줄을 회사명으로
+    const firstLine = ocrText.split(/\s{2,}|\n/)[0].replace(name, '').trim()
+    if (firstLine.length > 1) company = firstLine
   }
 
-  // 회사명: 주식회사, (주), Inc, Co. 등 패턴
-  const companyMatch = ocrText.match(/(주식회사\s*[\w가-힣]+|[\w가-힣]+\s*(?:주식회사|\(주\))|[\w가-힣A-Za-z]+\s*(?:Inc|Co\.|Corp|Ltd)\.?)/)
-  if (companyMatch) company = companyMatch[0].trim()
-
-  // 이름: 첫 번째 한글 단어 (2~4글자)
-  const nameMatch = ocrText.match(/^([가-힣]{2,4})\b/)
-  let name = nameMatch ? nameMatch[1] : ''
-  if (!name && lines.length > 0) {
-    const firstKorean = lines.find(l => /^[가-힣]{2,4}$/.test(l.trim()))
-    if (firstKorean) name = firstKorean.trim()
-  }
-
-  return { name, phone, company }
+  return { name, phone, company: company.replace(/\s+/g, ' ').trim() }
 }
 
 export async function POST(req: NextRequest) {
