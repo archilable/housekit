@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizePackageImports: ['@vercel/analytics'],
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
   },
 };
 
