@@ -1,5 +1,4 @@
 import { createClient } from '@libsql/client'
-import { unstable_cache } from 'next/cache'
 
 function getClient() {
   return createClient({
@@ -8,10 +7,8 @@ function getClient() {
   })
 }
 
-export const getHousePageData = (id: string) =>
-  unstable_cache(
-    async () => {
-      const client = getClient()
+export async function getHousePageData(id: string) {
+  const client = getClient()
 
       // 6개 쿼리를 한 번의 HTTP 요청으로 전송 (batch)
       const results = await client.batch([
@@ -153,8 +150,5 @@ export const getHousePageData = (id: string) =>
         createdAt: new Date(String(valRow.createdAt)),
       } : null
 
-      return { house, inventoryData, historyData, utilityData, doctorData, valuationData }
-    },
-    [`house-page-${id}`],
-    { revalidate: 30 }
-  )()
+  return { house, inventoryData, historyData, utilityData, doctorData, valuationData }
+}

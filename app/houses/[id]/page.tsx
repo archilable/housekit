@@ -15,7 +15,7 @@ import InviteButton from '@/app/components/InviteButton'
 import BackHomeButtons from '@/app/components/BackHomeButtons'
 import FastTabNav from '@/app/components/FastTabNav'
 
-export const revalidate = 60 // 60초 캐시, mutations 시 revalidatePath로 갱신
+export const dynamic = 'force-dynamic'
 
 function getWarrantyStatus(installedAt: Date | null, warrantyMonths: number | null) {
   if (!installedAt || !warrantyMonths) return null
