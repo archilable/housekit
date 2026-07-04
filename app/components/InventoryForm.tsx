@@ -31,6 +31,7 @@ export default function InventoryForm({ houseId, action, defaultValues = {} }: P
   const [model, setModel] = useState(defaultValues.model ?? '')
   const [scanning, setScanning] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
+  const [scanError, setScanError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
   async function handleScan(e: React.ChangeEvent<HTMLInputElement>) {
@@ -42,15 +43,20 @@ export default function InventoryForm({ houseId, action, defaultValues = {} }: P
       const imageBase64 = ev.target?.result as string
       setPreview(imageBase64)
       setScanning(true)
+      setScanError(null)
       try {
         const res = await fetch('/api/scan-model', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ imageBase64 }),
         })
+        if (!res.ok) throw new Error(`서버 오류 ${res.status}`)
         const data = await res.json()
         if (data.brand) setBrand(data.brand)
         if (data.model) setModel(data.model)
+        if (!data.brand && !data.model) setScanError('모델명을 인식하지 못했어요. 라벨이 잘 보이게 다시 찍어주세요.')
+      } catch (e: unknown) {
+        setScanError(e instanceof Error ? e.message : '인식 실패')
       } finally {
         setScanning(false)
       }
@@ -118,8 +124,11 @@ export default function InventoryForm({ houseId, action, defaultValues = {} }: P
         {scanning && (
           <p style={{ fontSize: 13, color: '#60a5fa', textAlign: 'center', marginTop: 8 }}>AI가 모델명을 인식하고 있어요...</p>
         )}
-        {!scanning && (brand || model) && preview && (
+        {!scanning && (brand || model) && preview && !scanError && (
           <p style={{ fontSize: 13, color: '#34d399', textAlign: 'center', marginTop: 8 }}>✅ 인식 완료! 아래 내용을 확인해주세요</p>
+        )}
+        {scanError && (
+          <p style={{ fontSize: 13, color: '#f87171', textAlign: 'center', marginTop: 8 }}>⚠️ {scanError}</p>
         )}
       </div>
 
