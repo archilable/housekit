@@ -13,6 +13,16 @@ const TAB_LABELS: Record<string, string> = {
 export default function FastTabNav({ houseId, initialTab }: { houseId: string; initialTab: string }) {
   const [active, setActive] = useState(initialTab)
 
+  // 페이지 캐시로 항상 'home'으로 서버 렌더됨 → 마운트 즉시 URL에서 올바른 탭 적용
+  useEffect(() => {
+    const urlTab = new URLSearchParams(window.location.search).get('tab') || 'home'
+    if (urlTab !== initialTab) {
+      setActive(urlTab)
+      document.getElementById(`tab-container-${houseId}`)?.setAttribute('data-active-tab', urlTab)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   function switchTab(key: string) {
     if (!FAST_TABS.has(key)) {
       // 느린 탭은 URL 이동

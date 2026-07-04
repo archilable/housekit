@@ -57,7 +57,13 @@ export default function HistoryCard({ h, houseId, highlight, deleteAction }: Pro
   const [loadingImages, setLoadingImages] = useState(false)
   const icon = CATEGORY_ICONS[h.category] || 'ti-pin'
   const color = CATEGORY_COLORS[h.category] || '#888'
-  const isHighlighted = highlight === h.id
+  // highlight는 서버에서 undefined → 클라이언트에서 URL로 확인
+  const [urlHighlight, setUrlHighlight] = useState<string | undefined>(highlight)
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search)
+    setUrlHighlight(p.get('highlight') ?? undefined)
+  }, [])
+  const isHighlighted = urlHighlight === h.id
 
   const hasDetail = h.description || h.contactCompany || h.company || h.contactName || h.contactPhone || h.inventory || h.hasEstimate || h.hasContract
 
