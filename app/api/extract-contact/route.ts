@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'meta-llama/llama-4-maverick:free',
+        model: 'google/gemma-4-31b-it:free',
         max_tokens: 256,
         messages: [{
           role: 'user',
