@@ -20,34 +20,41 @@ async function ocrExtract(base64Data: string, mediaType: string): Promise<string
   return data?.ParsedResults?.[0]?.ParsedText ?? ''
 }
 
+const TITLE_KEYWORDS = '대표|팀장|과장|부장|차장|매니저|이사|사원|주임|선임|책임|수석|원장|소장|실장|본부장|Director|Manager|CEO|Designer'
+
 function parseContact(ocrText: string): { name: string; phone: string; company: string } {
   // 1. 전화번호
   const phoneMatch = ocrText.match(/\+?82[-\s]?10[-\s]?\d{3,4}[-\s]?\d{4}|0\d{1,2}[-\s.]?\d{3,4}[-\s.]?\d{4}|\d{4}-\d{4}/)
   const phone = phoneMatch ? phoneMatch[0] : ''
 
-  // 2. 이름: 한글 2~4자 뒤에 소문자 로마자가 오는 패턴 우선 (박규남 gyunam park)
+  // 2. 이름: 직함 바로 앞 한글 추출 (OCR 띄어쓰기 오류 합치기)
   let name = ''
-  let nameIndex = ocrText.length
-  const nameRoman = ocrText.match(/([가-힣]{2,4})\s+[a-z]{2,}\s+[a-z]{2,}/)
-  if (nameRoman && nameRoman.index !== undefined) {
-    name = nameRoman[1]
-    nameIndex = nameRoman.index
+  let nameIndex = -1
+  const titleMatch = ocrText.match(new RegExp(`([가-힣\\s]{2,10})\\s*(${TITLE_KEYWORDS})`, 'i'))
+  if (titleMatch && titleMatch.index !== undefined) {
+    // 직함 앞 한글만 추출하여 공백 제거 (김시 현 → 김시현)
+    name = titleMatch[1].replace(/\s/g, '').trim()
+    nameIndex = titleMatch.index
   } else {
-    // 단독 한글 이름
-    const nameAlone = ocrText.match(/([가-힣]{2,4})(?=\s|$)/)
-    if (nameAlone && nameAlone.index !== undefined) {
-      name = nameAlone[1]
-      nameIndex = nameAlone.index
+    // 직함 없으면 로마자 앞 한글 이름
+    const nameRoman = ocrText.match(/([가-힣]{2,4})\s+[a-z]{2,}\s+[a-z]{2,}/)
+    if (nameRoman && nameRoman.index !== undefined) {
+      name = nameRoman[1]
+      nameIndex = nameRoman.index
     }
   }
 
-  // 3. 회사명: 이름이 등장하기 전 텍스트
+  // 3. 회사명: 이름 등장 전 텍스트 OR 이름 뒤 짧은 영문 단어
   let company = ''
   if (nameIndex > 0) {
     company = ocrText.slice(0, nameIndex).trim().replace(/[|\s]+$/, '').trim()
   }
-  // 이메일 도메인으로 보완
-  if (!company) {
+  // 회사명이 이름 뒤에 있는 경우 (anycar 같은 짧은 영문 브랜드)
+  if (!company || company.length < 2) {
+    const brandMatch = ocrText.match(/\b([A-Za-z가-힣][A-Za-z가-힣]{1,15})\s+(?:애니|서비스|센터|그룹|코리아)/)
+    if (brandMatch) company = brandMatch[1]
+  }
+  if (!company || company.length < 2) {
     const emailMatch = ocrText.match(/[\w.+-]+@([\w-]+)\./)
     if (emailMatch) company = emailMatch[1]
   }
