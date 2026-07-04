@@ -84,6 +84,35 @@ export default function HistoryContactForm({
   const [extracting, setExtracting] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
+  async function compressImage(file: File): Promise<string> {
+    return new Promise((resolve) => {
+      const img = new Image()
+      const url = URL.createObjectURL(file)
+      img.onload = () => {
+        URL.revokeObjectURL(url)
+        const canvas = document.createElement('canvas')
+        let { width, height } = img
+        const maxDim = 1600
+        if (width > maxDim || height > maxDim) {
+          const ratio = Math.min(maxDim / width, maxDim / height)
+          width = Math.round(width * ratio)
+          height = Math.round(height * ratio)
+        }
+        canvas.width = width
+        canvas.height = height
+        canvas.getContext('2d')!.drawImage(img, 0, 0, width, height)
+        let quality = 0.85
+        let dataUrl = canvas.toDataURL('image/jpeg', quality)
+        while (dataUrl.length > 1024 * 1024 * 1.37 && quality > 0.3) {
+          quality -= 0.1
+          dataUrl = canvas.toDataURL('image/jpeg', quality)
+        }
+        resolve(dataUrl)
+      }
+      img.src = url
+    })
+  }
+
   async function handleCardImage(file: File) {
     const reader = new FileReader()
     reader.onload = async (e) => {
@@ -91,10 +120,11 @@ export default function HistoryContactForm({
       setContactImage(base64)
       setExtracting(true)
       try {
+        const compressed = await compressImage(file)
         const res = await fetch('/api/extract-contact', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ imageBase64: base64, mediaType: file.type }),
+          body: JSON.stringify({ imageBase64: compressed, mediaType: 'image/jpeg' }),
         })
         const data = await res.json()
         if (data.name) setName(data.name)
