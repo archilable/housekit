@@ -130,9 +130,12 @@ export async function createHistory(formData: FormData) {
   const company = formData.get('company') as string
   const cost = formData.get('cost') ? parseInt(formData.get('cost') as string) : null
   const doneAt = formData.get('doneAt') as string
+  const inventoryId = (formData.get('inventoryId') as string) || null
+
   await prisma.history.create({
     data: {
       houseId,
+      inventoryId,
       category,
       title,
       description: description || null,
@@ -157,6 +160,7 @@ export async function updateHistory(id: string, formData: FormData) {
   await prisma.history.update({
     where: { id },
     data: {
+      inventoryId: (formData.get('inventoryId') as string) || null,
       category: formData.get('category') as string,
       title: formData.get('title') as string,
       description: (formData.get('description') as string) || null,

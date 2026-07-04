@@ -1,4 +1,5 @@
 import { createHistory } from '@/lib/actions'
+import { prisma } from '@/lib/db'
 import BackHomeButtons from '@/app/components/BackHomeButtons'
 import HistoryContactForm from '@/app/components/HistoryContactForm'
 import SubmitButton from '@/app/components/SubmitButton'
@@ -13,11 +14,17 @@ const fieldStyle = { display: 'flex', flexDirection: 'column' as const }
 
 export default async function NewHistoryPage({ params, searchParams }: {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ title?: string; category?: string }>
+  searchParams: Promise<{ title?: string; category?: string; inventoryId?: string }>
 }) {
   const { id } = await params
   const sp = await searchParams
   const today = new Date().toISOString().split('T')[0]
+
+  const inventories = await prisma.inventory.findMany({
+    where: { houseId: id },
+    orderBy: [{ category: 'asc' }, { name: 'asc' }],
+    select: { id: true, name: true, category: true, brand: true },
+  })
 
   return (
     <div style={{ padding: '20px 16px', maxWidth: '100%' }}>
@@ -28,6 +35,20 @@ export default async function NewHistoryPage({ params, searchParams }: {
 
       <form action={createHistory} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         <input type="hidden" name="houseId" value={id} />
+
+        {inventories.length > 0 && (
+          <div style={fieldStyle}>
+            <label style={labelStyle}>관련 설비</label>
+            <select name="inventoryId" defaultValue={sp.inventoryId ?? ''} style={{ ...inputStyle, appearance: 'none' as const }}>
+              <option value="">설비 선택 (선택사항)</option>
+              {inventories.map(inv => (
+                <option key={inv.id} value={inv.id}>
+                  [{inv.category}] {inv.name}{inv.brand ? ` · ${inv.brand}` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div style={fieldStyle}>
           <label style={labelStyle}>구분 <span style={{ color: '#f87171' }}>*</span></label>
