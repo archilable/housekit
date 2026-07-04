@@ -122,6 +122,16 @@ export async function deleteInventory(id: string, houseId: string) {
 }
 
 // History actions
+function extractImages(formData: FormData, prefix: string): string[] {
+  const count = parseInt((formData.get(`${prefix}_count`) as string) || '0')
+  const images: string[] = []
+  for (let i = 0; i < count; i++) {
+    const val = formData.get(`${prefix}_${i}`) as string
+    if (val) images.push(val)
+  }
+  return images
+}
+
 export async function createHistory(formData: FormData) {
   const houseId = formData.get('houseId') as string
   const category = formData.get('category') as string
@@ -132,7 +142,10 @@ export async function createHistory(formData: FormData) {
   const doneAt = formData.get('doneAt') as string
   const inventoryId = (formData.get('inventoryId') as string) || null
 
-  await prisma.history.create({
+  const estimateImages = extractImages(formData, 'estimateImage')
+  const contractImages = extractImages(formData, 'contractImage')
+
+  const history = await prisma.history.create({
     data: {
       houseId,
       inventoryId,
@@ -146,12 +159,17 @@ export async function createHistory(formData: FormData) {
       contactPhone: (formData.get('contactPhone') as string) || null,
       contactCompany: (formData.get('contactCompany') as string) || null,
       contactImageBase64: (formData.get('contactImageBase64') as string) || null,
-      contractImageBase64: (formData.get('contractImageBase64') as string) || null,
-      estimateImageBase64: (formData.get('estimateImageBase64') as string) || null,
-      hasEstimate: !!(formData.get('estimateImageBase64') as string),
-      hasContract: !!(formData.get('contractImageBase64') as string),
+      hasEstimate: estimateImages.length > 0,
+      hasContract: contractImages.length > 0,
     },
   })
+
+  for (let i = 0; i < estimateImages.length; i++) {
+    await prisma.historyImage.create({ data: { historyId: history.id, type: 'estimate', imageBase64: estimateImages[i], sortOrder: i } })
+  }
+  for (let i = 0; i < contractImages.length; i++) {
+    await prisma.historyImage.create({ data: { historyId: history.id, type: 'contract', imageBase64: contractImages[i], sortOrder: i } })
+  }
 
   revalidatePath(`/houses/${houseId}`)
   redirect(`/houses/${houseId}?tab=history`)
@@ -159,6 +177,9 @@ export async function createHistory(formData: FormData) {
 
 export async function updateHistory(id: string, formData: FormData) {
   const houseId = formData.get('houseId') as string
+  const estimateImages = extractImages(formData, 'estimateImage')
+  const contractImages = extractImages(formData, 'contractImage')
+
   await prisma.history.update({
     where: { id },
     data: {
@@ -173,12 +194,20 @@ export async function updateHistory(id: string, formData: FormData) {
       contactPhone: (formData.get('contactPhone') as string) || null,
       contactCompany: (formData.get('contactCompany') as string) || null,
       contactImageBase64: (formData.get('contactImageBase64') as string) || null,
-      contractImageBase64: (formData.get('contractImageBase64') as string) || null,
-      estimateImageBase64: (formData.get('estimateImageBase64') as string) || null,
-      hasEstimate: !!(formData.get('estimateImageBase64') as string),
-      hasContract: !!(formData.get('contractImageBase64') as string),
+      hasEstimate: estimateImages.length > 0,
+      hasContract: contractImages.length > 0,
     },
   })
+
+  // 기존 이미지 삭제 후 새로 저장
+  await prisma.historyImage.deleteMany({ where: { historyId: id } })
+  for (let i = 0; i < estimateImages.length; i++) {
+    await prisma.historyImage.create({ data: { historyId: id, type: 'estimate', imageBase64: estimateImages[i], sortOrder: i } })
+  }
+  for (let i = 0; i < contractImages.length; i++) {
+    await prisma.historyImage.create({ data: { historyId: id, type: 'contract', imageBase64: contractImages[i], sortOrder: i } })
+  }
+
   revalidatePath(`/houses/${houseId}`)
   redirect(`/houses/${houseId}?tab=history`)
 }

@@ -15,12 +15,16 @@ const fieldStyle = { display: 'flex', flexDirection: 'column' as const }
 
 export default async function EditHistoryPage({ params }: { params: Promise<{ id: string; itemId: string }> }) {
   const { id, itemId } = await params
-  const [item, inventories] = await Promise.all([
+  const [item, inventories, historyImages] = await Promise.all([
     prisma.history.findUnique({ where: { id: itemId } }),
     prisma.inventory.findMany({
       where: { houseId: id },
       orderBy: [{ category: 'asc' }, { name: 'asc' }],
       select: { id: true, name: true, category: true, brand: true },
+    }),
+    prisma.historyImage.findMany({
+      where: { historyId: itemId },
+      orderBy: [{ type: 'asc' }, { sortOrder: 'asc' }],
     }),
   ])
   if (!item) notFound()
@@ -88,8 +92,8 @@ export default async function EditHistoryPage({ params }: { params: Promise<{ id
           defaultPhone={item.contactPhone ?? ''}
           defaultCompany={item.contactCompany ?? ''}
           defaultContactImage={item.contactImageBase64 ?? ''}
-          defaultContractImage={item.contractImageBase64 ?? ''}
-          defaultEstimateImage={item.estimateImageBase64 ?? ''}
+          defaultEstimateImages={historyImages.filter(i => i.type === 'estimate').map(i => i.imageBase64)}
+          defaultContractImages={historyImages.filter(i => i.type === 'contract').map(i => i.imageBase64)}
         />
 
         <SubmitButton label="저장하기" loadingLabel="저장 중..." />

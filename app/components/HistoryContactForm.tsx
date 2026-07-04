@@ -14,8 +14,8 @@ interface Props {
   defaultPhone?: string
   defaultCompany?: string
   defaultContactImage?: string
-  defaultContractImage?: string
-  defaultEstimateImage?: string
+  defaultContractImages?: string[]
+  defaultEstimateImages?: string[]
 }
 
 async function compressToBase64(file: File, maxSizeKB = 300): Promise<string> {
@@ -46,52 +46,73 @@ async function compressToBase64(file: File, maxSizeKB = 300): Promise<string> {
   })
 }
 
-function ImageUpload({ label, name, icon, color, defaultImage = '' }: {
-  label: string; name: string; icon: string; color: string; defaultImage?: string
+function MultiImageUpload({ label, namePrefix, icon, color, defaultImages = [] }: {
+  label: string; namePrefix: string; icon: string; color: string; defaultImages?: string[]
 }) {
-  const [image, setImage] = useState(defaultImage)
+  const [images, setImages] = useState<string[]>(defaultImages)
   const [loading, setLoading] = useState(false)
 
   async function handleFile(file: File) {
     setLoading(true)
     const base64 = await compressToBase64(file)
-    setImage(base64)
+    setImages(prev => [...prev, base64])
     setLoading(false)
+  }
+
+  function remove(idx: number) {
+    setImages(prev => prev.filter((_, i) => i !== idx))
   }
 
   return (
     <div>
       <label style={labelStyle}>{label}</label>
-      <input type="hidden" name={name} value={image} />
+      {/* hidden inputs for each image */}
+      {images.map((img, i) => (
+        <input key={i} type="hidden" name={`${namePrefix}_${i}`} value={img} />
+      ))}
+      <input type="hidden" name={`${namePrefix}_count`} value={images.length} />
+
+      {/* 썸네일 목록 */}
+      {images.length > 0 && (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
+          {images.map((img, i) => (
+            <div key={i} style={{ position: 'relative' }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={`data:image/jpeg;base64,${img}`} alt={`${label} ${i + 1}`}
+                style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 8, border: `1px solid ${color}44` }} />
+              <button type="button" onClick={() => remove(i)}
+                style={{ position: 'absolute', top: -6, right: -6, width: 20, height: 20, borderRadius: 10, background: '#f87171', border: 'none', color: '#fff', fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+                ×
+              </button>
+              <p style={{ fontSize: 11, color: '#555', textAlign: 'center', marginTop: 2 }}>{i + 1}장</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* 추가 버튼 */}
       <label style={{
         display: 'flex', alignItems: 'center', gap: 12,
-        background: '#111118', border: `1px dashed ${image ? color : '#2a2a38'}`,
+        background: '#111118', border: `1px dashed ${images.length > 0 ? color : '#2a2a38'}`,
         borderRadius: 12, padding: 14, cursor: 'pointer',
       }}>
         <input type="file" accept="image/*" capture="environment"
           style={{ display: 'none' }}
           onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
-        {image ? (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`data:image/jpeg;base64,${image}`} alt={label}
-              style={{ width: 72, height: 50, objectFit: 'cover', borderRadius: 8, flexShrink: 0 }} />
-            <div>
-              <p style={{ fontSize: 14, color, fontWeight: 500 }}>✓ {label} 첨부됨</p>
-              <p style={{ fontSize: 13, color: '#555', marginTop: 2 }}>탭해서 다시 첨부</p>
-            </div>
-          </>
-        ) : (
-          <>
-            <div style={{ width: 40, height: 40, borderRadius: 10, background: color + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <i className={`ti ${icon}`} style={{ fontSize: 22, color }} />
-            </div>
-            <div>
-              <p style={{ fontSize: 15, color: '#888' }}>{loading ? '처리 중...' : `${label} 촬영 / 업로드`}</p>
-              <p style={{ fontSize: 13, color: '#444', marginTop: 2 }}>사진 또는 파일 이미지</p>
-            </div>
-          </>
-        )}
+        <div style={{ width: 40, height: 40, borderRadius: 10, background: color + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          {images.length > 0
+            ? <i className="ti ti-plus" style={{ fontSize: 22, color }} />
+            : <i className={`ti ${icon}`} style={{ fontSize: 22, color }} />
+          }
+        </div>
+        <div>
+          <p style={{ fontSize: 15, color: '#888' }}>
+            {loading ? '처리 중...' : images.length > 0 ? `${label} 추가` : `${label} 촬영 / 업로드`}
+          </p>
+          <p style={{ fontSize: 13, color: '#444', marginTop: 2 }}>
+            {images.length > 0 ? `현재 ${images.length}장` : '여러 장 추가 가능'}
+          </p>
+        </div>
       </label>
     </div>
   )
@@ -99,7 +120,7 @@ function ImageUpload({ label, name, icon, color, defaultImage = '' }: {
 
 export default function HistoryContactForm({
   defaultName = '', defaultPhone = '', defaultCompany = '',
-  defaultContactImage = '', defaultContractImage = '', defaultEstimateImage = '',
+  defaultContactImage = '', defaultContractImages = [], defaultEstimateImages = [],
 }: Props) {
   const [name, setName] = useState(defaultName)
   const [phone, setPhone] = useState(defaultPhone)
@@ -233,10 +254,10 @@ export default function HistoryContactForm({
         <div style={{ flex: 1, height: 1, background: '#1e1e28' }} />
       </div>
 
-      <ImageUpload label="견적서" name="estimateImageBase64" icon="ti-file-invoice"
-        color="#a78bfa" defaultImage={defaultEstimateImage} />
-      <ImageUpload label="계약서" name="contractImageBase64" icon="ti-file-text"
-        color="#34d399" defaultImage={defaultContractImage} />
+      <MultiImageUpload label="견적서" namePrefix="estimateImage" icon="ti-file-invoice"
+        color="#a78bfa" defaultImages={defaultEstimateImages} />
+      <MultiImageUpload label="계약서" namePrefix="contractImage" icon="ti-file-text"
+        color="#34d399" defaultImages={defaultContractImages} />
     </div>
   )
 }

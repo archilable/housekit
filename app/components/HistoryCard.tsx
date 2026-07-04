@@ -53,7 +53,7 @@ interface Props {
 export default function HistoryCard({ h, houseId, highlight, deleteAction }: Props) {
   const [expanded, setExpanded] = useState(false)
   const [modalImage, setModalImage] = useState<{ src: string; label: string } | null>(null)
-  const [images, setImages] = useState<{ estimateImageBase64?: string; contractImageBase64?: string } | null>(null)
+  const [images, setImages] = useState<{ type: string; imageBase64: string }[]>([])
   const [loadingImages, setLoadingImages] = useState(false)
   const icon = CATEGORY_ICONS[h.category] || 'ti-pin'
   const color = CATEGORY_COLORS[h.category] || '#888'
@@ -62,11 +62,11 @@ export default function HistoryCard({ h, houseId, highlight, deleteAction }: Pro
   const hasDetail = h.description || h.contactCompany || h.company || h.contactName || h.contactPhone || h.inventory || h.hasEstimate || h.hasContract
 
   useEffect(() => {
-    if (!expanded || !(h.hasEstimate || h.hasContract) || images || loadingImages) return
+    if (!expanded || !(h.hasEstimate || h.hasContract) || images.length > 0 || loadingImages) return
     setLoadingImages(true)
     fetch(`/api/history-image/${h.id}`)
       .then(r => r.json())
-      .then(data => { setImages(data); setLoadingImages(false) })
+      .then(data => { setImages(data.images ?? []); setLoadingImages(false) })
       .catch(() => setLoadingImages(false))
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expanded])
@@ -153,38 +153,48 @@ export default function HistoryCard({ h, houseId, highlight, deleteAction }: Pro
             </Link>
           )}
           {(h.hasEstimate || h.hasContract) && (
-            <div style={{ display: 'flex', gap: 10, marginTop: 4, flexWrap: 'wrap' }}>
+            <div style={{ marginTop: 4 }}>
               {loadingImages && (
                 <p style={{ fontSize: 13, color: '#555' }}>이미지 불러오는 중...</p>
               )}
-              {h.hasEstimate && images?.estimateImageBase64 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-start' }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`data:image/jpeg;base64,${images.estimateImageBase64}`}
-                    alt="견적서"
-                    onClick={() => setModalImage({ src: `data:image/jpeg;base64,${images!.estimateImageBase64!}`, label: '견적서' })}
-                    style={{ width: 100, height: 70, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', border: '1px solid #2a1a5e' }}
-                  />
-                  <span style={{ fontSize: 12, color: '#a78bfa', display: 'flex', alignItems: 'center', gap: 3 }}>
-                    <i className="ti ti-file-invoice" style={{ fontSize: 12 }} />견적서
-                  </span>
-                </div>
-              )}
-              {h.hasContract && images?.contractImageBase64 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-start' }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`data:image/jpeg;base64,${images.contractImageBase64}`}
-                    alt="계약서"
-                    onClick={() => setModalImage({ src: `data:image/jpeg;base64,${images!.contractImageBase64!}`, label: '계약서' })}
-                    style={{ width: 100, height: 70, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', border: '1px solid #0d3020' }}
-                  />
-                  <span style={{ fontSize: 12, color: '#34d399', display: 'flex', alignItems: 'center', gap: 3 }}>
-                    <i className="ti ti-file-text" style={{ fontSize: 12 }} />계약서
-                  </span>
-                </div>
-              )}
+              {images.length > 0 && (() => {
+                const estimates = images.filter(img => img.type === 'estimate')
+                const contracts = images.filter(img => img.type === 'contract')
+                return (
+                  <>
+                    {estimates.length > 0 && (
+                      <div style={{ marginBottom: 8 }}>
+                        <p style={{ fontSize: 12, color: '#a78bfa', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 3 }}>
+                          <i className="ti ti-file-invoice" style={{ fontSize: 12 }} />견적서 ({estimates.length}장)
+                        </p>
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                          {estimates.map((img, i) => (
+                            /* eslint-disable-next-line @next/next/no-img-element */
+                            <img key={i} src={`data:image/jpeg;base64,${img.imageBase64}`} alt={`견적서 ${i + 1}`}
+                              onClick={() => setModalImage({ src: `data:image/jpeg;base64,${img.imageBase64}`, label: `견적서 ${i + 1}` })}
+                              style={{ width: 90, height: 64, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', border: '1px solid #2a1a5e' }} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {contracts.length > 0 && (
+                      <div>
+                        <p style={{ fontSize: 12, color: '#34d399', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 3 }}>
+                          <i className="ti ti-file-text" style={{ fontSize: 12 }} />계약서 ({contracts.length}장)
+                        </p>
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                          {contracts.map((img, i) => (
+                            /* eslint-disable-next-line @next/next/no-img-element */
+                            <img key={i} src={`data:image/jpeg;base64,${img.imageBase64}`} alt={`계약서 ${i + 1}`}
+                              onClick={() => setModalImage({ src: `data:image/jpeg;base64,${img.imageBase64}`, label: `계약서 ${i + 1}` })}
+                              style={{ width: 90, height: 64, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', border: '1px solid #0d3020' }} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )
+              })()}
             </div>
           )}
         </div>
