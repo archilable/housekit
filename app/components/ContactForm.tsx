@@ -22,24 +22,35 @@ export default function ContactForm({ defaultName = '', defaultPhone = '', defau
   const [company, setCompany] = useState(defaultCompany)
   const [image, setImage] = useState(defaultImage)
   const [extracting, setExtracting] = useState(false)
+  const [extractMsg, setExtractMsg] = useState<{ ok: boolean; text: string } | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
   async function handleImage(file: File) {
     const reader = new FileReader()
     reader.onload = async (e) => {
-      const base64 = (e.target?.result as string).split(',')[1]
+      const dataUrl = e.target?.result as string
+      const base64 = dataUrl.split(',')[1]
       setImage(base64)
       setExtracting(true)
+      setExtractMsg(null)
       try {
         const res = await fetch('/api/extract-contact', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ imageBase64: base64, mediaType: file.type }),
+          body: JSON.stringify({ imageBase64: dataUrl, mediaType: file.type }),
         })
         const data = await res.json()
-        if (data.name) setName(data.name)
-        if (data.phone) setPhone(data.phone)
-        if (data.company) setCompany(data.company)
+        const filled = data.name || data.phone || data.company
+        if (filled) {
+          if (data.name) setName(data.name)
+          if (data.phone) setPhone(data.phone)
+          if (data.company) setCompany(data.company)
+          setExtractMsg({ ok: true, text: '✅ 명함 인식 완료! 아래 내용을 확인해주세요' })
+        } else {
+          setExtractMsg({ ok: false, text: '⚠️ 명함을 인식하지 못했어요. 다시 촬영해주세요.' })
+        }
+      } catch {
+        setExtractMsg({ ok: false, text: '⚠️ 인식 실패. 다시 시도해주세요.' })
       } finally {
         setExtracting(false)
       }
@@ -77,8 +88,10 @@ export default function ContactForm({ defaultName = '', defaultPhone = '', defau
               <div style={{ flex: 1 }}>
                 {extracting ? (
                   <p style={{ fontSize: 14, color: '#60a5fa' }}>AI 분석 중...</p>
+                ) : extractMsg ? (
+                  <p style={{ fontSize: 14, color: extractMsg.ok ? '#34d399' : '#f87171' }}>{extractMsg.text}</p>
                 ) : (
-                  <p style={{ fontSize: 14, color: '#34d399' }}>✓ 명함 인식 완료</p>
+                  <p style={{ fontSize: 14, color: '#34d399' }}>✓ 업로드 완료</p>
                 )}
                 <p style={{ fontSize: 13, color: '#555', marginTop: 2 }}>탭해서 다시 촬영</p>
               </div>
