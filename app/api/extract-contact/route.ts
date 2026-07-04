@@ -1,4 +1,7 @@
+import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
+
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 export async function POST(req: NextRequest) {
   try {
@@ -6,34 +9,26 @@ export async function POST(req: NextRequest) {
     if (!imageBase64) return NextResponse.json({ name: '', phone: '', company: '' }, { status: 400 })
 
     const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '')
-    const mimeType = mediaType || 'image/jpeg'
+    const detectedType = (mediaType || (imageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg')) as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp'
 
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [
-              { inline_data: { mime_type: mimeType, data: base64Data } },
-              { text: '이 명함 이미지에서 정보를 추출해주세요. 반드시 아래 JSON 형식으로만 답변하세요. 없는 항목은 빈 문자열로:\n{"name":"담당자이름","phone":"전화번호","company":"회사/업체명"}' },
-            ],
-          }],
-        }),
-      }
-    )
+    const message = await client.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 256,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: detectedType, data: base64Data } },
+          { type: 'text', text: '이 명함 이미지에서 정보를 추출해주세요. 반드시 아래 JSON 형식으로만 답변하세요. 없는 항목은 빈 문자열로:\n{"name":"담당자이름","phone":"전화번호","company":"회사/업체명"}' },
+        ],
+      }],
+    })
 
-    const data = await res.json()
-    console.log('[extract-contact] Gemini full:', JSON.stringify(data).slice(0, 500))
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
-    console.log('[extract-contact] Gemini text:', text)
+    const text = message.content[0].type === 'text' ? message.content[0].text : '{}'
     const match = text.match(/\{[\s\S]*\}/)
     const contact = match ? JSON.parse(match[0]) : {}
 
     return NextResponse.json(contact)
-  } catch (e) {
-    console.error('[extract-contact] error:', e)
+  } catch {
     return NextResponse.json({ name: '', phone: '', company: '' })
   }
 }
