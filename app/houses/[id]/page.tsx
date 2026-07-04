@@ -8,6 +8,7 @@ import UtilityChart from '@/app/components/UtilityChart'
 import SortableInventoryList from '@/app/components/SortableInventoryList'
 import AiValuation from '@/app/components/AiValuation'
 import RealPriceData from '@/app/components/RealPriceData'
+import HistoryCard from '@/app/components/HistoryCard'
 import DoctorHistoryList from '@/app/components/DoctorHistoryList'
 import HouseIllustration from '@/app/components/HouseIllustration'
 import InviteButton from '@/app/components/InviteButton'
@@ -456,56 +457,15 @@ export default async function HousePage({
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {((tabData as any)?.histories ?? []).map((h: any) => {
-                const icon = CATEGORY_ICONS[h.category] || 'ti-pin'
-                const color = CATEGORY_COLORS[h.category] || '#888'
-                const isHighlighted = highlight === h.id
-                return (
-                  <div key={h.id} id={`history-${h.id}`} style={{ background: isHighlighted ? '#0d1a2e' : 'var(--bg-card)', border: isHighlighted ? '1px solid #3b82f6' : '0.5px solid var(--border)', borderRadius: 14, padding: '14px 16px', display: 'flex', gap: 12, transition: 'border 0.3s' }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 10, background: color + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <i className={`ti ${icon}`} style={{ fontSize: 20, color }} />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-                        <p style={{ fontSize: 16, fontWeight: 500 }}>{h.title}</p>
-                        <p style={{ fontSize: 13, color: '#555', flexShrink: 0, marginLeft: 8 }}>{new Date(h.doneAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
-                      </div>
-                      {h.description && <p style={{ fontSize: 14, color: '#666', marginBottom: 2 }}>{h.description}</p>}
-                      <div style={{ display: 'flex', gap: 10, fontSize: 13, color: '#555', flexWrap: 'wrap' }}>
-                        {h.contactCompany && <span>{h.contactCompany}</span>}
-                        {!h.contactCompany && h.company && <span>{h.company}</span>}
-                        {h.contactName && <span style={{ color: '#666' }}>{h.contactName}</span>}
-                        {h.contactPhone && <a href={`tel:${h.contactPhone}`} style={{ color: '#60a5fa', textDecoration: 'none' }}>{h.contactPhone}</a>}
-                        {h.cost != null && <span>{h.cost.toLocaleString()}원</span>}
-                      </div>
-                      {h.inventory && (
-                        <div style={{ marginTop: 6 }}>
-                          <span style={{ fontSize: 12, color: '#60a5fa', background: '#0d1a2e', border: '0.5px solid #1d3a6e', borderRadius: 6, padding: '2px 8px', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                            <i className="ti ti-tool" style={{ fontSize: 11 }} />
-                            {h.inventory.name}
-                          </span>
-                        </div>
-                      )}
-                      {(h.estimateImageBase64 || h.contractImageBase64) && (
-                        <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
-                          {h.estimateImageBase64 && <div style={{ fontSize: 12, color: '#a78bfa', background: '#1a1040', borderRadius: 6, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 4 }}><i className="ti ti-file-invoice" style={{ fontSize: 13 }} />견적서</div>}
-                          {h.contractImageBase64 && <div style={{ fontSize: 12, color: '#34d399', background: '#0d1f14', borderRadius: 6, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 4 }}><i className="ti ti-file-text" style={{ fontSize: 13 }} />계약서</div>}
-                        </div>
-                      )}
-                    </div>
-                    <div style={{ display: 'flex', gap: 4 }}>
-                      <a href={`/houses/${id}/history/${h.id}/edit`} style={{ background: 'none', border: 'none', color: '#60a5fa', cursor: 'pointer', fontSize: 20, padding: 4, textDecoration: 'none' }}>
-                        <i className="ti ti-pencil" />
-                      </a>
-                      <form action={deleteHistory.bind(null, h.id, id)}>
-                        <button type="submit" style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', fontSize: 20, padding: 4 }}>
-                          <i className="ti ti-trash" />
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-                )
-              })}
+              {((tabData as any)?.histories ?? []).map((h: any) => (
+                <HistoryCard
+                  key={h.id}
+                  h={h}
+                  houseId={id}
+                  highlight={highlight}
+                  deleteAction={deleteHistory.bind(null, h.id, id)}
+                />
+              ))}
             </div>
           )}
         </div>
