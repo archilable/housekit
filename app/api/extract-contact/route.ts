@@ -21,40 +21,35 @@ async function ocrExtract(base64Data: string, mediaType: string): Promise<string
 }
 
 function parseContact(ocrText: string): { name: string; phone: string; company: string } {
-  // 전화번호 추출 (T 1544-7777, +82 10 xxxx, 010-xxxx 등)
-  const phoneMatch = ocrText.match(/(?:T\.?\s*)?(\+?82[-\s]?10[-\s]?\d{3,4}[-\s]?\d{4}|0\d{1,2}[-\s.]?\d{3,4}[-\s.]?\d{4}|\d{4}-\d{4})/)
-  const phone = phoneMatch ? phoneMatch[1] ?? phoneMatch[0] : ''
+  // 1. 전화번호
+  const phoneMatch = ocrText.match(/\+?82[-\s]?10[-\s]?\d{3,4}[-\s]?\d{4}|0\d{1,2}[-\s.]?\d{3,4}[-\s.]?\d{4}|\d{4}-\d{4}/)
+  const phone = phoneMatch ? phoneMatch[0] : ''
 
-  // 이름: 한글 2~4자 뒤에 소문자 영문 로마자 표기가 오는 패턴 (박규남 gyunam park)
+  // 2. 이름: 한글 2~4자 뒤에 소문자 로마자가 오는 패턴 우선 (박규남 gyunam park)
   let name = ''
-  const nameWithRoman = ocrText.match(/([가-힣]{2,4})\s+[a-z]{2,}\s+[a-z]{2,}/)
-  if (nameWithRoman) {
-    name = nameWithRoman[1]
+  let nameIndex = ocrText.length
+  const nameRoman = ocrText.match(/([가-힣]{2,4})\s+[a-z]{2,}\s+[a-z]{2,}/)
+  if (nameRoman && nameRoman.index !== undefined) {
+    name = nameRoman[1]
+    nameIndex = nameRoman.index
   } else {
-    // 단독 한글 이름 (줄바꿈 전후로 2~4자)
-    const nameOnly = ocrText.match(/(?:^|\s)([가-힣]{2,4})(?:\s|$)/)
-    if (nameOnly) name = nameOnly[1]
+    // 단독 한글 이름
+    const nameAlone = ocrText.match(/([가-힣]{2,4})(?=\s|$)/)
+    if (nameAlone && nameAlone.index !== undefined) {
+      name = nameAlone[1]
+      nameIndex = nameAlone.index
+    }
   }
 
-  // 회사명: 첫 번째 의미있는 덩어리 (이름보다 앞에 나오는 경우 많음)
+  // 3. 회사명: 이름이 등장하기 전 텍스트
   let company = ''
-  // 직함 키워드 앞의 텍스트에서 회사명 찾기
-  const beforeTitle = ocrText.match(/^(.+?)(?:대표|팀장|과장|부장|차장|매니저|Manager|Director|CEO|이사|사원|주임|선임|책임|수석|원장|소장|실장|본부장)/i)
-  if (beforeTitle) {
-    company = beforeTitle[1]
-      .replace(name, '')
-      .replace(/[a-z]+\s+[a-z]+/g, '') // 소문자 로마자 표기만 제거 (대문자 브랜드명 보존)
-      .trim().replace(/\s+/g, ' ')
+  if (nameIndex > 0) {
+    company = ocrText.slice(0, nameIndex).trim().replace(/[|\s]+$/, '').trim()
   }
+  // 이메일 도메인으로 보완
   if (!company) {
-    // 이메일 도메인에서 회사명
     const emailMatch = ocrText.match(/[\w.+-]+@([\w-]+)\./)
     if (emailMatch) company = emailMatch[1]
-  }
-  if (!company) {
-    // 첫 줄을 회사명으로
-    const firstLine = ocrText.split(/\s{2,}|\n/)[0].replace(name, '').trim()
-    if (firstLine.length > 1) company = firstLine
   }
 
   return { name, phone, company: company.replace(/\s+/g, ' ').trim() }
