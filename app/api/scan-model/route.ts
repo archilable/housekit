@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const MODELS = [
   'google/gemma-4-31b-it:free',
-  'nvidia/nemotron-nano-12b-v2-vl:free',
   'google/gemma-4-26b-a4b-it:free',
+  'nvidia/nemotron-nano-12b-v2-vl:free',
+  'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free',
 ]
 
 async function tryModel(model: string, mediaType: string, base64Data: string): Promise<string | null> {
