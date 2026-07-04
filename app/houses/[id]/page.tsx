@@ -73,7 +73,7 @@ export default async function HousePage({
           orderBy: [{ sortOrder: 'asc' }, { installedAt: 'desc' }],
         },
         histories: {
-          select: { id: true, title: true, category: true, doneAt: true, cost: true, company: true },
+          select: { id: true, title: true, category: true, doneAt: true, cost: true, company: true, inventory: { select: { name: true, category: true } } },
           orderBy: { doneAt: 'desc' },
           take: 5,
         },
@@ -91,7 +91,7 @@ export default async function HousePage({
     }) :
     tab === 'history' ? prisma.house.findUnique({
       where: { id },
-      select: { histories: { orderBy: { doneAt: 'desc' }, take: 50 } },
+      select: { histories: { orderBy: { doneAt: 'desc' }, take: 50, include: { inventory: { select: { name: true, category: true } } } } },
     }) :
     tab === 'utility' ? prisma.house.findUnique({
       where: { id },
@@ -476,6 +476,14 @@ export default async function HousePage({
                         {h.contactPhone && <a href={`tel:${h.contactPhone}`} style={{ color: '#60a5fa', textDecoration: 'none' }}>{h.contactPhone}</a>}
                         {h.cost != null && <span>{h.cost.toLocaleString()}원</span>}
                       </div>
+                      {h.inventory && (
+                        <div style={{ marginTop: 6 }}>
+                          <span style={{ fontSize: 12, color: '#60a5fa', background: '#0d1a2e', border: '0.5px solid #1d3a6e', borderRadius: 6, padding: '2px 8px', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                            <i className="ti ti-tool" style={{ fontSize: 11 }} />
+                            {h.inventory.name}
+                          </span>
+                        </div>
+                      )}
                       {(h.estimateImageBase64 || h.contractImageBase64) && (
                         <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
                           {h.estimateImageBase64 && <div style={{ fontSize: 12, color: '#a78bfa', background: '#1a1040', borderRadius: 6, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 4 }}><i className="ti ti-file-invoice" style={{ fontSize: 13 }} />견적서</div>}

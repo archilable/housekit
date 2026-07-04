@@ -1,8 +1,8 @@
 import { createHistory } from '@/lib/actions'
-import Link from 'next/link'
+import { prisma } from '@/lib/db'
+import BackHomeButtons from '@/app/components/BackHomeButtons'
 import HistoryContactForm from '@/app/components/HistoryContactForm'
 import SubmitButton from '@/app/components/SubmitButton'
-import BackHomeButtons from '@/app/components/BackHomeButtons'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
@@ -12,9 +12,19 @@ const inputStyle = {
 const labelStyle = { fontSize: 14, color: '#888', display: 'block', marginBottom: 8 }
 const fieldStyle = { display: 'flex', flexDirection: 'column' as const }
 
-export default async function NewHistoryPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function NewHistoryPage({ params, searchParams }: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ title?: string; category?: string; inventoryId?: string }>
+}) {
   const { id } = await params
+  const sp = await searchParams
   const today = new Date().toISOString().split('T')[0]
+
+  const inventories = await prisma.inventory.findMany({
+    where: { houseId: id },
+    orderBy: [{ category: 'asc' }, { name: 'asc' }],
+    select: { id: true, name: true, category: true, brand: true },
+  })
 
   return (
     <div style={{ padding: '20px 16px', maxWidth: '100%' }}>
@@ -26,9 +36,23 @@ export default async function NewHistoryPage({ params }: { params: Promise<{ id:
       <form action={createHistory} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         <input type="hidden" name="houseId" value={id} />
 
+        {inventories.length > 0 && (
+          <div style={fieldStyle}>
+            <label style={labelStyle}>관련 설비</label>
+            <select name="inventoryId" defaultValue={sp.inventoryId ?? ''} style={{ ...inputStyle, appearance: 'none' as const }}>
+              <option value="">설비 선택 (선택사항)</option>
+              {inventories.map(inv => (
+                <option key={inv.id} value={inv.id}>
+                  [{inv.category}] {inv.name}{inv.brand ? ` · ${inv.brand}` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <div style={fieldStyle}>
           <label style={labelStyle}>구분 <span style={{ color: '#f87171' }}>*</span></label>
-          <select name="category" required style={{ ...inputStyle, appearance: 'none' as const }}>
+          <select name="category" required defaultValue={sp.category ?? ''} style={{ ...inputStyle, appearance: 'none' as const }}>
             <option value="">선택하세요</option>
             <option value="수리">수리</option>
             <option value="교체">교체</option>
@@ -41,7 +65,7 @@ export default async function NewHistoryPage({ params }: { params: Promise<{ id:
 
         <div style={fieldStyle}>
           <label style={labelStyle}>제목 <span style={{ color: '#f87171' }}>*</span></label>
-          <input name="title" required placeholder="보일러 수리, 누수 점검 등" style={inputStyle} />
+          <input name="title" required placeholder="보일러 수리, 누수 점검 등" defaultValue={sp.title ?? ''} style={inputStyle} />
         </div>
 
         <div style={fieldStyle}>
@@ -51,7 +75,7 @@ export default async function NewHistoryPage({ params }: { params: Promise<{ id:
 
         <div style={fieldStyle}>
           <label style={labelStyle}>작업일 <span style={{ color: '#f87171' }}>*</span></label>
-          <input name="doneAt" type="date" required defaultValue={today} style={{ ...inputStyle, display: "block", overflow: "hidden" }} />
+          <input name="doneAt" type="date" required defaultValue={today} style={{ ...inputStyle, display: 'block', overflow: 'hidden' }} />
         </div>
 
         <div style={fieldStyle}>

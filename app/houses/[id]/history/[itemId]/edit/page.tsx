@@ -1,6 +1,5 @@
 import { prisma } from '@/lib/db'
 import { updateHistory } from '@/lib/actions'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import HistoryContactForm from '@/app/components/HistoryContactForm'
 import SubmitButton from '@/app/components/SubmitButton'
@@ -16,7 +15,14 @@ const fieldStyle = { display: 'flex', flexDirection: 'column' as const }
 
 export default async function EditHistoryPage({ params }: { params: Promise<{ id: string; itemId: string }> }) {
   const { id, itemId } = await params
-  const item = await prisma.history.findUnique({ where: { id: itemId } })
+  const [item, inventories] = await Promise.all([
+    prisma.history.findUnique({ where: { id: itemId } }),
+    prisma.inventory.findMany({
+      where: { houseId: id },
+      orderBy: [{ category: 'asc' }, { name: 'asc' }],
+      select: { id: true, name: true, category: true, brand: true },
+    }),
+  ])
   if (!item) notFound()
 
   const doneAtValue = new Date(item.doneAt).toISOString().split('T')[0]
@@ -30,6 +36,20 @@ export default async function EditHistoryPage({ params }: { params: Promise<{ id
 
       <form action={updateHistory.bind(null, itemId)} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         <input type="hidden" name="houseId" value={id} />
+
+        {inventories.length > 0 && (
+          <div style={fieldStyle}>
+            <label style={labelStyle}>관련 설비</label>
+            <select name="inventoryId" defaultValue={item.inventoryId ?? ''} style={{ ...inputStyle, appearance: 'none' as const }}>
+              <option value="">설비 선택 (선택사항)</option>
+              {inventories.map(inv => (
+                <option key={inv.id} value={inv.id}>
+                  [{inv.category}] {inv.name}{inv.brand ? ` · ${inv.brand}` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div style={fieldStyle}>
           <label style={labelStyle}>구분 <span style={{ color: '#f87171' }}>*</span></label>
@@ -55,7 +75,7 @@ export default async function EditHistoryPage({ params }: { params: Promise<{ id
 
         <div style={fieldStyle}>
           <label style={labelStyle}>작업일 <span style={{ color: '#f87171' }}>*</span></label>
-          <input name="doneAt" type="date" required defaultValue={doneAtValue} style={{ ...inputStyle, display: "block", overflow: "hidden" }} />
+          <input name="doneAt" type="date" required defaultValue={doneAtValue} style={{ ...inputStyle, display: 'block', overflow: 'hidden' }} />
         </div>
 
         <div style={fieldStyle}>
