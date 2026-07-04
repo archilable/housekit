@@ -22,6 +22,7 @@ async function ocrExtract(base64Data: string, mediaType: string): Promise<string
     body,
   })
   const data = await res.json()
+  console.log('[OCR response]', JSON.stringify(data).slice(0, 500))
   return data?.ParsedResults?.[0]?.ParsedText ?? ''
 }
 
