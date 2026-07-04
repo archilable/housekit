@@ -1,5 +1,4 @@
-import { prisma } from '@/lib/db'
-import { unstable_cache } from 'next/cache'
+import { getHousePageData } from '@/lib/houseData'
 import { deleteHistory, deleteInventory } from '@/lib/actions'
 import DeleteUtilityButton from '@/app/components/DeleteUtilityButton'
 import Link from 'next/link'
@@ -49,68 +48,11 @@ export default async function HousePage({
   const tab = 'home'
   const highlight = undefined
 
-  // unstable_cache: DB 쿼리 결과를 서버에 캐시 → 60초간 Turso 쿼리 없이 즉시 응답
-  // mutations(create/update/delete) 시 revalidateTag(`house-${id}`)로 무효화
-  const getHousePageData = unstable_cache(
-    async () => {
-      return Promise.all([
-    prisma.house.findUnique({
-      where: { id },
-      select: {
-        id: true, address: true, addressDetail: true, houseType: true,
-        buildYear: true, landArea: true, buildArea: true, exclusiveArea: true, area: true,
-        _count: { select: { inventories: true, histories: true, doctorHistories: true } },
-      },
-    }),
-    // 설비 탭
-    prisma.inventory.findMany({
-      where: { houseId: id },
-      orderBy: [{ sortOrder: 'asc' }, { installedAt: 'desc' }],
-      select: {
-        id: true, category: true, name: true, brand: true, model: true,
-        installedAt: true, warrantyMonths: true, notes: true, sortOrder: true,
-        contactName: true, contactPhone: true, contactCompany: true,
-        contactImageBase64: true,
-        houseId: true,
-      },
-    }),
-    // 이력 탭
-    prisma.history.findMany({
-      where: { houseId: id },
-      orderBy: { doneAt: 'desc' },
-      take: 50,
-      select: {
-        id: true, title: true, category: true, doneAt: true, cost: true,
-        description: true, company: true,
-        contactName: true, contactPhone: true, contactCompany: true,
-        hasEstimate: true, hasContract: true,
-        inventory: { select: { id: true, name: true, category: true } },
-      },
-    }).catch(() => []),
-    // 공과금 탭
-    prisma.utility.findMany({
-      where: { houseId: id },
-      orderBy: { month: 'desc' },
-      take: 12,
-    }),
-    // 닥터 탭
-    prisma.doctorHistory.findMany({
-      where: { houseId: id },
-      orderBy: { createdAt: 'desc' },
-      take: 20,
-      select: { id: true, description: true, result: true, createdAt: true, houseId: true, resolved: true, resolvedAt: true },
-    }),
-    // 시세 탭
-    prisma.valuation.findUnique({ where: { houseId: id } }),
-      ])
-    },
-    [`house-page-${id}`],
-    { revalidate: 30 }
-  )
+  // batch 쿼리: 6개를 HTTP 1회로 → 30초 → 3초 이하 목표
+  const data = await getHousePageData(id)
+  if (!data) notFound()
+  const { house, inventoryData, historyData, utilityData, doctorData, valuationData } = data
 
-  const [house, inventoryData, historyData, utilityData, doctorData, valuationData] = await getHousePageData()
-
-  if (!house) notFound()
 
   const score = calcHealthScore(house._count.inventories, house._count.histories)
   const scoreColor = score >= 70 ? '#34d399' : score >= 40 ? '#fbbf24' : '#f87171'
