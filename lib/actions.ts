@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { prisma } from './db'
 import { auth } from '@/auth'
+import { invalidateHouseCache } from './houseData'
 
 // House actions
 export async function createHouse(formData: FormData) {
@@ -52,6 +53,7 @@ export async function updateHouse(id: string, formData: FormData) {
     },
   })
   revalidatePath(`/houses/${id}`)
+  invalidateHouseCache(id)
   redirect(`/houses/${id}`)
 }
 
@@ -90,6 +92,7 @@ export async function createInventory(formData: FormData) {
   })
 
   revalidatePath(`/houses/${houseId}`)
+  invalidateHouseCache(houseId)
   redirect(`/houses/${houseId}?tab=inventory`)
 }
 
@@ -113,12 +116,14 @@ export async function updateInventory(id: string, formData: FormData) {
     },
   })
   revalidatePath(`/houses/${houseId}`)
+  invalidateHouseCache(houseId)
   redirect(`/houses/${houseId}?tab=inventory`)
 }
 
 export async function deleteInventory(id: string, houseId: string) {
   await prisma.inventory.delete({ where: { id } })
   revalidatePath(`/houses/${houseId}`)
+  invalidateHouseCache(houseId)
 }
 
 // History actions
@@ -166,6 +171,7 @@ export async function createHistory(formData: FormData) {
   }
 
   revalidatePath(`/houses/${houseId}`)
+  invalidateHouseCache(houseId)
   redirect(`/houses/${houseId}?tab=history`)
 }
 
@@ -203,12 +209,14 @@ export async function updateHistory(id: string, formData: FormData) {
   }
 
   revalidatePath(`/houses/${houseId}`)
+  invalidateHouseCache(houseId)
   redirect(`/houses/${houseId}?tab=history`)
 }
 
 export async function deleteHistory(id: string, houseId: string) {
   await prisma.history.delete({ where: { id } })
   revalidatePath(`/houses/${houseId}`)
+  invalidateHouseCache(houseId)
 }
 
 // Utility actions
@@ -227,12 +235,14 @@ export async function upsertUtility(formData: FormData) {
   })
 
   revalidatePath(`/houses/${houseId}`)
+  invalidateHouseCache(houseId)
   redirect(`/houses/${houseId}?tab=utility`)
 }
 
 export async function deleteUtility(utilityId: string, houseId: string) {
   await prisma.utility.delete({ where: { id: utilityId } })
   revalidatePath(`/houses/${houseId}`)
+  invalidateHouseCache(houseId)
   redirect(`/houses/${houseId}?tab=utility`)
 }
 
@@ -268,5 +278,6 @@ export async function upsertValuation(formData: FormData) {
     },
   })
   revalidatePath(`/houses/${houseId}`)
+  invalidateHouseCache(houseId)
   redirect(`/houses/${houseId}?tab=valuation`)
 }

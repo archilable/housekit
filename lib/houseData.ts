@@ -1,14 +1,24 @@
 import { createClient } from '@libsql/client'
 
-function getClient() {
-  return createClient({
+// 클라이언트 재사용 — warm 함수 인스턴스에서 재연결 없이 사용
+const g = globalThis as any
+if (!g.__tursoClient) {
+  g.__tursoClient = createClient({
     url: process.env.TURSO_DATABASE_URL!,
     authToken: process.env.TURSO_AUTH_TOKEN,
   })
 }
+const client = g.__tursoClient
+
+// 데이터 메모리 캐시 — warm 함수에서 DB 쿼리 없이 즉시 응답
+const dataCache: Record<string, { data: any; ts: number }> = g.__houseDataCache ?? {}
+g.__houseDataCache = dataCache
+const CACHE_TTL = 30_000 // 30초
 
 export async function getHousePageData(id: string) {
-  const client = getClient()
+  // 캐시 히트 시 즉시 반환
+  const cached = dataCache[id]
+  if (cached && Date.now() - cached.ts < CACHE_TTL) return cached.data
 
       // 6개 쿼리를 한 번의 HTTP 요청으로 전송 (batch)
       const results = await client.batch([
@@ -79,7 +89,7 @@ export async function getHousePageData(id: string) {
         },
       }
 
-      const inventoryData = results[1].rows.map(r => ({
+      const inventoryData = results[1].rows.map((r: any) => ({
         id: String(r.id),
         category: String(r.category),
         name: String(r.name),
@@ -96,7 +106,7 @@ export async function getHousePageData(id: string) {
         houseId: String(r.houseId),
       }))
 
-      const historyData = results[2].rows.map(r => ({
+      const historyData = results[2].rows.map((r: any) => ({
         id: String(r.id),
         title: String(r.title),
         category: String(r.category),
@@ -112,7 +122,7 @@ export async function getHousePageData(id: string) {
         inventory: r.inv_id ? { id: String(r.inv_id), name: String(r.inv_name), category: String(r.inv_category) } : null,
       }))
 
-      const utilityData = results[3].rows.map(r => ({
+      const utilityData = results[3].rows.map((r: any) => ({
         id: String(r.id),
         houseId: String(r.houseId),
         month: String(r.month),
@@ -124,7 +134,7 @@ export async function getHousePageData(id: string) {
         updatedAt: new Date(String(r.updatedAt)),
       }))
 
-      const doctorData = results[4].rows.map(r => ({
+      const doctorData = results[4].rows.map((r: any) => ({
         id: String(r.id),
         houseId: String(r.houseId),
         description: r.description ? String(r.description) : null,
@@ -150,5 +160,12 @@ export async function getHousePageData(id: string) {
         createdAt: new Date(String(valRow.createdAt)),
       } : null
 
-  return { house, inventoryData, historyData, utilityData, doctorData, valuationData }
+  const result = { house, inventoryData, historyData, utilityData, doctorData, valuationData }
+  dataCache[id] = { data: result, ts: Date.now() }
+  return result
+}
+
+// mutations 후 캐시 무효화
+export function invalidateHouseCache(id: string) {
+  delete dataCache[id]
 }
