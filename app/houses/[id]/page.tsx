@@ -76,7 +76,6 @@ export default async function HousePage({
         histories: {
           select: { id: true, title: true, category: true, doneAt: true, cost: true, company: true },
           orderBy: { doneAt: 'desc' },
-          take: 5,
         },
         utilities: { orderBy: { month: 'desc' }, take: 2 },
         doctorHistories: {
