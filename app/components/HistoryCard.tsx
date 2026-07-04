@@ -3,6 +3,29 @@
 import { useState } from 'react'
 import Link from 'next/link'
 
+function ImageModal({ src, label, onClose }: { src: string; label: string; onClose: () => void }) {
+  return (
+    <div
+      onClick={onClose}
+      style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.92)', zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 16 }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', maxWidth: 600, marginBottom: 12 }}>
+        <span style={{ color: '#fff', fontSize: 16, fontWeight: 500 }}>{label}</span>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#aaa', fontSize: 28, cursor: 'pointer', padding: 4 }}>
+          <i className="ti ti-x" />
+        </button>
+      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={label}
+        onClick={e => e.stopPropagation()}
+        style={{ maxWidth: '100%', maxHeight: '80vh', objectFit: 'contain', borderRadius: 12 }}
+      />
+    </div>
+  )
+}
+
 const CATEGORY_ICONS: Record<string, string> = {
   '점검': 'ti-search',
   '수리': 'ti-tool',
@@ -29,6 +52,7 @@ interface Props {
 
 export default function HistoryCard({ h, houseId, highlight, deleteAction }: Props) {
   const [expanded, setExpanded] = useState(false)
+  const [modalImage, setModalImage] = useState<{ src: string; label: string } | null>(null)
   const icon = CATEGORY_ICONS[h.category] || 'ti-pin'
   const color = CATEGORY_COLORS[h.category] || '#888'
   const isHighlighted = highlight === h.id
@@ -117,12 +141,41 @@ export default function HistoryCard({ h, houseId, highlight, deleteAction }: Pro
             </Link>
           )}
           {(h.estimateImageBase64 || h.contractImageBase64) && (
-            <div style={{ display: 'flex', gap: 6 }}>
-              {h.estimateImageBase64 && <div style={{ fontSize: 12, color: '#a78bfa', background: '#1a1040', borderRadius: 6, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 4 }}><i className="ti ti-file-invoice" style={{ fontSize: 13 }} />견적서</div>}
-              {h.contractImageBase64 && <div style={{ fontSize: 12, color: '#34d399', background: '#0d1f14', borderRadius: 6, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 4 }}><i className="ti ti-file-text" style={{ fontSize: 13 }} />계약서</div>}
+            <div style={{ display: 'flex', gap: 10, marginTop: 4, flexWrap: 'wrap' }}>
+              {h.estimateImageBase64 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-start' }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`data:image/jpeg;base64,${h.estimateImageBase64}`}
+                    alt="견적서"
+                    onClick={() => setModalImage({ src: `data:image/jpeg;base64,${h.estimateImageBase64}`, label: '견적서' })}
+                    style={{ width: 100, height: 70, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', border: '1px solid #2a1a5e' }}
+                  />
+                  <span style={{ fontSize: 12, color: '#a78bfa', display: 'flex', alignItems: 'center', gap: 3 }}>
+                    <i className="ti ti-file-invoice" style={{ fontSize: 12 }} />견적서
+                  </span>
+                </div>
+              )}
+              {h.contractImageBase64 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-start' }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`data:image/jpeg;base64,${h.contractImageBase64}`}
+                    alt="계약서"
+                    onClick={() => setModalImage({ src: `data:image/jpeg;base64,${h.contractImageBase64}`, label: '계약서' })}
+                    style={{ width: 100, height: 70, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', border: '1px solid #0d3020' }}
+                  />
+                  <span style={{ fontSize: 12, color: '#34d399', display: 'flex', alignItems: 'center', gap: 3 }}>
+                    <i className="ti ti-file-text" style={{ fontSize: 12 }} />계약서
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </div>
+      )}
+      {modalImage && (
+        <ImageModal src={modalImage.src} label={modalImage.label} onClose={() => setModalImage(null)} />
       )}
     </div>
   )
