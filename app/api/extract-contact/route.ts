@@ -25,8 +25,9 @@ export async function POST(req: NextRequest) {
     )
 
     const data = await res.json()
+    console.log('[extract-contact] Gemini full:', JSON.stringify(data).slice(0, 500))
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
-    console.log('[extract-contact] Gemini raw:', text)
+    console.log('[extract-contact] Gemini text:', text)
     const match = text.match(/\{[\s\S]*\}/)
     const contact = match ? JSON.parse(match[0]) : {}
 
