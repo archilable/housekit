@@ -25,9 +25,9 @@ function parseContact(ocrText: string): { name: string; phone: string; company: 
   const phoneMatch = ocrText.match(/(?:T\.?\s*)?(\+?82[-\s]?10[-\s]?\d{3,4}[-\s]?\d{4}|0\d{1,2}[-\s.]?\d{3,4}[-\s.]?\d{4}|\d{4}-\d{4})/)
   const phone = phoneMatch ? phoneMatch[1] ?? phoneMatch[0] : ''
 
-  // 이름: 한글 2~4자이면서 영문 이름이 바로 뒤에 오는 패턴 (박규남 gyunam park)
+  // 이름: 한글 2~4자 뒤에 소문자 영문 로마자 표기가 오는 패턴 (박규남 gyunam park)
   let name = ''
-  const nameWithRoman = ocrText.match(/([가-힣]{2,4})\s+[a-z]{2,}\s+[a-z]{2,}/i)
+  const nameWithRoman = ocrText.match(/([가-힣]{2,4})\s+[a-z]{2,}\s+[a-z]{2,}/)
   if (nameWithRoman) {
     name = nameWithRoman[1]
   } else {
@@ -43,7 +43,7 @@ function parseContact(ocrText: string): { name: string; phone: string; company: 
   if (beforeTitle) {
     company = beforeTitle[1]
       .replace(name, '')
-      .replace(/[a-z]+\s+[a-z]+/gi, '') // 영문 로마자 표기 제거
+      .replace(/[a-z]+\s+[a-z]+/g, '') // 소문자 로마자 표기만 제거 (대문자 브랜드명 보존)
       .trim().replace(/\s+/g, ' ')
   }
   if (!company) {
