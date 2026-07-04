@@ -60,6 +60,7 @@ export async function POST(req: NextRequest) {
     const detectedType = mediaType || (imageBase64.startsWith('data:image/png') ? 'image/png' : 'image/jpeg')
 
     const ocrText = await ocrExtract(base64Data, detectedType)
+    console.log('[extract-contact] OCR text:', ocrText.slice(0, 300))
     if (!ocrText.trim()) return NextResponse.json({ name: '', phone: '', company: '' })
 
     const contact = await parseWithLLM(ocrText)
