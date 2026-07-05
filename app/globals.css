@@ -30,6 +30,7 @@
 html {
   overflow-x: clip;
   width: 100%;
+  background: var(--bg);
 }
 
 body {
