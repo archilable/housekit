@@ -25,6 +25,33 @@ function extractKeyword(text: string): string {
   return text.split('\n').find(l => l.trim() && !l.startsWith('#'))?.slice(0, 20) || '수리'
 }
 
+function extractSoomgoKeywords(text: string): string[] {
+  const lines = text.split('\n')
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].includes('숨고 검색') && lines[i + 1]) {
+      return lines[i + 1].trim()
+        .replace(/^["']|["']$/g, '')
+        .split(/[,，]/)
+        .map(k => k.trim().replace(/^["']|["']$/g, ''))
+        .filter(Boolean)
+    }
+  }
+  return []
+}
+
+function openSoomgo(keyword: string) {
+  const webUrl = `https://soomgo.com/requests/search?keyword=${encodeURIComponent(keyword)}`
+  const appUrl = `soomgo://search?keyword=${encodeURIComponent(keyword)}`
+  let appOpened = false
+  const onHide = () => { appOpened = true }
+  document.addEventListener('visibilitychange', onHide)
+  window.location.href = appUrl
+  setTimeout(() => {
+    document.removeEventListener('visibilitychange', onHide)
+    if (!appOpened) window.open(webUrl, '_blank')
+  }, 1500)
+}
+
 function extractMaterials(text: string): string[] {
   const lines = text.split('\n')
   const materials: string[] = []
@@ -109,6 +136,7 @@ function HistoryCard({ h }: { h: DoctorHistory }) {
   const severityColor: Record<string, string> = { 낮음: '#34d399', 보통: '#fbbf24', 높음: '#f97316', 긴급: '#f87171' }
   const dateStr = new Date(h.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' })
   const keyword = extractKeyword(h.result)
+  const soomgoKeywords = extractSoomgoKeywords(h.result)
   const materials = extractMaterials(h.result)
 
   async function handleResolve() {
@@ -196,6 +224,22 @@ function HistoryCard({ h }: { h: DoctorHistory }) {
                     <span style={{ fontSize: 14, color: '#ddd' }}>{mat}</span>
                     <span style={{ fontSize: 13, color: '#f97316', fontWeight: 600, flexShrink: 0 }}>쿠팡 →</span>
                   </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 숨고 키워드 태그 */}
+          {soomgoKeywords.length > 0 && (
+            <div style={{ background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 12, padding: 12, marginBottom: 10 }}>
+              <p style={{ fontSize: 13, color: '#60a5fa', fontWeight: 500, marginBottom: 8, marginTop: 0 }}>👷 숨고에서 전문가 찾기</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {soomgoKeywords.map((kw, i) => (
+                  <button key={i} onClick={() => openSoomgo(kw)}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: '#1a2a4a', border: '0.5px solid #60a5fa55', borderRadius: 20, padding: '7px 13px', color: '#60a5fa', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
+                    {kw}
+                    <i className="ti ti-external-link" style={{ fontSize: 12, opacity: 0.7 }} />
+                  </button>
                 ))}
               </div>
             </div>
