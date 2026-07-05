@@ -2,16 +2,34 @@
 
 import { useEffect, useRef, useState } from 'react'
 
+interface BuildingInfo {
+  platArea: number | null   // 대지면적
+  archArea: number | null   // 건축면적
+  totArea: number | null    // 연면적
+  buildYear: number | null
+  houseType: string
+}
+
 interface Props {
   defaultAddress?: string
   defaultAddressDetail?: string
+  onBuildingInfo?: (info: BuildingInfo) => void
 }
 
 declare global {
   interface Window {
     daum: {
       Postcode: new (config: {
-        oncomplete: (data: { roadAddress: string; jibunAddress: string }) => void
+        oncomplete: (data: {
+          roadAddress: string
+          jibunAddress: string
+          sido: string
+          sigungu: string
+          bname: string
+          bname1: string
+          bnum: string
+          bnum2: string
+        }) => void
         onresize?: (size: { width: number; height: number }) => void
         width?: string
         height?: string
@@ -20,10 +38,11 @@ declare global {
   }
 }
 
-export default function AddressSearch({ defaultAddress = '', defaultAddressDetail = '' }: Props) {
+export default function AddressSearch({ defaultAddress = '', defaultAddressDetail = '', onBuildingInfo }: Props) {
   const [address, setAddress] = useState(defaultAddress)
   const [detail, setDetail] = useState(defaultAddressDetail)
   const [showSearch, setShowSearch] = useState(false)
+  const [fetching, setFetching] = useState(false)
   const embedRef = useRef<HTMLDivElement>(null)
   const scriptLoaded = useRef(false)
 
@@ -41,6 +60,26 @@ export default function AddressSearch({ defaultAddress = '', defaultAddressDetai
     document.head.appendChild(s)
   }
 
+  async function fetchBuildingInfo(sido: string, sigungu: string, bname: string, bnum: string, bnum2: string) {
+    if (!onBuildingInfo) return
+    setFetching(true)
+    try {
+      const params = new URLSearchParams({
+        siDo: sido,
+        siGunGu: sigungu,
+        eupmyeondong: bname,
+        bun: bnum,
+        ji: bnum2 || '0',
+      })
+      const res = await fetch(`/api/building-info?${params}`)
+      if (res.ok) {
+        const data = await res.json()
+        if (!data.error) onBuildingInfo(data)
+      }
+    } catch {}
+    setFetching(false)
+  }
+
   useEffect(() => {
     if (!showSearch || !embedRef.current) return
     loadScript(() => {
@@ -52,19 +91,20 @@ export default function AddressSearch({ defaultAddress = '', defaultAddressDetai
           setTimeout(() => {
             document.getElementById('address-detail-input')?.focus()
           }, 100)
+          // 건축물대장 자동 조회
+          fetchBuildingInfo(data.sido, data.sigungu, data.bname || data.bname1, data.bnum, data.bnum2)
         },
         width: '100%',
         height: '100%',
       }).embed(embedRef.current)
     })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showSearch])
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      {/* hidden inputs for form submission */}
       <input type="hidden" name="address" value={address} />
 
-      {/* 주소 표시 + 검색 버튼 */}
       <div style={{ position: 'relative' }}>
         <div
           onClick={() => setShowSearch(true)}
@@ -82,11 +122,13 @@ export default function AddressSearch({ defaultAddress = '', defaultAddressDetai
           <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {address || '주소 검색 (예: 연희동, 연희로)'}
           </span>
-          <i className="ti ti-search" style={{ fontSize: 18, color: '#60a5fa', flexShrink: 0 }} />
+          {fetching
+            ? <i className="ti ti-loader-2" style={{ fontSize: 18, color: '#60a5fa', flexShrink: 0, animation: 'spin 1s linear infinite' }} />
+            : <i className="ti ti-search" style={{ fontSize: 18, color: '#60a5fa', flexShrink: 0 }} />
+          }
         </div>
       </div>
 
-      {/* 검색 레이어 */}
       {showSearch && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 1000,
@@ -97,7 +139,6 @@ export default function AddressSearch({ defaultAddress = '', defaultAddressDetai
             marginTop: 'auto', borderRadius: '20px 20px 0 0',
             height: '80vh', display: 'flex', flexDirection: 'column', overflow: 'hidden',
           }}>
-            {/* 헤더 */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '0.5px solid #1e1e28', flexShrink: 0 }}>
               <span style={{ fontSize: 17, fontWeight: 500 }}>주소 검색</span>
               <button onClick={() => setShowSearch(false)}
@@ -105,13 +146,11 @@ export default function AddressSearch({ defaultAddress = '', defaultAddressDetai
                 ✕
               </button>
             </div>
-            {/* 카카오 우편번호 embed 영역 */}
             <div ref={embedRef} style={{ flex: 1, overflow: 'hidden' }} />
           </div>
         </div>
       )}
 
-      {/* 상세주소 */}
       {address && (
         <input
           id="address-detail-input"

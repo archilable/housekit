@@ -1,7 +1,10 @@
-import SubmitButton from '@/app/components/SubmitButton'
+'use client'
+
+import { useState } from 'react'
 import { createHouse } from '@/lib/actions'
 import Link from 'next/link'
 import AddressSearch from '@/app/components/AddressSearch'
+import SubmitButton from '@/app/components/SubmitButton'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
@@ -15,7 +18,24 @@ const fieldStyle = { display: 'flex', flexDirection: 'column' as const }
 const currentYear = new Date().getFullYear()
 const years = Array.from({ length: currentYear - 1949 }, (_, i) => currentYear - i)
 
+interface BuildingInfo {
+  platArea: number | null
+  archArea: number | null
+  totArea: number | null
+  buildYear: number | null
+  houseType: string
+}
+
 export default function NewHousePage() {
+  const [buildingInfo, setBuildingInfo] = useState<BuildingInfo | null>(null)
+  const [autoFilled, setAutoFilled] = useState(false)
+
+  function handleBuildingInfo(info: BuildingInfo) {
+    setBuildingInfo(info)
+    setAutoFilled(true)
+    setTimeout(() => setAutoFilled(false), 3000)
+  }
+
   return (
     <div style={{ padding: '20px 16px', maxWidth: '100%' }}>
       <div style={{ marginBottom: 28 }}>
@@ -29,12 +49,25 @@ export default function NewHousePage() {
       <form action={createHouse} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         <div style={fieldStyle}>
           <label style={labelStyle}>주소 <span style={{ color: '#f87171' }}>*</span></label>
-          <AddressSearch />
+          <AddressSearch onBuildingInfo={handleBuildingInfo} />
         </div>
+
+        {autoFilled && (
+          <div style={{ background: '#0d1f14', border: '0.5px solid #34d39944', borderRadius: 10, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <i className="ti ti-check" style={{ color: '#34d399', fontSize: 16 }} />
+            <span style={{ fontSize: 14, color: '#34d399' }}>건축물대장에서 정보를 자동으로 가져왔어요</span>
+          </div>
+        )}
 
         <div style={fieldStyle}>
           <label style={labelStyle}>주택 유형 <span style={{ color: '#f87171' }}>*</span></label>
-          <select name="houseType" required style={{ ...inputStyle, appearance: 'none' as const }}>
+          <select
+            name="houseType"
+            required
+            style={{ ...inputStyle, appearance: 'none' as const }}
+            value={buildingInfo?.houseType || ''}
+            onChange={e => setBuildingInfo(prev => prev ? { ...prev, houseType: e.target.value } : null)}
+          >
             <option value="">선택하세요</option>
             <option value="단독주택">단독주택</option>
             <option value="빌라/연립">빌라 / 연립</option>
@@ -46,7 +79,12 @@ export default function NewHousePage() {
 
         <div style={fieldStyle}>
           <label style={labelStyle}>건축연도</label>
-          <select name="buildYear" style={{ ...inputStyle, appearance: 'none' as const }}>
+          <select
+            name="buildYear"
+            style={{ ...inputStyle, appearance: 'none' as const }}
+            value={buildingInfo?.buildYear || ''}
+            onChange={e => setBuildingInfo(prev => prev ? { ...prev, buildYear: parseInt(e.target.value) || null } : null)}
+          >
             <option value="">선택하세요</option>
             {years.map(y => (
               <option key={y} value={y}>{y}년</option>
@@ -56,17 +94,41 @@ export default function NewHousePage() {
 
         <div style={fieldStyle}>
           <label style={labelStyle}>대지면적 (㎡)</label>
-          <input name="landArea" type="number" placeholder="120.0" step="0.1" style={inputStyle} />
+          <input
+            name="landArea"
+            type="number"
+            placeholder="120.0"
+            step="0.1"
+            style={inputStyle}
+            value={buildingInfo?.platArea ?? ''}
+            onChange={e => setBuildingInfo(prev => prev ? { ...prev, platArea: parseFloat(e.target.value) || null } : null)}
+          />
         </div>
 
         <div style={fieldStyle}>
           <label style={labelStyle}>건축면적 (㎡)</label>
-          <input name="buildArea" type="number" placeholder="84.5" step="0.1" style={inputStyle} />
+          <input
+            name="buildArea"
+            type="number"
+            placeholder="84.5"
+            step="0.1"
+            style={inputStyle}
+            value={buildingInfo?.archArea ?? ''}
+            onChange={e => setBuildingInfo(prev => prev ? { ...prev, archArea: parseFloat(e.target.value) || null } : null)}
+          />
         </div>
 
         <div style={fieldStyle}>
           <label style={labelStyle}>전용면적 / 실면적 (㎡)</label>
-          <input name="exclusiveArea" type="number" placeholder="59.9" step="0.1" style={inputStyle} />
+          <input
+            name="exclusiveArea"
+            type="number"
+            placeholder="59.9"
+            step="0.1"
+            style={inputStyle}
+            value={buildingInfo?.totArea ?? ''}
+            onChange={e => setBuildingInfo(prev => prev ? { ...prev, totArea: parseFloat(e.target.value) || null } : null)}
+          />
         </div>
 
         <div style={fieldStyle}>
