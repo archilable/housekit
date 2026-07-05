@@ -156,13 +156,18 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
 
   function openSoomgo(keyword: string) {
     const webUrl = `https://soomgo.com/requests/search?keyword=${encodeURIComponent(keyword)}`
-    // 앱 딥링크 시도 후 1.2초 내 앱 안 열리면 웹으로 이동
     const appUrl = `soomgo://search?keyword=${encodeURIComponent(keyword)}`
-    const start = Date.now()
+
+    let appOpened = false
+    const onHide = () => { appOpened = true }
+    document.addEventListener('visibilitychange', onHide)
+
     window.location.href = appUrl
+
     setTimeout(() => {
-      if (Date.now() - start < 1500) window.open(webUrl, '_blank')
-    }, 1200)
+      document.removeEventListener('visibilitychange', onHide)
+      if (!appOpened) window.open(webUrl, '_blank')
+    }, 1500)
   }
 
   return (
