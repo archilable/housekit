@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { deleteHistory, deleteInventory } from '@/lib/actions'
 import TabLink from './TabLink'
 import ClientTabRestorer from './ClientTabRestorer'
+import FastTabNav from './FastTabNav'
 import SortableInventoryList from './SortableInventoryList'
 import HistoryCard from './HistoryCard'
 import UtilityChart from './UtilityChart'
@@ -123,7 +124,8 @@ export default function HouseDashboardContent({ data, houseId }: { data: any; ho
         </div>
       </div>
 
-      {/* Tab Restorer + Tab Container */}
+      {/* Tab Nav + Restorer + Tab Container */}
+      <FastTabNav houseId={houseId} initialTab="home" />
       <ClientTabRestorer houseId={houseId} />
       <div id={`tab-container-${houseId}`} data-active-tab="home">
 

@@ -1,8 +1,9 @@
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { getHousePageData } from '@/lib/houseData'
 import InviteButton from '@/app/components/InviteButton'
 import BackHomeButtons from '@/app/components/BackHomeButtons'
-import FastTabNav from '@/app/components/FastTabNav'
-import HouseDataLoader from '@/app/components/HouseDataLoader'
+import HouseDashboardContent from '@/app/components/HouseDashboardContent'
 
 export const revalidate = 60
 
@@ -12,6 +13,8 @@ export default async function HousePage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
+  const data = await getHousePageData(id)
+  if (!data) notFound()
 
   return (
     <div style={{ color: '#fff', width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
@@ -24,8 +27,7 @@ export default async function HousePage({
           <InviteButton houseId={id} />
         </div>
       </div>
-      <FastTabNav houseId={id} initialTab="home" />
-      <HouseDataLoader houseId={id} />
+      <HouseDashboardContent data={data} houseId={id} />
     </div>
   )
 }
