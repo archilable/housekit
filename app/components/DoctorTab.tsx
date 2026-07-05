@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
@@ -9,6 +10,7 @@ const inputStyle: React.CSSProperties = {
 }
 
 export default function DoctorTab({ houseId }: { houseId: string }) {
+  const router = useRouter()
   const [preview, setPreview] = useState<string | null>(null)
   const [imageBase64, setImageBase64] = useState<string | null>(null)
   const [mediaType, setMediaType] = useState<string>('image/jpeg')
@@ -74,6 +76,10 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
       const data = await res.json()
       if (data.error) throw new Error(data.error)
       setResult(data.result)
+      // 스크롤 위치 유지하며 이력 목록 갱신
+      const sy = window.scrollY
+      router.refresh()
+      requestAnimationFrame(() => window.scrollTo({ top: sy, behavior: 'instant' }))
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : '오류가 발생했습니다.')
     } finally {
@@ -223,7 +229,13 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
 
       {result && (
         <div style={{ marginTop: 24, overflow: 'hidden' }}>
-          <p style={{ fontSize: 13, color: '#34d399', marginBottom: 10, marginTop: 0 }}>✅ 진단이 이력에 저장됐어요 — 아래 이력 목록에서 확인하세요</p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+            <p style={{ fontSize: 13, color: '#34d399', margin: 0 }}>✅ 이력에 저장됐어요</p>
+            <button onClick={() => { setResult(null); setPreview(null); setImageBase64(null); setDescription('') }}
+              style={{ background: '#1a1a24', border: '0.5px solid #2a2a38', color: '#888', borderRadius: 20, padding: '5px 12px', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+              다시 진단하기
+            </button>
+          </div>
           {/* 진단 결과 */}
           <div style={{ background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 16, padding: 16, marginBottom: 12, wordBreak: 'keep-all', overflowWrap: 'break-word' }}>
             <p style={{ fontSize: 16, fontWeight: 600, color: '#34d399', marginBottom: 12, marginTop: 0 }}>✅ 진단 완료</p>

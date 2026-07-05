@@ -3,9 +3,23 @@ import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/db'
 import { invalidateHouseCache } from '@/lib/houseData'
 
+// 서버 레벨 중복 요청 방지 (houseId → 마지막 요청 시각)
+const g = globalThis as any
+if (!g.__doctorInFlight) g.__doctorInFlight = new Map<string, number>()
+const inFlight = g.__doctorInFlight as Map<string, number>
+
 export async function POST(req: NextRequest) {
   try {
     const { imageBase64, mediaType, description, houseId } = await req.json()
+
+    // 동일 houseId로 10초 이내 중복 요청 차단
+    if (houseId) {
+      const last = inFlight.get(houseId)
+      if (last && Date.now() - last < 10_000) {
+        return NextResponse.json({ error: '진단이 이미 진행 중입니다.' }, { status: 429 })
+      }
+      inFlight.set(houseId, Date.now())
+    }
 
     const prompt = `당신은 대한민국에서 20년 이상 경력을 쌓은 주택 설비·수리 전문가입니다. 보일러, 배관, 누수, 곰팡이, 균열, 전기, 도배, 타일, 창호, 방수 등 모든 주거 문제에 정통하며, 한국의 일반적인 아파트·빌라·단독주택 구조와 자재를 잘 알고 있습니다.
 
@@ -82,6 +96,7 @@ export async function POST(req: NextRequest) {
       })
       invalidateHouseCache(houseId)
       revalidatePath(`/houses/${houseId}`)
+      inFlight.delete(houseId)
     }
 
     return NextResponse.json({ result: text })
