@@ -43,7 +43,7 @@ export async function getHousePageData(id: string) {
         {
           sql: `SELECT h.id, h.title, h.category, h.doneAt, h.cost, h.description,
                   h.company, h.contactName, h.contactPhone, h.contactCompany,
-                  h.hasEstimate, h.hasContract, h.hasPhoto,
+                  h.hasEstimate, h.hasContract, COALESCE(h.hasPhoto, 0) as hasPhoto,
                   i.id as inv_id, i.name as inv_name, i.category as inv_category
                 FROM History h
                 LEFT JOIN Inventory i ON h.inventoryId = i.id

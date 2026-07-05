@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import TabLink from './TabLink'
 
@@ -57,12 +56,15 @@ export default function HistoryCard({ h, houseId, highlight, deleteAction }: Pro
   const [modalImage, setModalImage] = useState<{ src: string; label: string } | null>(null)
   const [images, setImages] = useState<{ type: string; imageBase64: string }[]>([])
   const [loadingImages, setLoadingImages] = useState(false)
+  const [isHighlighted, setIsHighlighted] = useState(false)
   const icon = CATEGORY_ICONS[h.category] || 'ti-pin'
   const color = CATEGORY_COLORS[h.category] || '#888'
-  const searchParams = useSearchParams()
-  const isHighlighted = searchParams.get('highlight') === h.id
 
-  const hasDetail = h.description || h.contactCompany || h.company || h.contactName || h.contactPhone || h.inventory || h.hasEstimate || h.hasContract || h.hasPhoto
+  useEffect(() => {
+    setIsHighlighted(new URLSearchParams(window.location.search).get('highlight') === h.id)
+  }, [h.id])
+
+  const hasDetail = h.description || h.contactCompany || h.company || h.contactName || h.contactPhone || h.inventory || h.hasEstimate || h.hasContract || h.hasPhoto || false
 
   useEffect(() => {
     if (!expanded || !(h.hasEstimate || h.hasContract || h.hasPhoto) || images.length > 0 || loadingImages) return
