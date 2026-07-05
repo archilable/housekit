@@ -30,7 +30,7 @@ function getWarrantyStatus(installedAt: any, warrantyMonths: number | null) {
 }
 
 function calcHealthScore(inventoryCount: number, historyCount: number) {
-  return Math.min(40 + Math.min(inventoryCount * 8, 30) + Math.min(historyCount * 6, 30), 100)
+  return Math.min(Math.min(inventoryCount * 3, 50) + Math.min(historyCount * 2, 50), 100)
 }
 
 export default function HouseDashboardContent({ data, houseId }: { data: any; houseId: string }) {
