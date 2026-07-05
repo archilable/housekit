@@ -24,12 +24,12 @@ export async function getHousePageData(id: string) {
       const results = await client.batch([
         // 0. House 기본 정보 + 카운트
         {
-          sql: `SELECT h.id, h.address, h.addressDetail, h.houseType, h.buildYear,
-                  h.landArea, h.buildArea, h.exclusiveArea, h.area,
-                  (SELECT COUNT(*) FROM Inventory WHERE houseId = h.id) as inventoryCount,
-                  (SELECT COUNT(*) FROM History WHERE houseId = h.id) as historyCount,
-                  (SELECT COUNT(*) FROM DoctorHistory WHERE houseId = h.id) as doctorCount
-                FROM House h WHERE h.id = ?`,
+          sql: `SELECT id, address, addressDetail, houseType, buildYear,
+                  landArea, buildArea, exclusiveArea, area,
+                  (SELECT COUNT(*) FROM Inventory WHERE houseId = House.id) as inventoryCount,
+                  (SELECT COUNT(*) FROM History WHERE houseId = House.id) as historyCount,
+                  (SELECT COUNT(*) FROM DoctorHistory WHERE houseId = House.id) as doctorCount
+                FROM House WHERE id = ?`,
           args: [id],
         },
         // 1. 설비
