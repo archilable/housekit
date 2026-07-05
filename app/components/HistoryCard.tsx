@@ -61,7 +61,13 @@ export default function HistoryCard({ h, houseId, highlight, deleteAction }: Pro
   const color = CATEGORY_COLORS[h.category] || '#888'
 
   useEffect(() => {
-    setIsHighlighted(new URLSearchParams(window.location.search).get('highlight') === h.id)
+    const highlighted = new URLSearchParams(window.location.search).get('highlight') === h.id
+    setIsHighlighted(highlighted)
+    if (highlighted) {
+      setTimeout(() => {
+        document.getElementById(`history-${h.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }, 300)
+    }
   }, [h.id])
 
   const hasDetail = h.description || h.contactCompany || h.company || h.contactName || h.contactPhone || h.inventory || h.hasEstimate || h.hasContract
@@ -80,8 +86,8 @@ export default function HistoryCard({ h, houseId, highlight, deleteAction }: Pro
     <div
       id={`history-${h.id}`}
       style={{
-        background: isHighlighted ? '#0d1a2e' : 'var(--bg-card)',
-        border: isHighlighted ? '1px solid #3b82f6' : '0.5px solid var(--border)',
+        background: isHighlighted ? '#1a1500' : 'var(--bg-card)',
+        border: isHighlighted ? '1.5px solid #fbbf24' : '0.5px solid var(--border)',
         borderRadius: 14,
         overflow: 'hidden',
         transition: 'border 0.3s',

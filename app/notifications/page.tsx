@@ -77,6 +77,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
   }
 
   type RecentHistory = {
+    id: string
     title: string
     daysAgo: number
     href: string
@@ -108,9 +109,10 @@ export default async function NotificationsPage({ searchParams }: { searchParams
       const daysAgo = Math.floor((now.getTime() - new Date(hist.doneAt).getTime()) / (1000 * 60 * 60 * 24))
       if (daysAgo <= 14) {
         recentHistories.push({
+          id: hist.id,
           title: hist.title,
           daysAgo,
-          href: `/houses/${house.id}?tab=history`,
+          href: `/houses/${house.id}?tab=history&highlight=${hist.id}`,
           houseName: house.address,
         })
       }
@@ -121,9 +123,10 @@ export default async function NotificationsPage({ searchParams }: { searchParams
       if (daysAgo <= 14) {
         const firstLine = (dh.description || dh.result || '').split('\n')[0].slice(0, 40)
         recentHistories.push({
+          id: dh.id,
           title: firstLine || 'AI 하우스닥터 진단',
           daysAgo,
-          href: `/houses/${house.id}?tab=doctor`,
+          href: `/houses/${house.id}?tab=doctor&highlight=${dh.id}`,
           houseName: house.address,
           isDoctor: true,
         })

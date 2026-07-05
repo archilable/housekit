@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 
 type DoctorHistory = {
@@ -100,8 +100,18 @@ function ResolveModal({ history, onClose }: { history: DoctorHistory; onClose: (
   )
 }
 
-function HistoryCard({ h }: { h: DoctorHistory }) {
+function HistoryCard({ h, isHighlighted }: { h: DoctorHistory; isHighlighted?: boolean }) {
   const [resolved, setResolved] = useState(h.resolved)
+  const detailsRef = useRef<HTMLDetailsElement>(null)
+
+  useEffect(() => {
+    if (isHighlighted) {
+      if (detailsRef.current) detailsRef.current.open = true
+      setTimeout(() => {
+        document.getElementById(`doctor-${h.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }, 300)
+    }
+  }, [isHighlighted, h.id])
   const [resolvedAt, setResolvedAt] = useState<string | null>(h.resolvedAt ? new Date(h.resolvedAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }) : null)
   const [showModal, setShowModal] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -161,9 +171,11 @@ function HistoryCard({ h }: { h: DoctorHistory }) {
     <>
       {showModal && <ResolveModal history={h} onClose={() => setShowModal(false)} />}
       <details
+        id={`doctor-${h.id}`}
+        ref={detailsRef}
         style={{
-          background: resolved ? '#0d0d12' : '#111118',
-          border: `0.5px solid ${resolved ? '#1a2a1a' : '#1e1e28'}`,
+          background: isHighlighted ? '#1a1500' : resolved ? '#0d0d12' : '#111118',
+          border: isHighlighted ? '1.5px solid #fbbf24' : `0.5px solid ${resolved ? '#1a2a1a' : '#1e1e28'}`,
           borderRadius: 14,
           overflow: 'hidden',
           opacity: resolved ? 0.6 : 1,
@@ -285,19 +297,30 @@ const PREVIEW = 3
 
 export default function DoctorHistoryList({ histories }: { histories: DoctorHistory[] }) {
   const [expanded, setExpanded] = useState(false)
+  const [highlightId, setHighlightId] = useState<string | null>(null)
+
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get('highlight')
+    if (id) setHighlightId(id)
+  }, [])
+
   if (histories.length === 0) return null
 
   const unresolved = histories.filter(h => !h.resolved)
   const resolved = histories.filter(h => h.resolved)
   const sorted = [...unresolved, ...resolved]
-  const visible = expanded ? sorted : sorted.slice(0, PREVIEW)
+
+  // 하이라이트 항목이 PREVIEW 범위 밖이면 자동 펼침
+  const highlightIndex = highlightId ? sorted.findIndex(h => h.id === highlightId) : -1
+  const shouldExpand = highlightIndex >= PREVIEW
+  const visible = (expanded || shouldExpand) ? sorted : sorted.slice(0, PREVIEW)
   const remaining = sorted.length - PREVIEW
 
   return (
     <div style={{ padding: '0 16px', marginTop: 8 }}>
       <p style={{ fontSize: 13, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>진단 이력</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {visible.map(h => <HistoryCard key={h.id} h={h} />)}
+        {visible.map(h => <HistoryCard key={h.id} h={h} isHighlighted={h.id === highlightId} />)}
       </div>
       {remaining > 0 && !expanded && (
         <button onClick={() => setExpanded(true)}
