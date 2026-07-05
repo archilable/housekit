@@ -32,7 +32,7 @@ export default async function NewUtilityPage({
       <div style={{ marginBottom: 28 }}>
         <BackHomeButtons houseId={id} />
         <h1 style={{ fontSize: 22, fontWeight: 500, marginTop: 14, marginBottom: 0 }}>공과금 입력</h1>
-        <p style={{ fontSize: 15, color: '#555', marginTop: 6 }}>고지서 사진을 찍으면 AI가 자동으로 입력해드려요</p>
+        <p style={{ fontSize: 15, color: '#555', marginTop: 6 }}>고지서나 계좌 거래내역 사진을 찍으면 AI가 자동으로 입력해드려요</p>
       </div>
 
       <UtilityForm
