@@ -64,10 +64,10 @@ export default function HistoryCard({ h, houseId, highlight, deleteAction }: Pro
     setIsHighlighted(new URLSearchParams(window.location.search).get('highlight') === h.id)
   }, [h.id])
 
-  const hasDetail = h.description || h.contactCompany || h.company || h.contactName || h.contactPhone || h.inventory || h.hasEstimate || h.hasContract || h.hasPhoto || false
+  const hasDetail = h.description || h.contactCompany || h.company || h.contactName || h.contactPhone || h.inventory || h.hasEstimate || h.hasContract
 
   useEffect(() => {
-    if (!expanded || !(h.hasEstimate || h.hasContract || h.hasPhoto) || images.length > 0 || loadingImages) return
+    if (!expanded || !(h.hasEstimate || h.hasContract) || images.length > 0 || loadingImages) return
     setLoadingImages(true)
     fetch(`/api/history-image/${h.id}`)
       .then(r => r.json())

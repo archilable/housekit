@@ -16,10 +16,10 @@ export async function POST(req: NextRequest) {
       houseId, inventoryId, category, title, description,
       cost, doneAt,
       contactName, contactPhone, contactCompany, contactImageBase64,
-      hasEstimate, hasContract, hasPhoto,
+      hasEstimate, hasContract,
     } = body
 
-    console.log(`[history/save] houseId=${houseId} hasEst=${hasEstimate} hasCon=${hasContract} hasPhoto=${hasPhoto}`)
+    console.log(`[history/save] houseId=${houseId} hasEst=${hasEstimate} hasCon=${hasContract}`)
 
     const history = await prisma.history.create({
       data: {
@@ -37,7 +37,6 @@ export async function POST(req: NextRequest) {
         contactImageBase64: contactImageBase64 || null,
         hasEstimate: !!hasEstimate,
         hasContract: !!hasContract,
-        hasPhoto: !!hasPhoto,
       },
     })
 
