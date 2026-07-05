@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 [DIY 가능 / 전문가 권장 / 전문가 필수] — [이유와 예상 공사비용 범위]
 
 ## 🔗 숨고 검색어
-[숨고에서 검색할 전문가 키워드 1개. 예: "욕실 방수 공사"]`
+[숨고에서 검색할 전문가 키워드 2~3개를 쉼표로 구분. 예: "욕실 방수 공사, 타일 보수, 누수 수리"]`
 
     const systemMessage = {
       role: 'system',

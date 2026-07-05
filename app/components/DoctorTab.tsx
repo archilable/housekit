@@ -80,15 +80,19 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
     }
   }
 
-  // 결과에서 숨고 키워드 추출
-  function extractSoomgoKeyword(text: string): string {
+  // 결과에서 숨고 키워드 여러 개 추출
+  function extractSoomgoKeywords(text: string): string[] {
     const lines = text.split('\n')
     for (let i = 0; i < lines.length; i++) {
       if (lines[i].includes('숨고 검색') && lines[i + 1]) {
         return lines[i + 1].trim()
+          .replace(/^["']|["']$/g, '')
+          .split(/[,，]/)
+          .map(k => k.trim().replace(/^["']|["']$/g, ''))
+          .filter(Boolean)
       }
     }
-    return description || '수리'
+    return description ? [description] : ['수리']
   }
 
   // 결과에서 자재 목록 추출
@@ -138,7 +142,8 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
     })
   }
 
-  const soomgoKeyword = result ? extractSoomgoKeyword(result) : ''
+  const soomgoKeywords = result ? extractSoomgoKeywords(result) : []
+  const soomgoKeyword = soomgoKeywords[0] || description || '수리'
   const materials = result ? extractMaterials(result) : []
 
   return (
@@ -218,6 +223,24 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
             </div>
           )}
 
+          {/* 숨고 키워드 태그 */}
+          {soomgoKeywords.length > 0 && (
+            <div style={{ background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 14, padding: 14, marginBottom: 10 }}>
+              <p style={{ fontSize: 14, color: '#60a5fa', fontWeight: 500, marginBottom: 10 }}>👷 숨고에서 전문가 찾기</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {soomgoKeywords.map((kw, i) => (
+                  <a key={i}
+                    href={`https://soomgo.com/requests/search?keyword=${encodeURIComponent(kw)}`}
+                    target="_blank" rel="noopener noreferrer"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#1a2a4a', border: '0.5px solid #60a5fa55', borderRadius: 20, padding: '8px 14px', textDecoration: 'none', color: '#60a5fa', fontSize: 15, fontWeight: 500 }}>
+                    {kw}
+                    <i className="ti ti-external-link" style={{ fontSize: 13, opacity: 0.7 }} />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* 액션 버튼 2개 */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(soomgoKeyword + ' DIY 수리 방법')}`}
@@ -225,14 +248,14 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: '#111828', border: '0.5px solid #1e3a5f', borderRadius: 14, padding: '16px 12px', textDecoration: 'none' }}>
               <span style={{ fontSize: 26 }}>🔧</span>
               <span style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>DIY 수리</span>
-              <span style={{ fontSize: 13, color: '#555', textAlign: 'center' }}>유튜브 영상으로 직접 수리하기</span>
+              <span style={{ fontSize: 13, color: '#555', textAlign: 'center' }}>유튜브로 직접 수리하기</span>
             </a>
-            <a href={`https://search.naver.com/search.naver?query=${encodeURIComponent(soomgoKeyword + ' 전문가')}`}
+            <a href={`https://soomgo.com/requests/search?keyword=${encodeURIComponent(soomgoKeyword)}`}
               target="_blank" rel="noopener noreferrer"
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 14, padding: '16px 12px', textDecoration: 'none' }}>
               <span style={{ fontSize: 26 }}>👷</span>
               <span style={{ fontSize: 15, fontWeight: 600, color: '#60a5fa' }}>전문가 찾기</span>
-              <span style={{ fontSize: 13, color: '#555', textAlign: 'center' }}>네이버에서 전문가 검색</span>
+              <span style={{ fontSize: 13, color: '#555', textAlign: 'center' }}>숨고에서 전문가 연결</span>
             </a>
           </div>
         </div>
