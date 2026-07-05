@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
 
     // 진단 이력 저장
     if (houseId) {
-      await prisma.doctorHistory.create({
+      const saved = await prisma.doctorHistory.create({
         data: {
           houseId,
           description: description || null,
@@ -97,6 +97,7 @@ export async function POST(req: NextRequest) {
       invalidateHouseCache(houseId)
       revalidatePath(`/houses/${houseId}`)
       inFlight.delete(houseId)
+      return NextResponse.json({ result: text, id: saved.id })
     }
 
     return NextResponse.json({ result: text })

@@ -7,8 +7,7 @@ import RecentHistoryToggle from './RecentHistoryToggle'
 import SortableInventoryList from './SortableInventoryList'
 import HistoryCard from './HistoryCard'
 import UtilityChart from './UtilityChart'
-import DoctorTab from './DoctorTab'
-import DoctorHistoryList from './DoctorHistoryList'
+import DoctorSection from './DoctorSection'
 import DeleteUtilityButton from './DeleteUtilityButton'
 import RealPriceData from './RealPriceData'
 import AiValuation from './AiValuation'
@@ -395,8 +394,7 @@ export default function HouseDashboardContent({ data, houseId }: { data: any; ho
 
         {/* DOCTOR TAB */}
         <div className="fast-tab fast-tab-doctor">
-          <DoctorTab houseId={houseId} />
-          <DoctorHistoryList histories={doctorData} />
+          <DoctorSection houseId={houseId} initialHistories={doctorData} />
           <div style={{ height: 32 }} />
         </div>
 

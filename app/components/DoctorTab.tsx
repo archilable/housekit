@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
@@ -9,8 +8,9 @@ const inputStyle: React.CSSProperties = {
   outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box',
 }
 
-export default function DoctorTab({ houseId }: { houseId: string }) {
-  const router = useRouter()
+type DiagnosedEntry = { id: string; houseId: string; description: string | null; imageBase64: string | null; result: string; resolved: boolean; resolvedAt: null; createdAt: string }
+
+export default function DoctorTab({ houseId, onDiagnosed }: { houseId: string; onDiagnosed?: (entry: DiagnosedEntry) => void }) {
   const [preview, setPreview] = useState<string | null>(null)
   const [imageBase64, setImageBase64] = useState<string | null>(null)
   const [mediaType, setMediaType] = useState<string>('image/jpeg')
@@ -76,10 +76,16 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
       const data = await res.json()
       if (data.error) throw new Error(data.error)
       setResult(data.result)
-      // 스크롤 위치 유지하며 이력 목록 갱신
-      const sy = window.scrollY
-      router.refresh()
-      requestAnimationFrame(() => window.scrollTo({ top: sy, behavior: 'instant' }))
+      onDiagnosed?.({
+        id: data.id || `tmp-${Date.now()}`,
+        houseId,
+        description: description || null,
+        imageBase64: imageBase64 || null,
+        result: data.result,
+        resolved: false,
+        resolvedAt: null,
+        createdAt: new Date().toISOString(),
+      })
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : '오류가 발생했습니다.')
     } finally {
