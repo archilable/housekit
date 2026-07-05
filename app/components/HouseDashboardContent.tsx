@@ -112,23 +112,23 @@ export default function HouseDashboardContent({ data, houseId }: { data: any; ho
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, marginTop: 20, background: '#1a1a24', borderRadius: 14, overflow: 'hidden', border: '0.5px solid #222' }}>
             {house.landArea && (
               <div style={{ background: '#111118', padding: '14px 0', textAlign: 'center' }}>
-                <p style={{ fontSize: 11, color: '#444', marginBottom: 5 }}>대지</p>
-                <p style={{ fontSize: 15, color: '#aaa', fontWeight: 500 }}>{(house.landArea / 3.305785).toFixed(1)}평</p>
-                <p style={{ fontSize: 11, color: '#333', marginTop: 3 }}>{house.landArea}㎡</p>
+                <p style={{ fontSize: 13, color: '#444', marginBottom: 5 }}>대지</p>
+                <p style={{ fontSize: 17, color: '#aaa', fontWeight: 500 }}>{(house.landArea / 3.305785).toFixed(1)}평</p>
+                <p style={{ fontSize: 13, color: '#333', marginTop: 3 }}>{house.landArea}㎡</p>
               </div>
             )}
             {house.buildArea && (
               <div style={{ background: '#111118', padding: '14px 0', textAlign: 'center', borderLeft: '0.5px solid #1a1a24', borderRight: '0.5px solid #1a1a24' }}>
-                <p style={{ fontSize: 11, color: '#444', marginBottom: 5 }}>건축</p>
-                <p style={{ fontSize: 15, color: '#aaa', fontWeight: 500 }}>{(house.buildArea / 3.305785).toFixed(1)}평</p>
-                <p style={{ fontSize: 11, color: '#333', marginTop: 3 }}>{house.buildArea}㎡</p>
+                <p style={{ fontSize: 13, color: '#444', marginBottom: 5 }}>건축</p>
+                <p style={{ fontSize: 17, color: '#aaa', fontWeight: 500 }}>{(house.buildArea / 3.305785).toFixed(1)}평</p>
+                <p style={{ fontSize: 13, color: '#333', marginTop: 3 }}>{house.buildArea}㎡</p>
               </div>
             )}
             {house.exclusiveArea && (
               <div style={{ background: '#0d1520', padding: '14px 0', textAlign: 'center' }}>
-                <p style={{ fontSize: 11, color: '#3b6fb5', marginBottom: 5 }}>전용</p>
-                <p style={{ fontSize: 15, color: '#60a5fa', fontWeight: 600 }}>{(house.exclusiveArea / 3.305785).toFixed(1)}평</p>
-                <p style={{ fontSize: 11, color: '#2a4a80', marginTop: 3 }}>{house.exclusiveArea}㎡</p>
+                <p style={{ fontSize: 13, color: '#3b6fb5', marginBottom: 5 }}>전용</p>
+                <p style={{ fontSize: 17, color: '#60a5fa', fontWeight: 600 }}>{(house.exclusiveArea / 3.305785).toFixed(1)}평</p>
+                <p style={{ fontSize: 13, color: '#2a4a80', marginTop: 3 }}>{house.exclusiveArea}㎡</p>
               </div>
             )}
           </div>
