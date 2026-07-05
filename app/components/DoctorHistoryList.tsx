@@ -140,14 +140,17 @@ function HistoryCard({ h }: { h: DoctorHistory }) {
               {h.description || summary}
             </p>
           </div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
-            <button onClick={e => { e.preventDefault(); e.stopPropagation(); handleDelete() }} disabled={loading}
-              style={{ background: 'none', border: 'none', color: '#444', cursor: 'pointer', padding: 4, fontSize: 18, lineHeight: 1 }}>
-              <i className="ti ti-trash" />
-            </button>
-            <i className="ti ti-chevron-down" style={{ fontSize: 18, color: '#444' }} />
-          </div>
+          <i className="ti ti-chevron-down" style={{ fontSize: 18, color: '#444', flexShrink: 0, marginTop: 2 }} />
         </summary>
+
+        {/* 삭제 버튼 — summary 밖에 배치 (iOS Safari 호환) */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0 16px 4px' }}>
+          <button onClick={handleDelete} disabled={loading}
+            style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', padding: '4px 8px', fontSize: 14, display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'inherit' }}>
+            <i className="ti ti-trash" style={{ fontSize: 16 }} />
+            삭제
+          </button>
+        </div>
 
         <div style={{ padding: '0 16px 16px', borderTop: '0.5px solid #1e1e28' }}>
           {/* 진단 결과 텍스트 */}
