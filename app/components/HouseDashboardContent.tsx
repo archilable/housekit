@@ -88,16 +88,8 @@ export default function HouseDashboardContent({ data, houseId }: { data: any; ho
         </div>
       )}
 
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', padding: '0 16px', marginTop: 4 }}>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <span style={{ fontSize: 15, background: '#0d1a2e', color: '#60a5fa', padding: '3px 10px', borderRadius: 20, border: '0.5px solid #1e3a5f' }}>{house.houseType}</span>
-          {house.buildYear && <span style={{ fontSize: 15, color: '#555' }}>{house.buildYear}년</span>}
-        </div>
-      </div>
-
       {/* House Illustration */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 0 12px', position: 'relative' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 0 12px', position: 'relative' }}>
         <HouseIllustration houseType={house.houseType} />
         <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: 180, height: 30, background: 'radial-gradient(ellipse, rgba(59,130,246,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
       </div>
@@ -105,7 +97,11 @@ export default function HouseDashboardContent({ data, houseId }: { data: any; ho
       {/* House Name */}
       <div style={{ textAlign: 'center', padding: '4px 16px 20px' }}>
         <h1 style={{ fontSize: 24, fontWeight: 500, marginBottom: 4 }}>{house.address}</h1>
-        {house.addressDetail && <p style={{ fontSize: 17, color: '#666' }}>{house.addressDetail}</p>}
+        {house.addressDetail && <p style={{ fontSize: 17, color: '#666', marginBottom: 4 }}>{house.addressDetail}</p>}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 6 }}>
+          <span style={{ fontSize: 13, background: '#0d1a2e', color: '#60a5fa', padding: '2px 9px', borderRadius: 20, border: '0.5px solid #1e3a5f' }}>{house.houseType}</span>
+          {house.buildYear && <span style={{ fontSize: 13, color: '#555' }}>{house.buildYear}년</span>}
+        </div>
         {(house.landArea || house.buildArea || house.exclusiveArea) && (
           <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 10, flexWrap: 'wrap' }}>
             {house.landArea && <span style={{ fontSize: 14, color: '#555' }}>대지 <span style={{ color: '#aaa' }}>{house.landArea}㎡ ({(house.landArea / 3.305785).toFixed(1)}평)</span></span>}
