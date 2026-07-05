@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import HouseIllustration from './HouseIllustration'
 
@@ -24,6 +24,13 @@ export default function HouseCarousel({ houses: initialHouses }: { houses: House
   const [houses, setHouses] = useState(initialHouses)
   const [current, setCurrent] = useState(0)
   const [saving, setSaving] = useState(false)
+
+  // 목록 진입 시 모든 집 데이터를 미리 인메모리 캐시에 로드
+  useEffect(() => {
+    initialHouses.forEach(h => {
+      fetch(`/api/prefetch/${h.id}`).catch(() => {})
+    })
+  }, [initialHouses])
 
   // 메인 카드 스와이프
   const touchStartX = useRef(0)

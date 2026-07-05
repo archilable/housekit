@@ -13,7 +13,7 @@ const client = g.__tursoClient
 // 데이터 메모리 캐시 — warm 함수에서 DB 쿼리 없이 즉시 응답
 const dataCache: Record<string, { data: any; ts: number }> = g.__houseDataCache ?? {}
 g.__houseDataCache = dataCache
-const CACHE_TTL = 30_000 // 30초
+const CACHE_TTL = 5 * 60_000 // 5분
 
 export async function getHousePageData(id: string) {
   // 캐시 히트 시 즉시 반환

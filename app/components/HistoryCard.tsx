@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import TabLink from './TabLink'
 
 function ImageModal({ src, label, onClose }: { src: string; label: string; onClose: () => void }) {
   return (
@@ -57,13 +59,8 @@ export default function HistoryCard({ h, houseId, highlight, deleteAction }: Pro
   const [loadingImages, setLoadingImages] = useState(false)
   const icon = CATEGORY_ICONS[h.category] || 'ti-pin'
   const color = CATEGORY_COLORS[h.category] || '#888'
-  // highlight는 서버에서 undefined → 클라이언트에서 URL로 확인
-  const [urlHighlight, setUrlHighlight] = useState<string | undefined>(highlight)
-  useEffect(() => {
-    const p = new URLSearchParams(window.location.search)
-    setUrlHighlight(p.get('highlight') ?? undefined)
-  }, [])
-  const isHighlighted = urlHighlight === h.id
+  const searchParams = useSearchParams()
+  const isHighlighted = searchParams.get('highlight') === h.id
 
   const hasDetail = h.description || h.contactCompany || h.company || h.contactName || h.contactPhone || h.inventory || h.hasEstimate || h.hasContract
 
@@ -153,10 +150,10 @@ export default function HistoryCard({ h, houseId, highlight, deleteAction }: Pro
             </div>
           )}
           {h.inventory && (
-            <Link href={`/houses/${houseId}?tab=inventory&highlight=${h.inventory.id}`} style={{ fontSize: 14, color: '#60a5fa', background: '#0d1a2e', border: '0.5px solid #1d3a6e', borderRadius: 6, padding: '4px 10px', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: 5, textDecoration: 'none' }}>
+            <TabLink houseId={houseId} tab="inventory" highlight={h.inventory.id} style={{ fontSize: 14, color: '#60a5fa', background: '#0d1a2e', border: '0.5px solid #1d3a6e', borderRadius: 6, padding: '4px 10px', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: 5, textDecoration: 'none' }}>
               <i className="ti ti-tool" style={{ fontSize: 13 }} />
               {h.inventory.name}
-            </Link>
+            </TabLink>
           )}
           {(h.hasEstimate || h.hasContract) && (
             <div style={{ marginTop: 4 }}>

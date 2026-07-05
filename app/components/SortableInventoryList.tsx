@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 
 interface WarrantyStatus {
   label: string; color: string; bg: string; border: string
@@ -35,8 +36,11 @@ function getWarrantyStatus(installedAt: Date | null, warrantyMonths: number | nu
   return { label: `보증 ${Math.floor(diffDays / 30)}개월`, color: '#34d399', bg: '#0d1f14', border: '#1a3d28' }
 }
 
-export default function SortableInventoryList({ initialItems, houseId, highlightId }: { initialItems: InventoryItem[], houseId: string, highlightId?: string }) {
+export default function SortableInventoryList({ initialItems, houseId, highlightId: initialHighlightId }: { initialItems: InventoryItem[], houseId: string, highlightId?: string }) {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  // URL에서 실시간으로 읽어 TabLink 클라이언트 전환도 감지
+  const highlightId = searchParams.get('highlight') || initialHighlightId
   const [items, setItems] = useState(initialItems)
 
   async function handleDelete(itemId: string, name: string) {
@@ -60,11 +64,14 @@ export default function SortableInventoryList({ initialItems, houseId, highlight
 
   useEffect(() => { itemsRef.current = items }, [items])
 
-  useLayoutEffect(() => {
-    if (highlightId) {
+  useEffect(() => {
+    if (!highlightId) return
+    const scroll = () => {
       const el = itemRefs.current.get(highlightId)
-      if (el) { setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100) }
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
+    // 탭 전환 후 DOM 렌더 완료 시점에 스크롤
+    setTimeout(scroll, 150)
   }, [highlightId])
   useEffect(() => { draggingIdRef.current = draggingId }, [draggingId])
   useEffect(() => { overIdRef.current = overId }, [overId])
@@ -195,8 +202,8 @@ export default function SortableInventoryList({ initialItems, houseId, highlight
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
             style={{
-              background: isHighlighted ? '#1a0e00' : 'var(--bg-card)',
-              border: isHighlighted ? '1px solid #f97316' : isOver ? '1px solid #3b82f6' : `0.5px solid ${w ? w.border : 'var(--border)'}`,
+              background: isHighlighted ? '#1a1500' : 'var(--bg-card)',
+              border: isHighlighted ? '2px solid #fbbf24' : isOver ? '1px solid #3b82f6' : `0.5px solid ${w ? w.border : 'var(--border)'}`,
               borderRadius: 14, padding: '14px 16px',
               display: 'flex', alignItems: 'center', gap: 12,
               opacity: isDrag ? 0.4 : 1,

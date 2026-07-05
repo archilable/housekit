@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 
 const ALL_TABS = ['home', 'history', 'inventory', 'doctor', 'utility', 'valuation']
 const FAST_TABS = new Set(['home', 'history', 'inventory', 'doctor', 'utility', 'valuation'])
@@ -11,17 +12,15 @@ const TAB_LABELS: Record<string, string> = {
 }
 
 export default function FastTabNav({ houseId, initialTab }: { houseId: string; initialTab: string }) {
-  const [active, setActive] = useState(initialTab)
+  const searchParams = useSearchParams()
+  const urlTab = searchParams.get('tab') || 'home'
+  const [active, setActive] = useState(urlTab)
 
-  // 페이지 캐시로 항상 'home'으로 서버 렌더됨 → 마운트 즉시 URL에서 올바른 탭 적용
+  // URL 변경 시 탭 동기화 (카드 링크 클릭, 뒤로가기 등)
   useEffect(() => {
-    const urlTab = new URLSearchParams(window.location.search).get('tab') || 'home'
-    if (urlTab !== initialTab) {
-      setActive(urlTab)
-      document.getElementById(`tab-container-${houseId}`)?.setAttribute('data-active-tab', urlTab)
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    setActive(urlTab)
+    document.getElementById(`tab-container-${houseId}`)?.setAttribute('data-active-tab', urlTab)
+  }, [urlTab, houseId])
 
   function switchTab(key: string) {
     if (!FAST_TABS.has(key)) {

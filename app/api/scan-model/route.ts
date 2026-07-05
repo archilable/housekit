@@ -1,34 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const MODELS = [
+  'google/gemini-flash-1.5-8b',
+  'google/gemini-2.0-flash-lite',
+  'meta-llama/llama-3.2-11b-vision-instruct:free',
   'google/gemma-4-31b-it:free',
-  'google/gemma-4-26b-a4b-it:free',
-  'nvidia/nemotron-nano-12b-v2-vl:free',
-  'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free',
 ]
 
 async function tryModel(model: string, mediaType: string, base64Data: string): Promise<string | null> {
-  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: 256,
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'image_url', image_url: { url: `data:${mediaType};base64,${base64Data}` } },
-          { type: 'text', text: '이 제품 라벨/스티커 이미지에서 브랜드명과 모델명을 추출해줘. JSON 형식으로만 답해: {"brand": "브랜드명", "model": "모델명"}. 찾을 수 없으면 null로.' },
-        ],
-      }],
-    }),
-  })
-  const data = await res.json()
-  if (data.error) return null
-  return data.choices?.[0]?.message?.content ?? null
+  try {
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model,
+        max_tokens: 256,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image_url', image_url: { url: `data:${mediaType};base64,${base64Data}` } },
+            { type: 'text', text: '이 제품 라벨/스티커 이미지에서 브랜드명과 모델명을 추출해줘. JSON 형식으로만 답해: {"brand": "브랜드명", "model": "모델명"}. 찾을 수 없으면 null로.' },
+          ],
+        }],
+      }),
+    })
+    const data = await res.json()
+    if (data.error) {
+      console.warn(`[scan-model] ${model} error:`, data.error)
+      return null
+    }
+    return data.choices?.[0]?.message?.content ?? null
+  } catch (e) {
+    console.warn(`[scan-model] ${model} exception:`, e)
+    return null
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -41,15 +49,23 @@ export async function POST(req: NextRequest) {
 
     for (const model of MODELS) {
       const text = await tryModel(model, mediaType, base64Data)
-      if (text) {
-        const match = text.match(/\{[\s\S]*\}/)
-        if (!match) continue
-        return NextResponse.json(JSON.parse(match[0]))
+      if (!text) continue
+      const match = text.match(/\{[\s\S]*?\}/)
+      if (!match) continue
+      try {
+        const parsed = JSON.parse(match[0])
+        if (parsed.brand || parsed.model) {
+          console.log(`[scan-model] success with ${model}:`, parsed)
+          return NextResponse.json(parsed)
+        }
+      } catch {
+        continue
       }
     }
 
     return NextResponse.json({ brand: null, model: null })
-  } catch {
+  } catch (e) {
+    console.error('[scan-model] fatal:', e)
     return NextResponse.json({ brand: null, model: null })
   }
 }

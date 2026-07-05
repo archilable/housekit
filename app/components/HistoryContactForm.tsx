@@ -18,7 +18,7 @@ interface Props {
   defaultEstimateImages?: string[]
 }
 
-async function compressToBase64(file: File, maxSizeKB = 300): Promise<string> {
+async function compressToBase64(file: File, maxSizeKB = 100): Promise<string> {
   return new Promise((resolve) => {
     const img = new Image()
     const url = URL.createObjectURL(file)
@@ -26,7 +26,7 @@ async function compressToBase64(file: File, maxSizeKB = 300): Promise<string> {
       URL.revokeObjectURL(url)
       const canvas = document.createElement('canvas')
       let { width, height } = img
-      const maxDim = 1200
+      const maxDim = 600
       if (width > maxDim || height > maxDim) {
         const ratio = Math.min(maxDim / width, maxDim / height)
         width = Math.round(width * ratio)
@@ -34,10 +34,10 @@ async function compressToBase64(file: File, maxSizeKB = 300): Promise<string> {
       }
       canvas.width = width; canvas.height = height
       canvas.getContext('2d')!.drawImage(img, 0, 0, width, height)
-      let quality = 0.80
+      let quality = 0.7
       let dataUrl = canvas.toDataURL('image/jpeg', quality)
-      while (dataUrl.length > maxSizeKB * 1024 * 1.37 && quality > 0.2) {
-        quality -= 0.1
+      while (dataUrl.length > maxSizeKB * 1024 * 1.37 && quality > 0.1) {
+        quality -= 0.05
         dataUrl = canvas.toDataURL('image/jpeg', quality)
       }
       resolve(dataUrl.split(',')[1])
@@ -136,7 +136,7 @@ export default function HistoryContactForm({
         URL.revokeObjectURL(url)
         const canvas = document.createElement('canvas')
         let { width, height } = img
-        const maxDim = 1200
+        const maxDim = 600
         if (width > maxDim || height > maxDim) {
           const ratio = Math.min(maxDim / width, maxDim / height)
           width = Math.round(width * ratio)
@@ -145,10 +145,10 @@ export default function HistoryContactForm({
         canvas.width = width
         canvas.height = height
         canvas.getContext('2d')!.drawImage(img, 0, 0, width, height)
-        let quality = 0.80
+        let quality = 0.7
         let dataUrl = canvas.toDataURL('image/jpeg', quality)
-        while (dataUrl.length > 300 * 1024 * 1.37 && quality > 0.2) {
-          quality -= 0.1
+        while (dataUrl.length > 100 * 1024 * 1.37 && quality > 0.1) {
+          quality -= 0.05
           dataUrl = canvas.toDataURL('image/jpeg', quality)
         }
         resolve(dataUrl)
@@ -158,27 +158,24 @@ export default function HistoryContactForm({
   }
 
   async function handleCardImage(file: File) {
-    const reader = new FileReader()
-    reader.onload = async (e) => {
-      const base64 = (e.target?.result as string).split(',')[1]
+    setExtracting(true)
+    try {
+      const compressed = await compressImage(file)
+      // compressed is full dataUrl; strip prefix for storage
+      const base64 = compressed.split(',')[1]
       setContactImage(base64)
-      setExtracting(true)
-      try {
-        const compressed = await compressImage(file)
-        const res = await fetch('/api/extract-contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ imageBase64: compressed, mediaType: 'image/jpeg' }),
-        })
-        const data = await res.json()
-        if (data.name) setName(data.name)
-        if (data.phone) setPhone(data.phone)
-        if (data.company) setCompany(data.company)
-      } finally {
-        setExtracting(false)
-      }
+      const res = await fetch('/api/extract-contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64: compressed, mediaType: 'image/jpeg' }),
+      })
+      const data = await res.json()
+      if (data.name) setName(data.name)
+      if (data.phone) setPhone(data.phone)
+      if (data.company) setCompany(data.company)
+    } finally {
+      setExtracting(false)
     }
-    reader.readAsDataURL(file)
   }
 
   return (

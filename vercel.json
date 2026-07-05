@@ -2,13 +2,8 @@
   "regions": ["icn1"],
   "functions": {
     "app/**": {
-      "maxDuration": 10
+      "maxDuration": 60
     }
   },
-  "crons": [
-    {
-      "path": "/api/keepalive",
-      "schedule": "*/5 * * * *"
-    }
-  ]
+  "crons": []
 }

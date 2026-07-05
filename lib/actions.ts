@@ -52,7 +52,6 @@ export async function updateHouse(id: string, formData: FormData) {
       notes: (formData.get('notes') as string) || null,
     },
   })
-  revalidatePath(`/houses/${id}`)
   invalidateHouseCache(id)
   redirect(`/houses/${id}`)
 }
@@ -63,27 +62,21 @@ export async function deleteHouse(id: string) {
   redirect('/houses')
 }
 
-// Inventory actions
+// Inventory actions (now handled via /api/inventory/save XHR — kept for legacy compatibility)
 export async function createInventory(formData: FormData) {
   const houseId = formData.get('houseId') as string
-  const category = formData.get('category') as string
-  const name = formData.get('name') as string
-  const brand = formData.get('brand') as string
-  const model = formData.get('model') as string
   const installedAtStr = formData.get('installedAt') as string
-  const warrantyMonths = formData.get('warrantyMonths') ? parseInt(formData.get('warrantyMonths') as string) : null
-  const notes = formData.get('notes') as string
 
   await prisma.inventory.create({
     data: {
       houseId,
-      category,
-      name,
-      brand: brand || null,
-      model: model || null,
+      category: formData.get('category') as string,
+      name: formData.get('name') as string,
+      brand: (formData.get('brand') as string) || null,
+      model: (formData.get('model') as string) || null,
       installedAt: installedAtStr ? new Date(installedAtStr) : null,
-      warrantyMonths,
-      notes: notes || null,
+      warrantyMonths: formData.get('warrantyMonths') ? parseInt(formData.get('warrantyMonths') as string) : null,
+      notes: (formData.get('notes') as string) || null,
       contactName: (formData.get('contactName') as string) || null,
       contactPhone: (formData.get('contactPhone') as string) || null,
       contactCompany: (formData.get('contactCompany') as string) || null,
@@ -91,9 +84,8 @@ export async function createInventory(formData: FormData) {
     },
   })
 
-  revalidatePath(`/houses/${houseId}`)
   invalidateHouseCache(houseId)
-  redirect(`/houses/${houseId}?tab=inventory`)
+  redirect(`/houses/${houseId}?tab=inventory&refresh=1`)
 }
 
 export async function updateInventory(id: string, formData: FormData) {
@@ -115,14 +107,12 @@ export async function updateInventory(id: string, formData: FormData) {
       contactImageBase64: (formData.get('contactImageBase64') as string) || null,
     },
   })
-  revalidatePath(`/houses/${houseId}`)
   invalidateHouseCache(houseId)
-  redirect(`/houses/${houseId}?tab=inventory`)
+  redirect(`/houses/${houseId}?tab=inventory&refresh=1`)
 }
 
 export async function deleteInventory(id: string, houseId: string) {
   await prisma.inventory.delete({ where: { id } })
-  revalidatePath(`/houses/${houseId}`)
   invalidateHouseCache(houseId)
 }
 
@@ -133,27 +123,19 @@ function extractImages(formData: FormData, name: string): string[] {
 
 export async function createHistory(formData: FormData) {
   const houseId = formData.get('houseId') as string
-  const category = formData.get('category') as string
-  const title = formData.get('title') as string
-  const description = formData.get('description') as string
-  const company = formData.get('company') as string
-  const cost = formData.get('cost') ? parseInt(formData.get('cost') as string) : null
-  const doneAt = formData.get('doneAt') as string
-  const inventoryId = (formData.get('inventoryId') as string) || null
-
   const estimateImages = extractImages(formData, 'estimateImage')
   const contractImages = extractImages(formData, 'contractImage')
 
   const history = await prisma.history.create({
     data: {
       houseId,
-      inventoryId,
-      category,
-      title,
-      description: description || null,
-      company: company || null,
-      cost,
-      doneAt: new Date(doneAt),
+      inventoryId: (formData.get('inventoryId') as string) || null,
+      category: formData.get('category') as string,
+      title: formData.get('title') as string,
+      description: (formData.get('description') as string) || null,
+      company: (formData.get('company') as string) || null,
+      cost: formData.get('cost') ? parseInt(formData.get('cost') as string) : null,
+      doneAt: new Date(formData.get('doneAt') as string),
       contactName: (formData.get('contactName') as string) || null,
       contactPhone: (formData.get('contactPhone') as string) || null,
       contactCompany: (formData.get('contactCompany') as string) || null,
@@ -170,9 +152,8 @@ export async function createHistory(formData: FormData) {
     await prisma.historyImage.create({ data: { historyId: history.id, type: 'contract', imageBase64: contractImages[i], sortOrder: i } })
   }
 
-  revalidatePath(`/houses/${houseId}`)
   invalidateHouseCache(houseId)
-  redirect(`/houses/${houseId}?tab=history`)
+  redirect(`/houses/${houseId}?tab=history&refresh=1`)
 }
 
 export async function updateHistory(id: string, formData: FormData) {
@@ -199,7 +180,6 @@ export async function updateHistory(id: string, formData: FormData) {
     },
   })
 
-  // 기존 이미지 삭제 후 새로 저장
   await prisma.historyImage.deleteMany({ where: { historyId: id } })
   for (let i = 0; i < estimateImages.length; i++) {
     await prisma.historyImage.create({ data: { historyId: id, type: 'estimate', imageBase64: estimateImages[i], sortOrder: i } })
@@ -208,14 +188,12 @@ export async function updateHistory(id: string, formData: FormData) {
     await prisma.historyImage.create({ data: { historyId: id, type: 'contract', imageBase64: contractImages[i], sortOrder: i } })
   }
 
-  revalidatePath(`/houses/${houseId}`)
   invalidateHouseCache(houseId)
-  redirect(`/houses/${houseId}?tab=history`)
+  redirect(`/houses/${houseId}?tab=history&refresh=1`)
 }
 
 export async function deleteHistory(id: string, houseId: string) {
   await prisma.history.delete({ where: { id } })
-  revalidatePath(`/houses/${houseId}`)
   invalidateHouseCache(houseId)
 }
 
@@ -234,16 +212,14 @@ export async function upsertUtility(formData: FormData) {
     update: { electric, water, gas, telecom },
   })
 
-  revalidatePath(`/houses/${houseId}`)
   invalidateHouseCache(houseId)
-  redirect(`/houses/${houseId}?tab=utility`)
+  redirect(`/houses/${houseId}?tab=utility&refresh=1`)
 }
 
 export async function deleteUtility(utilityId: string, houseId: string) {
   await prisma.utility.delete({ where: { id: utilityId } })
-  revalidatePath(`/houses/${houseId}`)
   invalidateHouseCache(houseId)
-  redirect(`/houses/${houseId}?tab=utility`)
+  redirect(`/houses/${houseId}?tab=utility&refresh=1`)
 }
 
 // Valuation actions
@@ -277,7 +253,6 @@ export async function upsertValuation(formData: FormData) {
       priceRatio: ff('priceRatio'),
     },
   })
-  revalidatePath(`/houses/${houseId}`)
   invalidateHouseCache(houseId)
-  redirect(`/houses/${houseId}?tab=valuation`)
+  redirect(`/houses/${houseId}?tab=valuation&refresh=1`)
 }
