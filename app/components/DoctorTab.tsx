@@ -113,13 +113,17 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
 
   function renderResult(text: string) {
     const lines = text.split('\n')
+    let inSoomgoSection = false
     return lines.map((line, i) => {
+      // 숨고 섹션 진입 감지 (헤더 포함 완전히 숨김)
+      if (line.includes('숨고 검색') || line.includes('🔗')) { inSoomgoSection = true; return null }
+      if (inSoomgoSection) {
+        if (line.startsWith('## ')) inSoomgoSection = false // 다음 섹션 시작
+        else return null
+      }
       if (line.startsWith('## ')) {
         return <p key={i} style={{ fontSize: 16, fontWeight: 600, color: '#60a5fa', marginTop: 16, marginBottom: 4 }}>{line.replace('## ', '')}</p>
       }
-      // 숨고 섹션은 버튼으로 대체하므로 숨김
-      if (line.includes('숨고 검색')) return null
-      if (lines[i - 1]?.includes('숨고 검색')) return null
       // 자재 항목에 쿠팡 링크 추가
       if (line.trim().startsWith('-') && lines[i - 2]?.includes('필요한 자재') ||
           line.trim().startsWith('-') && lines[i - 1]?.includes('필요한 자재') ||
@@ -145,6 +149,17 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
   const soomgoKeywords = result ? extractSoomgoKeywords(result) : []
   const soomgoKeyword = soomgoKeywords[0] || description || '수리'
   const materials = result ? extractMaterials(result) : []
+
+  function openSoomgo(keyword: string) {
+    const webUrl = `https://soomgo.com/requests/search?keyword=${encodeURIComponent(keyword)}`
+    // 앱 딥링크 시도 후 1.2초 내 앱 안 열리면 웹으로 이동
+    const appUrl = `soomgo://search?keyword=${encodeURIComponent(keyword)}`
+    const start = Date.now()
+    window.location.href = appUrl
+    setTimeout(() => {
+      if (Date.now() - start < 1500) window.open(webUrl, '_blank')
+    }, 1200)
+  }
 
   return (
     <div style={{ padding: '16px 16px', width: '100%', boxSizing: 'border-box' }}>
@@ -229,13 +244,11 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
               <p style={{ fontSize: 14, color: '#60a5fa', fontWeight: 500, marginBottom: 10 }}>👷 숨고에서 전문가 찾기</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {soomgoKeywords.map((kw, i) => (
-                  <a key={i}
-                    href={`https://soomgo.com/requests/search?keyword=${encodeURIComponent(kw)}`}
-                    target="_blank" rel="noopener noreferrer"
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#1a2a4a', border: '0.5px solid #60a5fa55', borderRadius: 20, padding: '8px 14px', textDecoration: 'none', color: '#60a5fa', fontSize: 15, fontWeight: 500 }}>
+                  <button key={i} onClick={() => openSoomgo(kw)}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#1a2a4a', border: '0.5px solid #60a5fa55', borderRadius: 20, padding: '8px 14px', textDecoration: 'none', color: '#60a5fa', fontSize: 15, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>
                     {kw}
                     <i className="ti ti-external-link" style={{ fontSize: 13, opacity: 0.7 }} />
-                  </a>
+                  </button>
                 ))}
               </div>
             </div>
@@ -250,13 +263,12 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
               <span style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>DIY 수리</span>
               <span style={{ fontSize: 13, color: '#555', textAlign: 'center' }}>유튜브로 직접 수리하기</span>
             </a>
-            <a href={`https://soomgo.com/requests/search?keyword=${encodeURIComponent(soomgoKeyword)}`}
-              target="_blank" rel="noopener noreferrer"
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 14, padding: '16px 12px', textDecoration: 'none' }}>
+            <button onClick={() => openSoomgo(soomgoKeyword)}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 14, padding: '16px 12px', cursor: 'pointer', fontFamily: 'inherit', width: '100%' }}>
               <span style={{ fontSize: 26 }}>👷</span>
               <span style={{ fontSize: 15, fontWeight: 600, color: '#60a5fa' }}>전문가 찾기</span>
               <span style={{ fontSize: 13, color: '#555', textAlign: 'center' }}>숨고에서 전문가 연결</span>
-            </a>
+            </button>
           </div>
         </div>
       )}
