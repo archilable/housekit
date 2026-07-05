@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
@@ -17,6 +17,7 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
   const [loading, setLoading] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const submitting = useRef(false)
   void houseId
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -45,10 +46,12 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
   }
 
   async function handleSubmit() {
+    if (submitting.current) return
     if (!imageBase64 && !description) {
       setError('사진 또는 설명을 입력해주세요.')
       return
     }
+    submitting.current = true
     setLoading(true)
     setError(null)
     setResult(null)
@@ -77,6 +80,7 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
     } finally {
       clearInterval(timer)
       setLoading(false)
+      submitting.current = false
     }
   }
 
