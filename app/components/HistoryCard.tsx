@@ -62,10 +62,10 @@ export default function HistoryCard({ h, houseId, highlight, deleteAction }: Pro
   const searchParams = useSearchParams()
   const isHighlighted = searchParams.get('highlight') === h.id
 
-  const hasDetail = h.description || h.contactCompany || h.company || h.contactName || h.contactPhone || h.inventory || h.hasEstimate || h.hasContract
+  const hasDetail = h.description || h.contactCompany || h.company || h.contactName || h.contactPhone || h.inventory || h.hasEstimate || h.hasContract || h.hasPhoto
 
   useEffect(() => {
-    if (!expanded || !(h.hasEstimate || h.hasContract) || images.length > 0 || loadingImages) return
+    if (!expanded || !(h.hasEstimate || h.hasContract || h.hasPhoto) || images.length > 0 || loadingImages) return
     setLoadingImages(true)
     fetch(`/api/history-image/${h.id}`)
       .then(r => r.json())
@@ -155,16 +155,32 @@ export default function HistoryCard({ h, houseId, highlight, deleteAction }: Pro
               {h.inventory.name}
             </TabLink>
           )}
-          {(h.hasEstimate || h.hasContract) && (
+          {(h.hasEstimate || h.hasContract || h.hasPhoto) && (
             <div style={{ marginTop: 4 }}>
               {loadingImages && (
                 <p style={{ fontSize: 13, color: '#555' }}>이미지 불러오는 중...</p>
               )}
               {images.length > 0 && (() => {
+                const photos = images.filter(img => img.type === 'photo')
                 const estimates = images.filter(img => img.type === 'estimate')
                 const contracts = images.filter(img => img.type === 'contract')
                 return (
                   <>
+                    {photos.length > 0 && (
+                      <div style={{ marginBottom: 8 }}>
+                        <p style={{ fontSize: 12, color: '#60a5fa', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 3 }}>
+                          <i className="ti ti-camera" style={{ fontSize: 12 }} />현장 사진 ({photos.length}장)
+                        </p>
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                          {photos.map((img, i) => (
+                            /* eslint-disable-next-line @next/next/no-img-element */
+                            <img key={i} src={`data:image/jpeg;base64,${img.imageBase64}`} alt={`현장 사진 ${i + 1}`}
+                              onClick={() => setModalImage({ src: `data:image/jpeg;base64,${img.imageBase64}`, label: `현장 사진 ${i + 1}` })}
+                              style={{ width: 90, height: 64, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', border: '1px solid #1e3a5f' }} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     {estimates.length > 0 && (
                       <div style={{ marginBottom: 8 }}>
                         <p style={{ fontSize: 12, color: '#a78bfa', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 3 }}>

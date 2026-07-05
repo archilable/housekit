@@ -266,6 +266,7 @@ export default function NewHistoryForm({ houseId, inventories, defaultTitle, def
         contactImageBase64: contactImage,
         hasEstimate: estimateImages.length > 0,
         hasContract: contractImages.length > 0,
+        hasPhoto: workImages.length > 0,
       })
       if (!meta.ok) {
         setError(meta.data.error || `저장 오류 (${meta.status})`)

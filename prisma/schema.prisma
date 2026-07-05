@@ -192,6 +192,7 @@ model History {
   estimateImageBase64  String?
   hasEstimate          Boolean        @default(false)
   hasContract          Boolean        @default(false)
+  hasPhoto             Boolean        @default(false)
   createdAt            DateTime       @default(now())
   updatedAt            DateTime       @updatedAt
   images               HistoryImage[]

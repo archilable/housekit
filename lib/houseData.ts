@@ -43,7 +43,7 @@ export async function getHousePageData(id: string) {
         {
           sql: `SELECT h.id, h.title, h.category, h.doneAt, h.cost, h.description,
                   h.company, h.contactName, h.contactPhone, h.contactCompany,
-                  h.hasEstimate, h.hasContract,
+                  h.hasEstimate, h.hasContract, h.hasPhoto,
                   i.id as inv_id, i.name as inv_name, i.category as inv_category
                 FROM History h
                 LEFT JOIN Inventory i ON h.inventoryId = i.id
@@ -119,6 +119,7 @@ export async function getHousePageData(id: string) {
         contactCompany: r.contactCompany ? String(r.contactCompany) : null,
         hasEstimate: Boolean(r.hasEstimate),
         hasContract: Boolean(r.hasContract),
+        hasPhoto: Boolean(r.hasPhoto),
         inventory: r.inv_id ? { id: String(r.inv_id), name: String(r.inv_name), category: String(r.inv_category) } : null,
       }))
 
