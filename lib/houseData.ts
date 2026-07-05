@@ -32,10 +32,10 @@ export async function getHousePageData(id: string) {
                 FROM House WHERE id = ?`,
           args: [id],
         },
-        // 1. 설비
+        // 1. 설비 (contactImageBase64 제외 — 이미지 수 MB 로딩 방지)
         {
           sql: `SELECT id, category, name, brand, model, installedAt, warrantyMonths,
-                  notes, sortOrder, contactName, contactPhone, contactCompany, contactImageBase64, houseId
+                  notes, sortOrder, contactName, contactPhone, contactCompany, houseId
                 FROM Inventory WHERE houseId = ? ORDER BY sortOrder ASC, installedAt DESC LIMIT 50`,
           args: [id],
         },
@@ -102,7 +102,7 @@ export async function getHousePageData(id: string) {
         contactName: r.contactName ? String(r.contactName) : null,
         contactPhone: r.contactPhone ? String(r.contactPhone) : null,
         contactCompany: r.contactCompany ? String(r.contactCompany) : null,
-        contactImageBase64: r.contactImageBase64 ? String(r.contactImageBase64) : null,
+        contactImageBase64: null,
         houseId: String(r.houseId),
       }))
 
