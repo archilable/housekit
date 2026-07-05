@@ -10,3 +10,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   })
   return NextResponse.json({ ok: true, resolvedAt: updated.resolvedAt })
 }
+
+export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  await prisma.doctorHistory.delete({ where: { id } })
+  return NextResponse.json({ ok: true })
+}

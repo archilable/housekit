@@ -77,6 +77,16 @@ function HistoryCard({ h }: { h: DoctorHistory }) {
   const [resolvedAt, setResolvedAt] = useState<string | null>(h.resolvedAt ? new Date(h.resolvedAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }) : null)
   const [showModal, setShowModal] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [deleted, setDeleted] = useState(false)
+
+  async function handleDelete() {
+    if (!confirm('이 진단 이력을 삭제할까요?')) return
+    setLoading(true)
+    await fetch(`/api/doctor/${h.id}`, { method: 'DELETE' })
+    setDeleted(true)
+  }
+
+  if (deleted) return null
 
   const lines = h.result.split('\n').filter(l => l.trim() && !l.startsWith('##'))
   const summary = lines[0]?.slice(0, 60) || '진단 결과'
@@ -130,7 +140,13 @@ function HistoryCard({ h }: { h: DoctorHistory }) {
               {h.description || summary}
             </p>
           </div>
-          <i className="ti ti-chevron-down" style={{ fontSize: 18, color: '#444', flexShrink: 0, marginTop: 2 }} />
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
+            <button onClick={e => { e.preventDefault(); e.stopPropagation(); handleDelete() }} disabled={loading}
+              style={{ background: 'none', border: 'none', color: '#444', cursor: 'pointer', padding: 4, fontSize: 18, lineHeight: 1 }}>
+              <i className="ti ti-trash" />
+            </button>
+            <i className="ti ti-chevron-down" style={{ fontSize: 18, color: '#444' }} />
+          </div>
         </summary>
 
         <div style={{ padding: '0 16px 16px', borderTop: '0.5px solid #1e1e28' }}>
