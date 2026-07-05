@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import HouseCarousel from '@/app/components/HouseCarousel'
-import { auth, signOut } from '@/auth'
+import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 
 export const revalidate = 30
@@ -63,24 +63,10 @@ export default async function Home() {
           <p style={{ fontSize: 14, color: '#555', marginBottom: 2 }}>내 자산</p>
           <h1 style={{ fontSize: 24, fontWeight: 600 }}>주택 {houses.length}채</h1>
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          {session?.user?.image && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={session.user.image} alt="프로필" style={{ width: 28, height: 28, borderRadius: '50%', border: '1px solid #1e3a5f' }} />
-          )}
-          <Link href="/houses/new" style={{
-            fontSize: 14, color: '#60a5fa', background: '#0d1a2e',
-            padding: '7px 14px', borderRadius: 20, border: '0.5px solid #1e3a5f',
-            textDecoration: 'none',
-          }}>
-            + 주택 추가
-          </Link>
-          <form action={async () => { 'use server'; await signOut({ redirectTo: '/login' }) }}>
-            <button type="submit" style={{ fontSize: 14, color: '#555', background: 'none', border: 'none', cursor: 'pointer', padding: '7px 4px' }}>
-              로그아웃
-            </button>
-          </form>
-        </div>
+        {session?.user?.image && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={session.user.image} alt="프로필" style={{ width: 32, height: 32, borderRadius: '50%', border: '1px solid #1e3a5f' }} />
+        )}
       </div>
 
       <HouseCarousel houses={houses} />
