@@ -25,8 +25,14 @@ export async function POST(req: NextRequest) {
 - 확실하지 않으면 null (틀리게 넣는 것보다 null이 나음)
 - 고지서/내역에 없는 항목은 null
 
+월 추출 규칙:
+- 고지서: "청구월", "사용월", "납기일" 등에서 해당 월 추출
+- 계좌내역: 공과금 거래 날짜에서 월 추출 (여러 달이면 가장 최근)
+- 월은 "YYYY-MM" 형식 (예: "2025-06")
+- 월을 알 수 없으면 null
+
 JSON만 반환 (다른 텍스트 없이):
-{"electric":숫자또는null,"water":숫자또는null,"gas":숫자또는null,"telecom":숫자또는null,"memo":"사진 종류와 추출 내용 한줄 요약"}`
+{"electric":숫자또는null,"water":숫자또는null,"gas":숫자또는null,"telecom":숫자또는null,"month":"YYYY-MM또는null","memo":"사진 종류와 추출 내용 한줄 요약"}`
 
     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',

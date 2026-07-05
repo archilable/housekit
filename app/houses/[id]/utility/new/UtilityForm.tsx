@@ -29,20 +29,26 @@ interface Props {
 
 export default function UtilityForm({ houseId, selectedMonth, months, existing, action }: Props) {
   const thisMonth = new Date().toISOString().slice(0, 7)
+  const [month, setMonth] = useState(selectedMonth)
   const [values, setValues] = useState<Record<string, string>>({
     electric: existing?.electric?.toString() ?? '',
     water: existing?.water?.toString() ?? '',
     gas: existing?.gas?.toString() ?? '',
     telecom: existing?.telecom?.toString() ?? '',
   })
+  const [monthAutoSet, setMonthAutoSet] = useState(false)
 
-  function handleOCR(data: { electric?: number; water?: number; gas?: number; telecom?: number }) {
+  function handleOCR(data: { electric?: number; water?: number; gas?: number; telecom?: number; month?: string }) {
     setValues(prev => ({
       electric: data.electric?.toString() ?? prev.electric,
       water: data.water?.toString() ?? prev.water,
       gas: data.gas?.toString() ?? prev.gas,
       telecom: data.telecom?.toString() ?? prev.telecom,
     }))
+    if (data.month && months.includes(data.month)) {
+      setMonth(data.month)
+      setMonthAutoSet(true)
+    }
   }
 
   return (
@@ -54,8 +60,16 @@ export default function UtilityForm({ houseId, selectedMonth, months, existing, 
 
       {/* 월 선택 */}
       <div style={fieldStyle}>
-        <label style={labelStyle}>청구월 선택</label>
-        <select name="month" defaultValue={selectedMonth} style={{ ...inputStyle, appearance: 'none' as const }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <label style={{ ...labelStyle, marginBottom: 0 }}>청구월 선택</label>
+          {monthAutoSet && <span style={{ fontSize: 13, color: '#34d399' }}>✅ 자동설정</span>}
+        </div>
+        <select
+          name="month"
+          value={month}
+          onChange={e => { setMonth(e.target.value); setMonthAutoSet(false) }}
+          style={{ ...inputStyle, appearance: 'none' as const, borderColor: monthAutoSet ? '#1a3d28' : '#2a2a38' }}
+        >
           {months.map(m => (
             <option key={m} value={m}>
               {m.replace('-', '년 ')}월{m === thisMonth ? ' (이번달)' : ''}

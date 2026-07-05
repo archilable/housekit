@@ -2,7 +2,7 @@
 import { useRef, useState } from 'react'
 
 interface Props {
-  onResult: (data: { electric?: number; water?: number; gas?: number; telecom?: number }) => void
+  onResult: (data: { electric?: number; water?: number; gas?: number; telecom?: number; month?: string }) => void
 }
 
 export default function UtilityOCR({ onResult }: Props) {
@@ -39,6 +39,7 @@ export default function UtilityOCR({ onResult }: Props) {
           water: data.water ?? undefined,
           gas: data.gas ?? undefined,
           telecom: data.telecom ?? undefined,
+          month: data.month ?? undefined,
         })
         if (data.memo) setMemo(data.memo)
         setLoading(false)
