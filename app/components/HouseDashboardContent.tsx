@@ -96,25 +96,51 @@ export default function HouseDashboardContent({ data, houseId }: { data: any; ho
 
       {/* House Name */}
       <div style={{ textAlign: 'center', padding: '4px 16px 20px' }}>
-        <h1 style={{ fontSize: 24, fontWeight: 500, marginBottom: 4 }}>{house.address}</h1>
-        {house.addressDetail && <p style={{ fontSize: 17, color: '#666', marginBottom: 4 }}>{house.addressDetail}</p>}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 6 }}>
-          <span style={{ fontSize: 13, background: '#0d1a2e', color: '#60a5fa', padding: '2px 9px', borderRadius: 20, border: '0.5px solid #1e3a5f' }}>{house.houseType}</span>
-          {house.buildYear && <span style={{ fontSize: 13, color: '#555' }}>{house.buildYear}년</span>}
+        <h1 style={{ fontSize: 22, fontWeight: 500, marginBottom: 2, lineHeight: 1.3 }}>
+          {house.address}{house.addressDetail ? `, ${house.addressDetail}` : ''}
+        </h1>
+
+        {/* 타입 · 연도 · 층수 태그 */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 12, background: '#0d1a2e', color: '#60a5fa', padding: '3px 10px', borderRadius: 20, border: '0.5px solid #1e3a5f' }}>{house.houseType}</span>
+          {house.buildYear && <span style={{ fontSize: 12, background: '#111118', color: '#555', padding: '3px 10px', borderRadius: 20, border: '0.5px solid #222' }}>{house.buildYear}년</span>}
+          {house.addressDetail && house.addressDetail.match(/\d+층/) && null}
         </div>
+
+        {/* 면적 3분할 그리드 */}
         {(house.landArea || house.buildArea || house.exclusiveArea) && (
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 10, flexWrap: 'wrap' }}>
-            {house.landArea && <span style={{ fontSize: 14, color: '#555' }}>대지 <span style={{ color: '#aaa' }}>{house.landArea}㎡ ({(house.landArea / 3.305785).toFixed(1)}평)</span></span>}
-            {house.buildArea && <span style={{ fontSize: 14, color: '#555' }}>건축 <span style={{ color: '#aaa' }}>{house.buildArea}㎡ ({(house.buildArea / 3.305785).toFixed(1)}평)</span></span>}
-            {house.exclusiveArea && <span style={{ fontSize: 14, color: '#60a5fa' }}>전용 <span style={{ fontWeight: 600 }}>{house.exclusiveArea}㎡ ({(house.exclusiveArea / 3.305785).toFixed(1)}평)</span></span>}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, marginTop: 14, background: '#1a1a24', borderRadius: 14, overflow: 'hidden', border: '0.5px solid #222' }}>
+            {house.landArea && (
+              <div style={{ background: '#111118', padding: '10px 0', textAlign: 'center' }}>
+                <p style={{ fontSize: 11, color: '#444', marginBottom: 3 }}>대지</p>
+                <p style={{ fontSize: 14, color: '#aaa', fontWeight: 500 }}>{(house.landArea / 3.305785).toFixed(1)}평</p>
+                <p style={{ fontSize: 11, color: '#333' }}>{house.landArea}㎡</p>
+              </div>
+            )}
+            {house.buildArea && (
+              <div style={{ background: '#111118', padding: '10px 0', textAlign: 'center', borderLeft: '0.5px solid #1a1a24', borderRight: '0.5px solid #1a1a24' }}>
+                <p style={{ fontSize: 11, color: '#444', marginBottom: 3 }}>건축</p>
+                <p style={{ fontSize: 14, color: '#aaa', fontWeight: 500 }}>{(house.buildArea / 3.305785).toFixed(1)}평</p>
+                <p style={{ fontSize: 11, color: '#333' }}>{house.buildArea}㎡</p>
+              </div>
+            )}
+            {house.exclusiveArea && (
+              <div style={{ background: '#0d1520', padding: '10px 0', textAlign: 'center' }}>
+                <p style={{ fontSize: 11, color: '#3b6fb5', marginBottom: 3 }}>전용</p>
+                <p style={{ fontSize: 14, color: '#60a5fa', fontWeight: 600 }}>{(house.exclusiveArea / 3.305785).toFixed(1)}평</p>
+                <p style={{ fontSize: 11, color: '#2a4a80' }}>{house.exclusiveArea}㎡</p>
+              </div>
+            )}
           </div>
         )}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 12 }}>
-          <span style={{ fontSize: 14, color: '#666' }}>집 건강점수</span>
-          <div style={{ width: 100, height: 4, background: '#1a1a2e', borderRadius: 2 }}>
+
+        {/* 건강점수 */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 14 }}>
+          <span style={{ fontSize: 13, color: '#555' }}>집 건강점수</span>
+          <div style={{ flex: 1, maxWidth: 100, height: 4, background: '#1a1a2e', borderRadius: 2 }}>
             <div style={{ width: `${score}%`, height: '100%', background: scoreColor, borderRadius: 2, transition: 'width 0.5s' }} />
           </div>
-          <span style={{ fontSize: 16, fontWeight: 500, color: scoreColor }}>{score}점</span>
+          <span style={{ fontSize: 15, fontWeight: 600, color: scoreColor }}>{score}점</span>
         </div>
       </div>
 
