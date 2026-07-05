@@ -228,6 +228,7 @@ export default function NewHistoryForm({ houseId, inventories, defaultTitle, def
   const [contactImage, setContactImage] = useState('')
 
   // images — held in state, never in FormData
+  const [workImages, setWorkImages] = useState<string[]>([])
   const [estimateImages, setEstimateImages] = useState<string[]>([])
   const [contractImages, setContractImages] = useState<string[]>([])
 
@@ -274,6 +275,10 @@ export default function NewHistoryForm({ houseId, inventories, defaultTitle, def
       const { historyId } = meta.data
 
       // 2단계: 이미지 한 장씩 업로드
+      for (let i = 0; i < workImages.length; i++) {
+        const r = await xhr('PATCH', { historyId, type: 'photo', imageBase64: workImages[i], sortOrder: i })
+        if (!r.ok) { setError(r.data.error || '현장 사진 저장 실패'); setPending(false); return }
+      }
       for (let i = 0; i < estimateImages.length; i++) {
         const r = await xhr('PATCH', { historyId, type: 'estimate', imageBase64: estimateImages[i], sortOrder: i })
         if (!r.ok) { setError(r.data.error || '견적서 이미지 저장 실패'); setPending(false); return }
@@ -327,6 +332,11 @@ export default function NewHistoryForm({ houseId, inventories, defaultTitle, def
       <div style={fieldStyle}>
         <label style={labelStyle}>상세 내용</label>
         <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} placeholder="작업 내용을 자세히 기록하세요" style={{ ...inputStyle, resize: 'none' as const }} />
+      </div>
+
+      <div style={fieldStyle}>
+        <MultiImageUpload label="현장 사진" icon="ti-camera" color="#60a5fa"
+          images={workImages} setImages={setWorkImages} />
       </div>
 
       <div style={fieldStyle}>
