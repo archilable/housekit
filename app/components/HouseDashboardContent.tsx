@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { deleteHistory, deleteInventory } from '@/lib/actions'
 import TabLink from './TabLink'
@@ -35,7 +36,10 @@ function calcHealthScore(inventoryCount: number, historyCount: number) {
   return Math.min(40 + Math.min(inventoryCount * 8, 30) + Math.min(historyCount * 6, 30), 100)
 }
 
+const HISTORY_PREVIEW = 3
+
 export default function HouseDashboardContent({ data, houseId }: { data: any; houseId: string }) {
+  const [historyExpanded, setHistoryExpanded] = useState(false)
   const { house, inventoryData, historyData, utilityData, doctorData, valuationData } = data
 
   const score = calcHealthScore(house._count.inventories, house._count.histories)
@@ -241,15 +245,22 @@ export default function HouseDashboardContent({ data, houseId }: { data: any; ho
 
           {historyData.length > 0 && (
             <>
-              <p style={{ fontSize: 13, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>최근 이력</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <p style={{ fontSize: 13, color: '#444', textTransform: 'uppercase', letterSpacing: 1 }}>최근 이력</p>
+                {historyData.length > HISTORY_PREVIEW && (
+                  <button onClick={() => setHistoryExpanded(v => !v)} style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: 14, cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>
+                    {historyExpanded ? '접기' : `+${historyData.length - HISTORY_PREVIEW}건 더 보기`}
+                  </button>
+                )}
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                {historyData.map((h: any, idx: number) => {
+                {(historyExpanded ? historyData : historyData.slice(0, HISTORY_PREVIEW)).map((h: any, idx: number, arr: any[]) => {
                   const dotColors: Record<string, string> = { 수리: '#60a5fa', 교체: '#a78bfa', 점검: '#34d399', 청소: '#fbbf24', 기타: '#888' }
                   return (
-                    <TabLink key={h.id} houseId={houseId} tab="history" highlight={h.id} style={{ display: 'flex', gap: 12, paddingBottom: idx < historyData.length - 1 ? 16 : 0, position: 'relative', textDecoration: 'none', color: 'inherit' }}>
+                    <TabLink key={h.id} houseId={houseId} tab="history" highlight={h.id} style={{ display: 'flex', gap: 12, paddingBottom: idx < arr.length - 1 ? 16 : 0, position: 'relative', textDecoration: 'none', color: 'inherit' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <div style={{ width: 8, height: 8, borderRadius: '50%', background: dotColors[h.category] || '#888', flexShrink: 0, marginTop: 4 }} />
-                        {idx < historyData.length - 1 && <div style={{ width: 1, flex: 1, background: '#1e1e28', marginTop: 4 }} />}
+                        {idx < arr.length - 1 && <div style={{ width: 1, flex: 1, background: '#1e1e28', marginTop: 4 }} />}
                       </div>
                       <div style={{ flex: 1, paddingBottom: 4 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
