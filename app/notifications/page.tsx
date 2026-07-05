@@ -55,6 +55,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
       select: { id: true, name: true, category: true, brand: true, installedAt: true, warrantyMonths: true, houseId: true },
     },
     histories: { orderBy: { doneAt: 'desc' as const }, take: 5, select: { id: true, title: true, category: true, doneAt: true, houseId: true } },
+    doctorHistories: { orderBy: { createdAt: 'desc' as const }, take: 5, select: { id: true, description: true, result: true, createdAt: true, houseId: true } },
   }
 
   const [ownedHouses, sharedAccess] = await Promise.all([
@@ -80,6 +81,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
     daysAgo: number
     href: string
     houseName: string
+    isDoctor?: boolean
   }
 
   const warrantyItems: WarrantyItem[] = []
@@ -113,7 +115,23 @@ export default async function NotificationsPage({ searchParams }: { searchParams
         })
       }
     }
+
+    for (const dh of house.doctorHistories) {
+      const daysAgo = Math.floor((now.getTime() - new Date(dh.createdAt).getTime()) / (1000 * 60 * 60 * 24))
+      if (daysAgo <= 14) {
+        const firstLine = (dh.description || dh.result || '').split('\n')[0].slice(0, 40)
+        recentHistories.push({
+          title: firstLine || 'AI 하우스닥터 진단',
+          daysAgo,
+          href: `/houses/${house.id}?tab=doctor`,
+          houseName: house.address,
+          isDoctor: true,
+        })
+      }
+    }
   }
+
+  recentHistories.sort((a, b) => a.daysAgo - b.daysAgo)
 
   // 만료 임박 순 정렬 (만료된 것은 최근 것 먼저)
   warrantyItems.sort((a, b) => a.daysLeft - b.daysLeft)
@@ -131,7 +149,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
       <p style={{ fontSize: 13, color: '#555', marginBottom: 4 }}>알림</p>
       <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 24 }}>{warrantyOnly ? '보증 관리' : '알림 센터'}</h1>
 
-      {warrantyItems.length === 0 && recentHistories.length === 0 ? (
+      {warrantyItems.length === 0 && recentHistories.length === 0 && !warrantyOnly ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', textAlign: 'center', color: '#444' }}>
           <div style={{ fontSize: 50, marginBottom: 16 }}>🔔</div>
           <p style={{ fontSize: 18, fontWeight: 500, marginBottom: 8 }}>새 알림이 없어요</p>
@@ -212,15 +230,15 @@ export default async function NotificationsPage({ searchParams }: { searchParams
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {recentHistories.map((h, i) => (
                   <Link key={i} href={h.href} style={{ textDecoration: 'none' }}>
-                    <div style={{ background: '#111118', border: '0.5px solid #1e1e28', borderRadius: 16, padding: '14px 16px', display: 'flex', gap: 12, alignItems: 'center' }}>
-                      <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(96,165,250,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
-                        🔧
+                    <div style={{ background: '#111118', border: `0.5px solid ${h.isDoctor ? '#1a2a1a' : '#1e1e28'}`, borderRadius: 16, padding: '14px 16px', display: 'flex', gap: 12, alignItems: 'center' }}>
+                      <div style={{ width: 40, height: 40, borderRadius: 12, background: h.isDoctor ? 'rgba(52,211,153,0.1)' : 'rgba(96,165,250,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
+                        {h.isDoctor ? '🩺' : '🔧'}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 2 }}>{h.title}</p>
-                        <p style={{ fontSize: 13, color: '#555', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{h.houseName}</p>
+                        <p style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{h.title}</p>
+                        <p style={{ fontSize: 13, color: '#555', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{h.houseName}{h.isDoctor && <span style={{ marginLeft: 6, color: '#34d399', fontSize: 12 }}>AI 진단</span>}</p>
                       </div>
-                      <div style={{ color: '#60a5fa', fontSize: 13, fontWeight: 600, flexShrink: 0 }}>
+                      <div style={{ color: h.isDoctor ? '#34d399' : '#60a5fa', fontSize: 13, fontWeight: 600, flexShrink: 0 }}>
                         {h.daysAgo === 0 ? '오늘' : `${h.daysAgo}일 전`}
                       </div>
                     </div>
