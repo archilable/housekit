@@ -61,13 +61,13 @@ export default function FastTabNav({ houseId, initialTab }: { houseId: string; i
   }, [houseId])
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', gap: 0, borderBottom: '0.5px solid #1e1e28', marginBottom: 16, padding: '0 16px', overflowX: 'auto' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', gap: 0, borderBottom: '0.5px solid #1e1e28', marginBottom: 16, padding: '0 4px', overflowX: 'auto' }}>
       {ALL_TABS.map(key => (
         <button
           key={key}
           onClick={() => switchTab(key)}
           style={{
-            textAlign: 'center', padding: '10px 14px', fontSize: 17,
+            textAlign: 'center', padding: '10px 16px', fontSize: 17,
             color: active === key ? '#60a5fa' : '#555',
             borderBottom: active === key ? '2px solid #60a5fa' : '2px solid transparent',
             borderTop: 'none', borderLeft: 'none', borderRight: 'none',
