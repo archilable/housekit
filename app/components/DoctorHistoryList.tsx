@@ -281,19 +281,36 @@ function HistoryCard({ h }: { h: DoctorHistory }) {
   )
 }
 
+const PREVIEW = 3
+
 export default function DoctorHistoryList({ histories }: { histories: DoctorHistory[] }) {
+  const [expanded, setExpanded] = useState(false)
   if (histories.length === 0) return null
 
   const unresolved = histories.filter(h => !h.resolved)
   const resolved = histories.filter(h => h.resolved)
   const sorted = [...unresolved, ...resolved]
+  const visible = expanded ? sorted : sorted.slice(0, PREVIEW)
+  const remaining = sorted.length - PREVIEW
 
   return (
     <div style={{ padding: '0 16px', marginTop: 8 }}>
       <p style={{ fontSize: 13, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>진단 이력</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {sorted.map(h => <HistoryCard key={h.id} h={h} />)}
+        {visible.map(h => <HistoryCard key={h.id} h={h} />)}
       </div>
+      {remaining > 0 && !expanded && (
+        <button onClick={() => setExpanded(true)}
+          style={{ width: '100%', marginTop: 10, background: '#1a1a24', border: '0.5px solid #2a2a38', color: '#888', borderRadius: 12, padding: '12px', fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>
+          +{remaining}건 더 보기
+        </button>
+      )}
+      {expanded && sorted.length > PREVIEW && (
+        <button onClick={() => setExpanded(false)}
+          style={{ width: '100%', marginTop: 10, background: '#1a1a24', border: '0.5px solid #2a2a38', color: '#555', borderRadius: 12, padding: '12px', fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>
+          접기
+        </button>
+      )}
     </div>
   )
 }
