@@ -52,7 +52,7 @@ export default async function HousePage({
     <div style={{ color: '#fff', width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
       <div style={{ padding: '20px 16px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <BackHomeButtons houseId={id} />
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
           <Link href={`/houses/${id}/edit`} style={{ color: '#60a5fa', fontSize: 20, textDecoration: 'none' }}>
             <i className="ti ti-pencil" />
           </Link>
