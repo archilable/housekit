@@ -56,9 +56,9 @@ export async function getHousePageData(id: string) {
                 FROM Utility WHERE houseId = ? ORDER BY month DESC LIMIT 12`,
           args: [id],
         },
-        // 4. 닥터 이력
+        // 4. 닥터 이력 (imageBase64 제외 — 카드 펼칠 때 별도 로드)
         {
-          sql: `SELECT id, description, imageBase64, result, createdAt, houseId, resolved, resolvedAt
+          sql: `SELECT id, description, result, createdAt, houseId, resolved, resolvedAt
                 FROM DoctorHistory WHERE houseId = ? ORDER BY createdAt DESC LIMIT 20`,
           args: [id],
         },
@@ -138,7 +138,7 @@ export async function getHousePageData(id: string) {
         id: String(r.id),
         houseId: String(r.houseId),
         description: r.description ? String(r.description) : null,
-        imageBase64: r.imageBase64 ? String(r.imageBase64) : null,
+        imageBase64: null, // 카드 펼칠 때 /api/doctor/[id] 로 별도 로드
         result: String(r.result),
         createdAt: new Date(String(r.createdAt)),
         resolved: Boolean(r.resolved),

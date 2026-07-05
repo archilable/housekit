@@ -1,6 +1,15 @@
 import { prisma } from '@/lib/db'
 import { NextResponse } from 'next/server'
 
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const record = await prisma.doctorHistory.findUnique({
+    where: { id },
+    select: { imageBase64: true },
+  })
+  return NextResponse.json({ imageBase64: record?.imageBase64 ?? null })
+}
+
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const { resolved } = await req.json().catch(() => ({ resolved: true }))

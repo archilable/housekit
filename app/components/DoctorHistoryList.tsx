@@ -79,6 +79,20 @@ function HistoryCard({ h }: { h: DoctorHistory }) {
   const [showModal, setShowModal] = useState(false)
   const [loading, setLoading] = useState(false)
   const [deleted, setDeleted] = useState(false)
+  const [imageBase64, setImageBase64] = useState<string | null>(null)
+  const [imageLoaded, setImageLoaded] = useState(false)
+
+  async function handleToggle(e: React.MouseEvent<HTMLElement>) {
+    const details = (e.currentTarget as HTMLElement).closest('details')
+    if (!details) return
+    // 펼칠 때 (현재 닫혀있을 때) 사진 로드
+    if (!details.open && !imageLoaded) {
+      setImageLoaded(true)
+      const res = await fetch(`/api/doctor/${h.id}`)
+      const data = await res.json()
+      if (data.imageBase64) setImageBase64(data.imageBase64)
+    }
+  }
 
   async function handleDelete() {
     if (!confirm('이 진단 이력을 삭제할까요?')) return
@@ -127,7 +141,7 @@ function HistoryCard({ h }: { h: DoctorHistory }) {
           opacity: resolved ? 0.6 : 1,
           transition: 'opacity 0.3s',
         }}>
-        <summary style={{ padding: '14px 16px', cursor: 'pointer', listStyle: 'none', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+        <summary onClick={handleToggle} style={{ padding: '14px 16px', cursor: 'pointer', listStyle: 'none', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4, flexWrap: 'wrap' }}>
               {resolved ? (
@@ -154,9 +168,9 @@ function HistoryCard({ h }: { h: DoctorHistory }) {
         </div>
 
         <div style={{ padding: '0 16px 16px', borderTop: '0.5px solid #1e1e28' }}>
-          {/* 진단 사진 */}
-          {h.imageBase64 && (
-            <img src={`data:image/jpeg;base64,${h.imageBase64}`} alt="진단 사진"
+          {/* 진단 사진 (펼칠 때 lazy load) */}
+          {imageBase64 && (
+            <img src={`data:image/jpeg;base64,${imageBase64}`} alt="진단 사진"
               style={{ width: '100%', borderRadius: 10, maxHeight: 200, objectFit: 'cover', display: 'block', marginTop: 12, marginBottom: 8 }} />
           )}
 
