@@ -58,7 +58,7 @@ export async function getHousePageData(id: string) {
         },
         // 4. 닥터 이력
         {
-          sql: `SELECT id, description, result, createdAt, houseId, resolved, resolvedAt
+          sql: `SELECT id, description, imageBase64, result, createdAt, houseId, resolved, resolvedAt
                 FROM DoctorHistory WHERE houseId = ? ORDER BY createdAt DESC LIMIT 20`,
           args: [id],
         },
@@ -138,6 +138,7 @@ export async function getHousePageData(id: string) {
         id: String(r.id),
         houseId: String(r.houseId),
         description: r.description ? String(r.description) : null,
+        imageBase64: r.imageBase64 ? String(r.imageBase64) : null,
         result: String(r.result),
         createdAt: new Date(String(r.createdAt)),
         resolved: Boolean(r.resolved),

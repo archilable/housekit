@@ -7,6 +7,7 @@ type DoctorHistory = {
   id: string
   houseId: string
   description: string | null
+  imageBase64: string | null
   result: string
   resolved: boolean
   resolvedAt: Date | string | null
@@ -153,6 +154,12 @@ function HistoryCard({ h }: { h: DoctorHistory }) {
         </div>
 
         <div style={{ padding: '0 16px 16px', borderTop: '0.5px solid #1e1e28' }}>
+          {/* 진단 사진 */}
+          {h.imageBase64 && (
+            <img src={`data:image/jpeg;base64,${h.imageBase64}`} alt="진단 사진"
+              style={{ width: '100%', borderRadius: 10, maxHeight: 200, objectFit: 'cover', display: 'block', marginTop: 12, marginBottom: 8 }} />
+          )}
+
           {/* 진단 결과 텍스트 */}
           <div style={{ marginTop: 12, marginBottom: 16 }}>
             {h.result.split('\n').map((line, i) => {
