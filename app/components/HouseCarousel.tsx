@@ -17,7 +17,7 @@ interface House {
 }
 
 function calcHealthScore(inv: number, hist: number) {
-  return Math.min(40 + Math.min(inv * 8, 30) + Math.min(hist * 6, 30), 100)
+  return Math.min(Math.min(inv * 3, 50) + Math.min(hist * 2, 50), 100)
 }
 
 export default function HouseCarousel({ houses: initialHouses }: { houses: House[] }) {
