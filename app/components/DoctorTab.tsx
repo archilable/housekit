@@ -272,12 +272,13 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
               <span style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>DIY 수리</span>
               <span style={{ fontSize: 13, color: '#555', textAlign: 'center' }}>유튜브로 직접 수리하기</span>
             </a>
-            <button onClick={() => openSoomgo(soomgoKeyword)}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 14, padding: '16px 12px', cursor: 'pointer', fontFamily: 'inherit', width: '100%' }}>
+            <a href={`https://search.naver.com/search.naver?query=${encodeURIComponent(soomgoKeyword + ' 전문가')}`}
+              target="_blank" rel="noopener noreferrer"
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 14, padding: '16px 12px', textDecoration: 'none' }}>
               <span style={{ fontSize: 26 }}>👷</span>
               <span style={{ fontSize: 15, fontWeight: 600, color: '#60a5fa' }}>전문가 찾기</span>
-              <span style={{ fontSize: 13, color: '#555', textAlign: 'center' }}>숨고에서 전문가 연결</span>
-            </button>
+              <span style={{ fontSize: 13, color: '#555', textAlign: 'center' }}>네이버에서 전문가 검색</span>
+            </a>
           </div>
         </div>
       )}
