@@ -53,6 +53,7 @@ export async function updateHouse(id: string, formData: FormData) {
     },
   })
   invalidateHouseCache(id)
+  revalidatePath(`/houses/${id}`)
   redirect(`/houses/${id}`)
 }
 
@@ -85,6 +86,7 @@ export async function createInventory(formData: FormData) {
   })
 
   invalidateHouseCache(houseId)
+  revalidatePath(`/houses/${houseId}`)
   redirect(`/houses/${houseId}?tab=inventory&refresh=1`)
 }
 
@@ -108,12 +110,14 @@ export async function updateInventory(id: string, formData: FormData) {
     },
   })
   invalidateHouseCache(houseId)
+  revalidatePath(`/houses/${houseId}`)
   redirect(`/houses/${houseId}?tab=inventory&refresh=1`)
 }
 
 export async function deleteInventory(id: string, houseId: string) {
   await prisma.inventory.delete({ where: { id } })
   invalidateHouseCache(houseId)
+  revalidatePath(`/houses/${houseId}`)
 }
 
 // History actions
@@ -153,6 +157,7 @@ export async function createHistory(formData: FormData) {
   }
 
   invalidateHouseCache(houseId)
+  revalidatePath(`/houses/${houseId}`)
   redirect(`/houses/${houseId}?tab=history&refresh=1`)
 }
 
@@ -189,12 +194,14 @@ export async function updateHistory(id: string, formData: FormData) {
   }
 
   invalidateHouseCache(houseId)
+  revalidatePath(`/houses/${houseId}`)
   redirect(`/houses/${houseId}?tab=history&refresh=1`)
 }
 
 export async function deleteHistory(id: string, houseId: string) {
   await prisma.history.delete({ where: { id } })
   invalidateHouseCache(houseId)
+  revalidatePath(`/houses/${houseId}`)
 }
 
 // Utility actions
@@ -213,12 +220,14 @@ export async function upsertUtility(formData: FormData) {
   })
 
   invalidateHouseCache(houseId)
+  revalidatePath(`/houses/${houseId}`)
   redirect(`/houses/${houseId}?tab=utility&refresh=1`)
 }
 
 export async function deleteUtility(utilityId: string, houseId: string) {
   await prisma.utility.delete({ where: { id: utilityId } })
   invalidateHouseCache(houseId)
+  revalidatePath(`/houses/${houseId}`)
   redirect(`/houses/${houseId}?tab=utility&refresh=1`)
 }
 
@@ -254,5 +263,6 @@ export async function upsertValuation(formData: FormData) {
     },
   })
   invalidateHouseCache(houseId)
+  revalidatePath(`/houses/${houseId}`)
   redirect(`/houses/${houseId}?tab=valuation&refresh=1`)
 }

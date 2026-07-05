@@ -6,7 +6,7 @@ import InviteButton from '@/app/components/InviteButton'
 import BackHomeButtons from '@/app/components/BackHomeButtons'
 import HouseDashboardContent from '@/app/components/HouseDashboardContent'
 
-export const revalidate = 60
+export const revalidate = 600 // 10분 캐시 — 저장/삭제 시 revalidatePath로 수동 갱신
 
 async function HouseBody({ id }: { id: string }) {
   const data = await getHousePageData(id)
