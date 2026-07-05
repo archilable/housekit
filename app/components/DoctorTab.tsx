@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
@@ -9,6 +10,7 @@ const inputStyle: React.CSSProperties = {
 }
 
 export default function DoctorTab({ houseId }: { houseId: string }) {
+  const router = useRouter()
   const [preview, setPreview] = useState<string | null>(null)
   const [imageBase64, setImageBase64] = useState<string | null>(null)
   const [mediaType, setMediaType] = useState<string>('image/jpeg')
@@ -18,7 +20,6 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
   const [loadingMsg, setLoadingMsg] = useState('')
   const [error, setError] = useState<string | null>(null)
   const submitting = useRef(false)
-  void houseId
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -75,6 +76,7 @@ export default function DoctorTab({ houseId }: { houseId: string }) {
       const data = await res.json()
       if (data.error) throw new Error(data.error)
       setResult(data.result)
+      router.refresh() // 이력 목록 자동 갱신
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : '오류가 발생했습니다.')
     } finally {

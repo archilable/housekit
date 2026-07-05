@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/db'
+import { invalidateHouseCache } from '@/lib/houseData'
 
 export async function POST(req: NextRequest) {
   try {
@@ -78,6 +80,8 @@ export async function POST(req: NextRequest) {
           result: text,
         },
       })
+      invalidateHouseCache(houseId)
+      revalidatePath(`/houses/${houseId}`)
     }
 
     return NextResponse.json({ result: text })
