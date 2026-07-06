@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { unstable_cache } from 'next/cache'
 
 async function runValuationAi(address: string, houseType: string, buildYear: number | null, area: number | null, realTrades: any) {
   const age = buildYear ? new Date().getFullYear() - buildYear : null
@@ -70,23 +69,14 @@ ${realTradeText}
 export async function POST(req: NextRequest) {
   try {
     const { address, houseType, buildYear, area } = await req.json()
-
-    const cacheKey = `valuation-ai-v2-${address}-${houseType}-${buildYear}-${Math.round(area ?? 0)}`
     const baseUrl = process.env.NEXTAUTH_URL ?? 'https://www.housekit.kr'
 
-    const cached = unstable_cache(
-      async () => {
-        const realRes = await fetch(
-          `${baseUrl}/api/realprice?address=${encodeURIComponent(address)}&houseType=${encodeURIComponent(houseType)}&area=${area ?? 0}`
-        )
-        const realTrades = realRes.ok ? await realRes.json() : null
-        return runValuationAi(address, houseType, buildYear, area, realTrades)
-      },
-      [cacheKey],
-      { revalidate: 60 * 60 * 24 }
+    const realRes = await fetch(
+      `${baseUrl}/api/realprice?address=${encodeURIComponent(address)}&houseType=${encodeURIComponent(houseType)}&area=${area ?? 0}`,
+      { cache: 'no-store' }
     )
-
-    const result = await cached()
+    const realTrades = realRes.ok ? await realRes.json() : null
+    const result = await runValuationAi(address, houseType, buildYear, area, realTrades)
     return NextResponse.json(result)
   } catch (e: unknown) {
     return NextResponse.json({ error: e instanceof Error ? e.message : '오류 발생' }, { status: 500 })
