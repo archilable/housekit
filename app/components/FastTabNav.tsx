@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react'
 
-const ALL_TABS = ['home', 'history', 'inventory', 'doctor', 'utility', 'valuation']
-const FAST_TABS = new Set(['home', 'history', 'inventory', 'doctor', 'utility', 'valuation'])
+const ALL_TABS = ['home', 'history', 'inventory', 'doctor', 'utility', 'valuation', 'floorplan']
+const FAST_TABS = new Set(['home', 'history', 'inventory', 'doctor', 'utility', 'valuation', 'floorplan'])
 
 const TAB_LABELS: Record<string, string> = {
   home: '홈', history: '이력', inventory: '설비',
-  doctor: '닥터', utility: '공과금', valuation: '시세',
+  doctor: '닥터', utility: '공과금', valuation: '시세', floorplan: '도면',
 }
 
 export default function FastTabNav({ houseId, initialTab }: { houseId: string; initialTab: string }) {
