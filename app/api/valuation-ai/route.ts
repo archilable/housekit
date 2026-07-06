@@ -4,12 +4,17 @@ async function runValuationAi(address: string, houseType: string, buildYear: num
   const age = buildYear ? new Date().getFullYear() - buildYear : null
 
   let realTradeText = '실거래 데이터 없음'
+  let avgWon = 0
   if (realTrades && !realTrades.error && realTrades.count > 0) {
+    avgWon = realTrades.avg
+    const toEok = (v: number) => `${(v / 100000000).toFixed(2)}억원 (${v.toLocaleString()}원)`
     realTradeText = `최근 12개월 ${realTrades.count}건 실거래 기준:
-- 최고가: ${(realTrades.max / 100000000).toFixed(1)}억원
-- 최저가: ${(realTrades.min / 100000000).toFixed(1)}억원
-- 평균가: ${(realTrades.avg / 100000000).toFixed(1)}억원
-- 중간가: ${(realTrades.median / 100000000).toFixed(1)}억원`
+- 최고가: ${toEok(realTrades.max)}
+- 최저가: ${toEok(realTrades.min)}
+- 평균가: ${toEok(realTrades.avg)}
+- 중간가: ${toEok(realTrades.median)}
+
+※ 중간가와 평균가가 이 주택의 실제 시세 기준입니다. JSON의 midPrice는 반드시 위 중간가(${realTrades.median.toLocaleString()}원)와 평균가(${realTrades.avg.toLocaleString()}원) 사이 수준이어야 합니다.`
   }
 
   const prompt = `당신은 대한민국 부동산 감정평가 전문가입니다. 국토교통부 실거래가 데이터와 주택 정보를 바탕으로 시세를 추정하세요.
@@ -29,11 +34,11 @@ ${realTradeText}
 - 단독주택은 토지가치 포함 여부 고려
 - 최고가/최저가는 이상치일 수 있으므로 중간값 중심으로 추정할 것
 
-다음 JSON 형식으로만 답변하세요. 다른 텍스트는 절대 포함하지 마세요:
+다음 JSON 형식으로만 답변하세요. 다른 텍스트는 절대 포함하지 마세요. 모든 가격은 원(KRW) 단위 정수입니다:
 {
-  "minPrice": 숫자(원 단위),
-  "maxPrice": 숫자(원 단위),
-  "midPrice": 숫자(원 단위),
+  "minPrice": 숫자(원 단위 정수, 예: 1050000000),
+  "maxPrice": 숫자(원 단위 정수, 예: 1200000000),
+  "midPrice": 숫자(원 단위 정수, 예: 1100000000),
   "basis": "실거래 데이터 기반 추정 근거 2~3문장",
   "confidence": "높음 또는 보통 또는 낮음",
   "note": "참고사항 한 문장"
@@ -77,6 +82,25 @@ export async function POST(req: NextRequest) {
     )
     const realTrades = realRes.ok ? await realRes.json() : null
     const result = await runValuationAi(address, houseType, buildYear, area, realTrades)
+
+    // 실거래 평균가 대비 AI 결과가 3배 초과하면 클램핑
+    if (realTrades && !realTrades.error && realTrades.avg > 0) {
+      const avg = realTrades.avg
+      const MAX_RATIO = 2.5
+      const MIN_RATIO = 0.4
+      if (result.midPrice > avg * MAX_RATIO) {
+        const scale = (avg * MAX_RATIO) / result.midPrice
+        result.midPrice = Math.round(result.midPrice * scale)
+        result.minPrice = Math.round(result.minPrice * scale)
+        result.maxPrice = Math.round(result.maxPrice * scale)
+      } else if (result.midPrice < avg * MIN_RATIO) {
+        const scale = (avg * MIN_RATIO) / result.midPrice
+        result.midPrice = Math.round(result.midPrice * scale)
+        result.minPrice = Math.round(result.minPrice * scale)
+        result.maxPrice = Math.round(result.maxPrice * scale)
+      }
+    }
+
     return NextResponse.json(result)
   } catch (e: unknown) {
     return NextResponse.json({ error: e instanceof Error ? e.message : '오류 발생' }, { status: 500 })
