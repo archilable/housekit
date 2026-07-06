@@ -1,10 +1,10 @@
 import { prisma } from '@/lib/db'
 import { updateHouse } from '@/lib/actions'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import AddressSearch from '@/app/components/AddressSearch'
 import SubmitButton from '@/app/components/SubmitButton'
 import BackHomeButtons from '@/app/components/BackHomeButtons'
+import DeleteHouseButton from '@/app/components/DeleteHouseButton'
 
 const inputStyle = {
   width: '100%', background: '#1a1a24', border: '0.5px solid #2a2a38',
@@ -84,6 +84,8 @@ export default async function EditHousePage({ params }: { params: Promise<{ id: 
 
         <SubmitButton label="저장하기" loadingLabel="저장 중..." />
       </form>
+
+      <DeleteHouseButton id={id} address={house.address} variant="full" />
     </div>
   )
 }
