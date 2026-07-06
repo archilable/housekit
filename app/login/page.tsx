@@ -1,7 +1,8 @@
-import Link from 'next/link'
 import { signIn } from '@/auth'
 
-export default function LoginPage() {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ callbackUrl?: string }> }) {
+  const { callbackUrl } = await searchParams
+  const redirectTo = callbackUrl || '/houses'
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', flexDirection: 'column',
@@ -41,7 +42,7 @@ export default function LoginPage() {
 
       <div style={{ width: '100%', maxWidth: 280, display: 'flex', flexDirection: 'column', gap: 12 }}>
         {/* 구글 로그인 */}
-        <form action={async () => { 'use server'; await signIn('google', { redirectTo: '/houses' }) }} style={{ width: '100%' }}>
+        <form action={async () => { 'use server'; await signIn('google', { redirectTo }) }} style={{ width: '100%' }}>
           <button type="submit" style={{
             width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
             background: '#fff', color: '#111', border: 'none', borderRadius: 14,
@@ -59,7 +60,7 @@ export default function LoginPage() {
         </form>
 
         {/* 카카오 로그인 */}
-        <form action={async () => { 'use server'; await signIn('kakao', { redirectTo: '/houses' }) }} style={{ width: '100%' }}>
+        <form action={async () => { 'use server'; await signIn('kakao', { redirectTo }) }} style={{ width: '100%' }}>
           <button type="submit" style={{
             width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
             background: '#FEE500', color: '#191919', border: 'none', borderRadius: 14,
