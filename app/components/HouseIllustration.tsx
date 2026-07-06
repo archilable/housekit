@@ -262,81 +262,72 @@ function Hanok() {
     <>
       <ellipse cx="120" cy="170" rx="88" ry="6" fill="#0d1a2e" opacity="0.8" />
 
-      {/* 기단 (석재 기초) */}
-      <rect x="34" y="148" width="172" height="20" fill="#1a2540" stroke="#2a4a80" strokeWidth="0.8" rx="1" />
-      <line x1="34" y1="155" x2="206" y2="155" stroke="#2a4a80" strokeWidth="0.4" />
-      {[50,70,90,110,130,150,170,190].map(x => (
-        <line key={x} x1={x} y1="148" x2={x} y2="168" stroke="#2a4a80" strokeWidth="0.3" opacity="0.5" />
+      {/* 기단 */}
+      <rect x="38" y="148" width="164" height="18" fill="#1a2540" stroke="#2a4a80" strokeWidth="0.8" rx="1" />
+      <line x1="38" y1="154" x2="202" y2="154" stroke="#2a4a80" strokeWidth="0.4" />
+      {[55,75,95,120,145,165,185].map(x => (
+        <line key={x} x1={x} y1="148" x2={x} y2="166" stroke="#2a4a80" strokeWidth="0.3" opacity="0.5" />
       ))}
 
       {/* 벽체 */}
-      <rect x="44" y="96" width="152" height="52" fill="#111828" stroke="#1e3a5f" strokeWidth="0.8" />
+      <rect x="48" y="98" width="144" height="50" fill="#111828" stroke="#1e3a5f" strokeWidth="0.8" />
 
-      {/* 벽 창살 창문 (왼쪽) */}
-      <rect x="54" y="104" width="38" height="36" fill="#0a1520" stroke="#2a4a80" strokeWidth="0.7" rx="1" />
-      {[60,66,72,78,84].map(x => (
-        <line key={x} x1={x} y1="104" x2={x} y2="140" stroke="#2a4a80" strokeWidth="0.4" />
+      {/* 창살 창문 왼쪽 */}
+      <rect x="56" y="106" width="36" height="34" fill="#0a1520" stroke="#2a4a80" strokeWidth="0.7" rx="1" />
+      {[62,68,74,80,86].map(x => (
+        <line key={x} x1={x} y1="106" x2={x} y2="140" stroke="#2a4a80" strokeWidth="0.4" />
       ))}
-      {[110,118,126,134].map(y => (
-        <line key={y} x1="54" y1={y} x2="92" y2={y} stroke="#2a4a80" strokeWidth="0.4" />
+      {[113,121,129,133].map(y => (
+        <line key={y} x1="56" y1={y} x2="92" y2={y} stroke="#2a4a80" strokeWidth="0.4" />
       ))}
-      <circle cx="73" cy="122" r="3" fill="#60a5fa" opacity="0.5" />
+      <circle cx="74" cy="123" r="2.5" fill="#60a5fa" opacity="0.5" />
 
-      {/* 벽 창살 창문 (오른쪽) */}
-      <rect x="148" y="104" width="38" height="36" fill="#0a1520" stroke="#2a4a80" strokeWidth="0.7" rx="1" />
+      {/* 창살 창문 오른쪽 */}
+      <rect x="148" y="106" width="36" height="34" fill="#0a1520" stroke="#2a4a80" strokeWidth="0.7" rx="1" />
       {[154,160,166,172,178].map(x => (
-        <line key={x} x1={x} y1="104" x2={x} y2="140" stroke="#2a4a80" strokeWidth="0.4" />
+        <line key={x} x1={x} y1="106" x2={x} y2="140" stroke="#2a4a80" strokeWidth="0.4" />
       ))}
-      {[110,118,126,134].map(y => (
-        <line key={y} x1="148" y1={y} x2="186" y2={y} stroke="#2a4a80" strokeWidth="0.4" />
+      {[113,121,129,133].map(y => (
+        <line key={y} x1="148" y1={y} x2="184" y2={y} stroke="#2a4a80" strokeWidth="0.4" />
       ))}
-      <circle cx="167" cy="122" r="3" fill="#60a5fa" opacity="0.3" />
+      <circle cx="166" cy="123" r="2.5" fill="#60a5fa" opacity="0.3" />
 
-      {/* 중앙 대문 */}
-      <rect x="100" y="108" width="40" height="40" fill="#0a1018" stroke="#1e3a5f" strokeWidth="0.8" rx="1" />
+      {/* 대문 */}
+      <rect x="102" y="108" width="36" height="40" fill="#0a1018" stroke="#1e3a5f" strokeWidth="0.8" rx="1" />
       <line x1="120" y1="108" x2="120" y2="148" stroke="#1e3a5f" strokeWidth="0.6" />
-      <rect x="102" y="110" width="16" height="24" fill="#0d1a2e" stroke="#2a4a80" strokeWidth="0.4" rx="1" opacity="0.7" />
-      <rect x="122" y="110" width="16" height="24" fill="#0d1a2e" stroke="#2a4a80" strokeWidth="0.4" rx="1" opacity="0.7" />
-      <circle cx="113" cy="122" r="2" fill="#60a5fa" opacity="0.7" />
-      <circle cx="127" cy="122" r="2" fill="#60a5fa" opacity="0.7" />
+      <rect x="104" y="110" width="14" height="22" fill="#0d1a2e" stroke="#2a4a80" strokeWidth="0.4" rx="1" opacity="0.7" />
+      <rect x="122" y="110" width="14" height="22" fill="#0d1a2e" stroke="#2a4a80" strokeWidth="0.4" rx="1" opacity="0.7" />
+      <circle cx="113" cy="121" r="1.8" fill="#60a5fa" opacity="0.7" />
+      <circle cx="127" cy="121" r="1.8" fill="#60a5fa" opacity="0.7" />
 
-      {/* 처마 (지붕 아래 돌출부) */}
-      <polygon points="28,96 212,96 200,88 40,88" fill="#1a2540" stroke="#2a4a80" strokeWidth="0.7" />
-      <line x1="28" y1="96" x2="212" y2="96" stroke="#2a4a80" strokeWidth="0.5" />
+      {/* 처마 하부면 — 처마선이 중앙에서 낮고 양 끝에서 위로 올라감 */}
+      <path d="M22,82 Q120,100 218,82 L202,96 Q120,104 38,96 Z"
+        fill="#1a2540" stroke="#2a4a80" strokeWidth="0.6" />
 
-      {/* 메인 지붕 — 팔작지붕 곡선 */}
-      {/* 중앙 지붕면 */}
-      <path d="M120,18 C140,30 185,60 205,88 L35,88 C55,60 100,30 120,18 Z"
+      {/* 지붕 본체 — 가운데 낮고 양 끝 위로 올라가는 한옥 처마 */}
+      <path d="M88,20 L152,20 C182,38 206,56 218,76 Q165,96 120,100 Q75,96 22,76 C34,56 58,38 88,20 Z"
         fill="#0d1520" stroke="#2a4a80" strokeWidth="1.2" />
-      {/* 지붕 곡선 처마선 */}
-      <path d="M35,88 C55,78 100,68 120,66 C140,68 185,78 205,88"
-        fill="none" stroke="#60a5fa" strokeWidth="0.7" opacity="0.5" />
-      {/* 지붕 능선 */}
-      <line x1="120" y1="18" x2="120" y2="88" stroke="#1e3a5f" strokeWidth="0.5" strokeDasharray="5 4" />
-      {/* 양 끝 처마 곡선 강조 */}
-      <path d="M35,88 Q28,92 22,96" fill="none" stroke="#2a4a80" strokeWidth="1.2" />
-      <path d="M205,88 Q212,92 218,96" fill="none" stroke="#2a4a80" strokeWidth="1.2" />
 
-      {/* 합각 (측면 삼각형) */}
-      <polygon points="35,88 60,88 120,18" fill="#0a1018" stroke="#1e3a5f" strokeWidth="0.6" opacity="0.7" />
-      <polygon points="205,88 180,88 120,18" fill="#0a1018" stroke="#1e3a5f" strokeWidth="0.6" opacity="0.7" />
+      {/* 처마 곡선 강조선 — 핵심: 양 끝이 올라가는 U자 반전 */}
+      <path d="M22,76 Q120,100 218,76"
+        fill="none" stroke="#60a5fa" strokeWidth="0.8" opacity="0.5" />
 
-      {/* 용마루 (지붕 꼭대기 수평 라인) */}
-      <rect x="92" y="16" width="56" height="5" fill="#1a2540" stroke="#2a4a80" strokeWidth="0.8" rx="2" />
-      {/* 취두 (용마루 장식) */}
-      <circle cx="92" cy="18" r="4" fill="#0d1a2e" stroke="#60a5fa" strokeWidth="1" />
-      <circle cx="92" cy="18" r="1.5" fill="#60a5fa" opacity="0.9" />
-      <circle cx="148" cy="18" r="4" fill="#0d1a2e" stroke="#60a5fa" strokeWidth="1" />
-      <circle cx="148" cy="18" r="1.5" fill="#60a5fa" opacity="0.9" />
+      {/* 추녀 끝 위로 꺾임 */}
+      <path d="M22,76 Q14,68 10,58" fill="none" stroke="#2a4a80" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M218,76 Q226,68 230,58" fill="none" stroke="#2a4a80" strokeWidth="1.6" strokeLinecap="round" />
 
-      {/* 서까래 표현 */}
-      {[50,72,94,120,146,168,190].map((x,i) => (
-        <line key={i} x1={120} y1={18} x2={x} y2={88} stroke="#1e3a5f" strokeWidth="0.3" opacity="0.4" />
+      {/* 용마루 */}
+      <rect x="88" y="17" width="64" height="6" fill="#1a2540" stroke="#2a4a80" strokeWidth="0.8" rx="2" />
+      {/* 취두 장식 */}
+      <circle cx="88" cy="20" r="4" fill="#0d1a2e" stroke="#60a5fa" strokeWidth="1" />
+      <circle cx="88" cy="20" r="1.5" fill="#60a5fa" opacity="0.9" />
+      <circle cx="152" cy="20" r="4" fill="#0d1a2e" stroke="#60a5fa" strokeWidth="1" />
+      <circle cx="152" cy="20" r="1.5" fill="#60a5fa" opacity="0.9" />
+
+      {/* 서까래 */}
+      {[40,62,84,120,156,178,200].map((x,i) => (
+        <line key={i} x1={120} y1={20} x2={x} y2={96} stroke="#1e3a5f" strokeWidth="0.3" opacity="0.35" />
       ))}
-
-      {/* 마당 돌 */}
-      <ellipse cx="80" cy="164" rx="8" ry="3" fill="#1a2540" stroke="#2a4a80" strokeWidth="0.4" opacity="0.6" />
-      <ellipse cx="160" cy="163" rx="6" ry="2.5" fill="#1a2540" stroke="#2a4a80" strokeWidth="0.4" opacity="0.5" />
     </>
   )
 }
