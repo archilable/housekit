@@ -34,9 +34,9 @@ export default function FloorPlanButton({ houseId }: { houseId: string }) {
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              width: '100%', maxHeight: '90vh', background: '#0a0a0f',
+              width: '100%', maxHeight: '90dvh', background: '#0a0a0f',
               borderRadius: '20px 20px 0 0', border: '0.5px solid #1e1e28',
-              overflow: 'hidden', display: 'flex', flexDirection: 'column',
+              display: 'flex', flexDirection: 'column',
             }}
           >
             {/* 핸들 */}
@@ -54,7 +54,7 @@ export default function FloorPlanButton({ houseId }: { houseId: string }) {
               </button>
             </div>
             {/* 내용 */}
-            <div style={{ overflowY: 'auto', flex: 1, paddingBottom: 32 }}>
+            <div style={{ overflowY: 'auto', flex: 1, paddingBottom: 40, WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
               <FloorPlanSection houseId={houseId} />
             </div>
           </div>
