@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 type FloorPlan = {
   id: string
@@ -25,7 +25,14 @@ export default function FloorPlanSection({ houseId }: { houseId: string }) {
   const [showUpload, setShowUpload] = useState(false)
   const [error, setError] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
+  const cameraRef = useRef<HTMLInputElement>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+
+  const onFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0] ?? null
+    setSelectedFile(f)
+    if (f && !uploadName) setUploadName(f.name.replace(/\.[^.]+$/, ''))
+  }, [uploadName])
 
   useEffect(() => {
     fetch(`/api/houses/${houseId}/floorplans`)
@@ -76,39 +83,41 @@ export default function FloorPlanSection({ houseId }: { houseId: string }) {
       {/* 업로드 패널 */}
       {showUpload && (
         <div style={{ background: '#111828', border: '0.5px solid #2a2a38', borderRadius: 16, padding: 16, marginBottom: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {/* 파일 선택 버튼 (숨겨진 input 위에 스타일 버튼) */}
-          <div style={{ position: 'relative' }}>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*,.pdf"
-              onChange={e => {
-                const f = e.target.files?.[0] ?? null
-                setSelectedFile(f)
-                if (f && !uploadName) setUploadName(f.name.replace(/\.[^.]+$/, ''))
-              }}
-              style={{ position: 'absolute', inset: 0, opacity: 0, width: '100%', height: '100%', cursor: 'pointer', zIndex: 1 }}
-            />
-            <div style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              gap: 8, border: '1.5px dashed #2a2a38', borderRadius: 12, padding: '20px 16px',
-              background: selectedFile ? 'rgba(96,165,250,0.06)' : '#0a0a0f',
-              borderColor: selectedFile ? '#60a5fa' : '#2a2a38',
-            }}>
-              <span style={{ fontSize: 28 }}>{selectedFile ? (selectedFile.type === 'application/pdf' ? '📄' : '🖼️') : '📎'}</span>
-              {selectedFile ? (
-                <>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', textAlign: 'center' }}>{selectedFile.name}</p>
-                  <p style={{ fontSize: 12, color: '#555' }}>{(selectedFile.size / (1024 * 1024)).toFixed(1)}MB</p>
-                </>
-              ) : (
-                <>
-                  <p style={{ fontSize: 15, fontWeight: 500, color: '#60a5fa' }}>파일 선택 / 사진 찍기</p>
-                  <p style={{ fontSize: 12, color: '#555' }}>이미지(JPG, PNG) 또는 PDF · 최대 20MB</p>
-                </>
-              )}
+          {/* 선택된 파일 미리보기 */}
+          {selectedFile && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(96,165,250,0.06)', border: '0.5px solid #60a5fa', borderRadius: 12, padding: '12px 14px' }}>
+              <span style={{ fontSize: 22 }}>{selectedFile.type === 'application/pdf' ? '📄' : '🖼️'}</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selectedFile.name}</p>
+                <p style={{ fontSize: 12, color: '#555' }}>{(selectedFile.size / (1024 * 1024)).toFixed(1)}MB</p>
+              </div>
+              <button onClick={() => { setSelectedFile(null); if (fileRef.current) fileRef.current.value = ''; if (cameraRef.current) cameraRef.current.value = '' }} style={{ background: 'none', border: 'none', color: '#555', fontSize: 18, cursor: 'pointer' }}>✕</button>
             </div>
-          </div>
+          )}
+
+          {/* 파일 선택 / 카메라 버튼 */}
+          {!selectedFile && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              {/* 갤러리 / 파일 */}
+              <div style={{ position: 'relative' }}>
+                <input ref={fileRef} type="file" accept="image/*,.pdf" onChange={onFileChange}
+                  style={{ position: 'absolute', inset: 0, opacity: 0, width: '100%', height: '100%', cursor: 'pointer', zIndex: 1 }} />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, border: '1px dashed #2a2a38', borderRadius: 12, padding: '18px 8px', background: '#0a0a0f' }}>
+                  <span style={{ fontSize: 24 }}>🖼️</span>
+                  <p style={{ fontSize: 13, color: '#aaa', fontWeight: 500 }}>갤러리 / 파일</p>
+                </div>
+              </div>
+              {/* 카메라 */}
+              <div style={{ position: 'relative' }}>
+                <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={onFileChange}
+                  style={{ position: 'absolute', inset: 0, opacity: 0, width: '100%', height: '100%', cursor: 'pointer', zIndex: 1 }} />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, border: '1px dashed #2a2a38', borderRadius: 12, padding: '18px 8px', background: '#0a0a0f' }}>
+                  <span style={{ fontSize: 24 }}>📷</span>
+                  <p style={{ fontSize: 13, color: '#aaa', fontWeight: 500 }}>카메라 촬영</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <input
             type="text"
