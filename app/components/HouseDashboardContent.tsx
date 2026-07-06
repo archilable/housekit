@@ -12,7 +12,7 @@ import DeleteUtilityButton from './DeleteUtilityButton'
 import RealPriceData from './RealPriceData'
 import AiValuation from './AiValuation'
 import HouseIllustration from './HouseIllustration'
-import FloorPlanSection from './FloorPlanSection'
+import FloorPlanButton from './FloorPlanButton'
 
 const INVENTORY_ICONS: Record<string, string> = { 보일러: 'ti-flame', 에어컨: 'ti-air-conditioning', 정수기: 'ti-droplet', 냉장고: 'ti-snowflake', 세탁기: 'ti-wash', 도어락: 'ti-lock', 기타: 'ti-package' }
 const INVENTORY_COLORS: Record<string, string> = { 보일러: '#f97316', 에어컨: '#60a5fa', 정수기: '#34d399', 냉장고: '#a78bfa', 세탁기: '#38bdf8', 도어락: '#fbbf24', 기타: '#888' }
@@ -107,6 +107,9 @@ export default function HouseDashboardContent({ data, houseId }: { data: any; ho
           {house.buildYear && <span style={{ fontSize: 12, background: '#111118', color: '#555', padding: '3px 10px', borderRadius: 20, border: '0.5px solid #222' }}>{house.buildYear}년</span>}
           {house.addressDetail && house.addressDetail.match(/\d+층/) && null}
         </div>
+
+        {/* 도면 버튼 */}
+        <FloorPlanButton houseId={houseId} />
 
         {/* 면적 3분할 그리드 */}
         {(house.landArea || house.buildArea || house.exclusiveArea) && (
@@ -419,10 +422,6 @@ export default function HouseDashboardContent({ data, houseId }: { data: any; ho
         <div className="fast-tab fast-tab-doctor">
           <DoctorSection houseId={houseId} initialHistories={doctorData} />
           <div style={{ height: 32 }} />
-        </div>
-
-        <div className="fast-tab fast-tab-floorplan" style={{ paddingBottom: 32 }}>
-          <FloorPlanSection houseId={houseId} />
         </div>
 
       </div>{/* tab-container */}
