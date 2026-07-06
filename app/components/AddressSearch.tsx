@@ -3,10 +3,6 @@
 import { useEffect, useRef, useState } from 'react'
 
 interface BuildingInfo {
-  platArea: number | null   // 대지면적
-  archArea: number | null   // 건축면적
-  totArea: number | null    // 연면적
-  buildYear: number | null
   houseType: string
 }
 
@@ -29,6 +25,8 @@ declare global {
           bname1: string
           bnum: string
           bnum2: string
+          apartment: string
+          buildingName: string
           autoRoadAddress: string
           autoJibunAddress: string
         }) => void
@@ -44,7 +42,6 @@ export default function AddressSearch({ defaultAddress = '', defaultAddressDetai
   const [address, setAddress] = useState(defaultAddress)
   const [detail, setDetail] = useState(defaultAddressDetail)
   const [showSearch, setShowSearch] = useState(false)
-  const [fetching, setFetching] = useState(false)
   const embedRef = useRef<HTMLDivElement>(null)
   const scriptLoaded = useRef(false)
 
@@ -62,18 +59,13 @@ export default function AddressSearch({ defaultAddress = '', defaultAddressDetai
     document.head.appendChild(s)
   }
 
-  async function fetchBuildingInfo(jibunAddress: string) {
-    if (!onBuildingInfo || !jibunAddress) return
-    setFetching(true)
-    try {
-      const params = new URLSearchParams({ jibunAddress })
-      const res = await fetch(`/api/building-info?${params}`)
-      if (res.ok) {
-        const data = await res.json()
-        if (!data.error) onBuildingInfo(data)
-      }
-    } catch {}
-    setFetching(false)
+  function inferHouseType(data: { apartment: string; buildingName: string }): string {
+    if (data.apartment === 'Y') return '아파트'
+    const name = data.buildingName || ''
+    if (name.includes('빌라') || name.includes('연립')) return '빌라/연립'
+    if (name.includes('다가구') || name.includes('원룸') || name.includes('다세대')) return '다가구'
+    if (name.includes('단독') || name.includes('주택')) return '단독주택'
+    return ''
   }
 
   useEffect(() => {
@@ -87,8 +79,10 @@ export default function AddressSearch({ defaultAddress = '', defaultAddressDetai
           setTimeout(() => {
             document.getElementById('address-detail-input')?.focus()
           }, 100)
-          // 건축물대장 자동 조회 (지번주소 기반)
-          if (data.jibunAddress) fetchBuildingInfo(data.jibunAddress)
+          if (onBuildingInfo) {
+            const houseType = inferHouseType(data)
+            if (houseType) onBuildingInfo({ houseType })
+          }
         },
         width: '100%',
         height: '100%',
@@ -118,10 +112,7 @@ export default function AddressSearch({ defaultAddress = '', defaultAddressDetai
           <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {address || '주소 검색 (예: 연희동, 연희로)'}
           </span>
-          {fetching
-            ? <i className="ti ti-loader-2" style={{ fontSize: 18, color: '#60a5fa', flexShrink: 0, animation: 'spin 1s linear infinite' }} />
-            : <i className="ti ti-search" style={{ fontSize: 18, color: '#60a5fa', flexShrink: 0 }} />
-          }
+          <i className="ti ti-search" style={{ fontSize: 18, color: '#60a5fa', flexShrink: 0 }} />
         </div>
       </div>
 
