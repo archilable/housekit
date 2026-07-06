@@ -7,7 +7,7 @@ export default async function InvitePage({ params }: { params: Promise<{ token: 
   const session = await auth()
 
   if (!session?.user?.id) {
-    redirect(`/login?callbackUrl=/invite/${token}`)
+    redirect(`/login?callbackUrl=${encodeURIComponent(`/invite/${token}`)}`)
   }
 
   const invite = await prisma.houseInvite.findUnique({
