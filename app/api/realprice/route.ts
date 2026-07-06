@@ -170,7 +170,7 @@ export async function GET(req: NextRequest) {
     // 같은 주소+타입 조합 24시간 캐싱 (국토부 데이터는 매달 업데이트)
     const cached = unstable_cache(
       () => fetchRealPrice(address, houseType, area),
-      [`realprice-${address}-${houseType}-${Math.round(area)}`],
+      [`realprice-v2-${address}-${houseType}-${Math.round(area)}`],
       { revalidate: 60 * 60 * 24 }
     )
     const result = await cached()

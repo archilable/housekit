@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
   try {
     const { address, houseType, buildYear, area } = await req.json()
 
-    const cacheKey = `valuation-ai-${address}-${houseType}-${buildYear}-${Math.round(area ?? 0)}`
+    const cacheKey = `valuation-ai-v2-${address}-${houseType}-${buildYear}-${Math.round(area ?? 0)}`
     const baseUrl = process.env.NEXTAUTH_URL ?? 'https://www.housekit.kr'
 
     const cached = unstable_cache(
