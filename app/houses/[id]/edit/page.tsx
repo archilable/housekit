@@ -43,6 +43,7 @@ export default async function EditHousePage({ params }: { params: Promise<{ id: 
             <option value="빌라/연립">빌라 / 연립</option>
             <option value="다가구">다가구</option>
             <option value="아파트">아파트</option>
+            <option value="한옥">한옥</option>
             <option value="기타">기타</option>
           </select>
         </div>
