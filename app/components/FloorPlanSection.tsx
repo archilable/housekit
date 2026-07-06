@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { upload } from '@vercel/blob/client'
 
 type FloorPlan = {
   id: string
@@ -47,16 +46,22 @@ export default function FloorPlanSection({ houseId }: { houseId: string }) {
     setError('')
     setUploading(true)
     try {
-      const ext = selectedFile.name.includes('.')
-        ? selectedFile.name.split('.').pop()!.toLowerCase()
-        : selectedFile.type.split('/')[1] ?? 'jpg'
-      const pathname = `floorplans/${houseId}/${Date.now()}.${ext}`
-      const blob = await upload(pathname, selectedFile, {
-        access: 'public',
-        handleUploadUrl: '/api/floorplans/upload',
-        clientPayload: JSON.stringify({ houseId, name: uploadName.trim() }),
+      // 서버에 FormData로 전송 → 서버가 Blob 저장 + DB 저장
+      const formData = new FormData()
+      formData.append('file', selectedFile)
+      formData.append('houseId', houseId)
+      formData.append('name', uploadName.trim())
+
+      const res = await fetch('/api/floorplans', {
+        method: 'POST',
+        body: formData,
       })
-      // blob에 저장 후 목록 새로고침
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error ?? `업로드 실패 (${res.status})`)
+      }
+
+      // 목록 새로고침
       const list = await fetch(`/api/houses/${houseId}/floorplans`).then(r => r.json())
       setPlans(Array.isArray(list) ? list : [])
       setShowUpload(false)
