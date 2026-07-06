@@ -43,6 +43,189 @@ const CATEGORY_ICON: Record<string, string> = {
   세탁기: '🫧', 건조기: '💨', 도어락: '🔐', 기타: '🔧',
 }
 
+type MaintenanceAlert = {
+  title: string
+  description: string
+  daysUntil: number | null
+  level: 'urgent' | 'recommended' | 'info'
+  icon: string
+  href: string
+  houseName: string
+}
+
+function generateMaintenanceAlerts(
+  house: {
+    id: string
+    address: string
+    buildYear: number | null
+    inventories: { name: string; category: string; installedAt: Date | null; warrantyMonths: number | null }[]
+    histories: { title: string; category: string; doneAt: Date }[]
+  },
+  now: Date
+): MaintenanceAlert[] {
+  const alerts: MaintenanceAlert[] = []
+  const houseUrl = `/houses/${house.id}`
+  const buildYear = house.buildYear
+  const age = buildYear ? now.getFullYear() - buildYear : null
+
+  function daysDiff(target: Date) {
+    return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+  }
+
+  function levelFromDays(days: number | null): 'urgent' | 'recommended' | 'info' {
+    if (days === null) return 'info'
+    if (days < 30) return 'urgent'
+    if (days < 90) return 'recommended'
+    return 'info'
+  }
+
+  // ── 방수 공사 (10년 주기) ──
+  if (buildYear && age !== null) {
+    const cycleYears = 10
+    const yearsIntoCycle = age % cycleYears
+    const yearsUntilNext = yearsIntoCycle === 0 ? 0 : cycleYears - yearsIntoCycle
+    const nextDue = new Date(now.getFullYear() + yearsUntilNext, 5, 1) // 6월
+    const days = daysDiff(nextDue)
+    if (days <= 90) {
+      alerts.push({
+        title: '방수 공사 권장',
+        description: `건축 ${age}년차 · ${cycleYears}년 주기 권장`,
+        daysUntil: days,
+        level: levelFromDays(days),
+        icon: '🌧️',
+        href: houseUrl,
+        houseName: house.address,
+      })
+    }
+  }
+
+  // ── 외벽 도장 (8년 주기) ──
+  if (buildYear && age !== null) {
+    const cycleYears = 8
+    const yearsIntoCycle = age % cycleYears
+    const yearsUntilNext = yearsIntoCycle === 0 ? 0 : cycleYears - yearsIntoCycle
+    const nextDue = new Date(now.getFullYear() + yearsUntilNext, 3, 1) // 4월
+    const days = daysDiff(nextDue)
+    if (days <= 90) {
+      alerts.push({
+        title: '외벽 도장 권장',
+        description: `건축 ${age}년차 · ${cycleYears}년 주기 권장`,
+        daysUntil: days,
+        level: levelFromDays(days),
+        icon: '🎨',
+        href: houseUrl,
+        houseName: house.address,
+      })
+    }
+  }
+
+  // ── 배관 점검 (15년 이상이면 상시 권장) ──
+  if (age !== null && age >= 15) {
+    alerts.push({
+      title: '배관 점검 권장',
+      description: `건축 ${age}년차 · 15년 이상 건물은 정기 점검 권장`,
+      daysUntil: null,
+      level: 'info',
+      icon: '🔩',
+      href: houseUrl,
+      houseName: house.address,
+    })
+  }
+
+  // ── 보일러 점검 (매년 10월) ──
+  const octoberThisYear = new Date(now.getFullYear(), 9, 1) // 10월 1일
+  const octoberNextYear = new Date(now.getFullYear() + 1, 9, 1)
+  const boilerCheckDue = now < octoberThisYear ? octoberThisYear : octoberNextYear
+  const boilerCheckDays = daysDiff(boilerCheckDue)
+  if (boilerCheckDays <= 90) {
+    alerts.push({
+      title: '보일러 점검 권장',
+      description: `겨울철 전 (10월) 연례 점검 권장`,
+      daysUntil: boilerCheckDays,
+      level: levelFromDays(boilerCheckDays),
+      icon: '🔥',
+      href: houseUrl,
+      houseName: house.address,
+    })
+  }
+
+  // ── 보일러 교체 (설치일 기준 12년) ──
+  const boiler = house.inventories.find(inv =>
+    inv.category === '보일러' || inv.name.includes('보일러')
+  )
+  if (boiler?.installedAt) {
+    const replaceDue = new Date(boiler.installedAt)
+    replaceDue.setFullYear(replaceDue.getFullYear() + 12)
+    const days = daysDiff(replaceDue)
+    if (days <= 90) {
+      const installedYear = boiler.installedAt.getFullYear()
+      alerts.push({
+        title: '보일러 교체 권장',
+        description: `${installedYear}년 설치 · 10~15년 주기 권장`,
+        daysUntil: days,
+        level: levelFromDays(days),
+        icon: '🔥',
+        href: `${houseUrl}?tab=inventory`,
+        houseName: house.address,
+      })
+    }
+  }
+
+  // ── 에어컨 청소 (마지막 청소 기준 6개월) ──
+  const acCleanHistory = house.histories
+    .filter(h => h.title.includes('에어컨') || h.category === '에어컨')
+    .sort((a, b) => new Date(b.doneAt).getTime() - new Date(a.doneAt).getTime())[0]
+
+  if (acCleanHistory) {
+    const cleanDue = new Date(acCleanHistory.doneAt)
+    cleanDue.setMonth(cleanDue.getMonth() + 6)
+    const days = daysDiff(cleanDue)
+    if (days <= 90) {
+      alerts.push({
+        title: '에어컨 청소 권장',
+        description: `마지막 청소 기준 6개월 주기 권장`,
+        daysUntil: days,
+        level: levelFromDays(days),
+        icon: '❄️',
+        href: `${houseUrl}?tab=history`,
+        houseName: house.address,
+      })
+    }
+  } else {
+    // 에어컨 설비가 있는데 청소 이력이 없으면 참고 알림
+    const hasAC = house.inventories.some(inv =>
+      inv.category === '에어컨' || inv.name.includes('에어컨')
+    )
+    if (hasAC) {
+      alerts.push({
+        title: '에어컨 청소 권장',
+        description: '에어컨 청소 이력이 없어요 · 6개월 주기 권장',
+        daysUntil: null,
+        level: 'info',
+        icon: '❄️',
+        href: `${houseUrl}?tab=history`,
+        houseName: house.address,
+      })
+    }
+  }
+
+  return alerts
+}
+
+const LEVEL_CONFIG = {
+  urgent: { label: '긴급', color: '#f87171', bg: 'rgba(248,113,113,0.08)', border: 'rgba(248,113,113,0.3)' },
+  recommended: { label: '권장', color: '#fbbf24', bg: 'rgba(251,191,36,0.08)', border: 'rgba(251,191,36,0.3)' },
+  info: { label: '참고', color: '#60a5fa', bg: 'rgba(96,165,250,0.08)', border: 'rgba(96,165,250,0.2)' },
+}
+
+function formatDaysUntil(days: number | null): string {
+  if (days === null) return '확인 권장'
+  if (days < 0) return `${Math.abs(days)}일 경과`
+  if (days === 0) return '오늘'
+  if (days < 30) return `${days}일 후`
+  return `${Math.floor(days / 30)}개월 후`
+}
+
 export default async function NotificationsPage({ searchParams }: { searchParams: Promise<{ warranty?: string; houseId?: string }> }) {
   const { warranty, houseId } = await searchParams
   const warrantyOnly = warranty === '1'
@@ -54,8 +237,16 @@ export default async function NotificationsPage({ searchParams }: { searchParams
     inventories: {
       select: { id: true, name: true, category: true, brand: true, installedAt: true, warrantyMonths: true, houseId: true },
     },
-    histories: { orderBy: { doneAt: 'desc' as const }, take: 5, select: { id: true, title: true, category: true, doneAt: true, houseId: true } },
-    doctorHistories: { orderBy: { createdAt: 'desc' as const }, take: 5, select: { id: true, description: true, result: true, createdAt: true, houseId: true } },
+    histories: {
+      orderBy: { doneAt: 'desc' as const },
+      take: 50,
+      select: { id: true, title: true, category: true, doneAt: true, houseId: true },
+    },
+    doctorHistories: {
+      orderBy: { createdAt: 'desc' as const },
+      take: 5,
+      select: { id: true, description: true, result: true, createdAt: true, houseId: true },
+    },
   }
 
   const [ownedHouses, sharedAccess] = await Promise.all([
@@ -87,6 +278,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
 
   const warrantyItems: WarrantyItem[] = []
   const recentHistories: RecentHistory[] = []
+  const allMaintenanceAlerts: MaintenanceAlert[] = []
 
   for (const house of houses) {
     for (const inv of house.inventories) {
@@ -132,15 +324,35 @@ export default async function NotificationsPage({ searchParams }: { searchParams
         })
       }
     }
+
+    if (!warrantyOnly) {
+      const alerts = generateMaintenanceAlerts(house, now)
+      allMaintenanceAlerts.push(...alerts)
+    }
   }
 
   recentHistories.sort((a, b) => a.daysAgo - b.daysAgo)
-
-  // 만료 임박 순 정렬 (만료된 것은 최근 것 먼저)
   warrantyItems.sort((a, b) => a.daysLeft - b.daysLeft)
 
   const expiredItems = warrantyItems.filter(i => i.daysLeft < 0)
   const activeItems = warrantyItems.filter(i => i.daysLeft >= 0)
+
+  // 예방 알림 정렬: 긴급 → 권장 → 참고, 같은 레벨은 daysUntil 오름차순
+  const levelOrder = { urgent: 0, recommended: 1, info: 2 }
+  allMaintenanceAlerts.sort((a, b) => {
+    const lo = levelOrder[a.level] - levelOrder[b.level]
+    if (lo !== 0) return lo
+    if (a.daysUntil === null && b.daysUntil === null) return 0
+    if (a.daysUntil === null) return 1
+    if (b.daysUntil === null) return -1
+    return a.daysUntil - b.daysUntil
+  })
+
+  const urgentAlerts = allMaintenanceAlerts.filter(a => a.level === 'urgent')
+  const recommendedAlerts = allMaintenanceAlerts.filter(a => a.level === 'recommended')
+  const infoAlerts = allMaintenanceAlerts.filter(a => a.level === 'info')
+
+  const hasAnything = warrantyItems.length > 0 || recentHistories.length > 0 || allMaintenanceAlerts.length > 0
 
   return (
     <div style={{ padding: '24px 20px 100px', maxWidth: 480, margin: '0 auto' }}>
@@ -152,16 +364,55 @@ export default async function NotificationsPage({ searchParams }: { searchParams
       <p style={{ fontSize: 13, color: '#555', marginBottom: 4 }}>알림</p>
       <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 24 }}>{warrantyOnly ? '보증 관리' : '알림 센터'}</h1>
 
-      {warrantyItems.length === 0 && recentHistories.length === 0 && !warrantyOnly ? (
+      {!hasAnything ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', textAlign: 'center', color: '#444' }}>
           <div style={{ fontSize: 50, marginBottom: 16 }}>🔔</div>
           <p style={{ fontSize: 18, fontWeight: 500, marginBottom: 8 }}>새 알림이 없어요</p>
           <p style={{ fontSize: 15, color: '#555' }}>설비에 보증기간을 등록하면 여기서 관리할 수 있어요</p>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
 
-          {/* 보증 유효 중인 설비 */}
+          {/* ── 예방 알림: 긴급 ── */}
+          {urgentAlerts.length > 0 && (
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                <span style={{ fontSize: 13, color: '#f87171', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>긴급</span>
+                <span style={{ fontSize: 12, background: 'rgba(248,113,113,0.15)', color: '#f87171', borderRadius: 6, padding: '2px 8px', fontWeight: 600 }}>{urgentAlerts.length}</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {urgentAlerts.map((alert, i) => <MaintenanceCard key={i} alert={alert} />)}
+              </div>
+            </div>
+          )}
+
+          {/* ── 예방 알림: 권장 ── */}
+          {recommendedAlerts.length > 0 && (
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                <span style={{ fontSize: 13, color: '#fbbf24', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>권장</span>
+                <span style={{ fontSize: 12, background: 'rgba(251,191,36,0.15)', color: '#fbbf24', borderRadius: 6, padding: '2px 8px', fontWeight: 600 }}>{recommendedAlerts.length}</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {recommendedAlerts.map((alert, i) => <MaintenanceCard key={i} alert={alert} />)}
+              </div>
+            </div>
+          )}
+
+          {/* ── 예방 알림: 참고 ── */}
+          {infoAlerts.length > 0 && (
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                <span style={{ fontSize: 13, color: '#60a5fa', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>참고</span>
+                <span style={{ fontSize: 12, background: 'rgba(96,165,250,0.15)', color: '#60a5fa', borderRadius: 6, padding: '2px 8px', fontWeight: 600 }}>{infoAlerts.length}</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {infoAlerts.map((alert, i) => <MaintenanceCard key={i} alert={alert} />)}
+              </div>
+            </div>
+          )}
+
+          {/* ── 보증 유효 중인 설비 ── */}
           {activeItems.length > 0 && (
             <div>
               <p style={{ fontSize: 13, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>보증 추적 중 ({activeItems.length}개)</p>
@@ -194,7 +445,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
             </div>
           )}
 
-          {/* 보증 만료된 설비 */}
+          {/* ── 보증 만료된 설비 ── */}
           {expiredItems.length > 0 && (
             <div>
               <p style={{ fontSize: 13, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>보증 만료됨 ({expiredItems.length}개)</p>
@@ -226,7 +477,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
             </div>
           )}
 
-          {/* 최근 이력 */}
+          {/* ── 최근 이력 ── */}
           {!warrantyOnly && recentHistories.length > 0 && (
             <div>
               <p style={{ fontSize: 13, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>최근 이력 (14일)</p>
@@ -254,5 +505,26 @@ export default async function NotificationsPage({ searchParams }: { searchParams
         </div>
       )}
     </div>
+  )
+}
+
+function MaintenanceCard({ alert }: { alert: MaintenanceAlert }) {
+  const cfg = LEVEL_CONFIG[alert.level]
+  return (
+    <Link href={alert.href} style={{ textDecoration: 'none' }}>
+      <div style={{ background: cfg.bg, border: `0.5px solid ${cfg.border}`, borderRadius: 16, padding: '14px 16px', display: 'flex', gap: 12, alignItems: 'center' }}>
+        <div style={{ width: 40, height: 40, borderRadius: 12, background: cfg.color + '20', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
+          {alert.icon}
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 2 }}>{alert.title}</p>
+          <p style={{ fontSize: 13, color: '#555', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{alert.houseName}</p>
+          <p style={{ fontSize: 12, color: '#444', marginTop: 2 }}>{alert.description}</p>
+        </div>
+        <div style={{ background: cfg.color + '20', color: cfg.color, borderRadius: 10, padding: '5px 10px', fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap', textAlign: 'center', flexShrink: 0 }}>
+          {formatDaysUntil(alert.daysUntil)}
+        </div>
+      </div>
+    </Link>
   )
 }
