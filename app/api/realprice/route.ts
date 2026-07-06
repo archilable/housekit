@@ -148,7 +148,13 @@ async function fetchRealPrice(address: string, houseType: string, area: number) 
     : allTrades
   if (filtered.length < 3) filtered = allTrades
 
-  const prices = filtered.map(t => t.price).sort((a, b) => a - b)
+  // 이상치 제거: 상하위 10% 제외
+  const sorted = [...filtered].sort((a, b) => a.price - b.price)
+  const trimCount = Math.floor(sorted.length * 0.1)
+  const trimmed = sorted.slice(trimCount, sorted.length - trimCount || undefined)
+  const final = trimmed.length >= 3 ? trimmed : sorted
+
+  const prices = final.map(t => t.price).sort((a, b) => a - b)
   const avg = Math.round(prices.reduce((s, p) => s + p, 0) / prices.length)
 
   return { lawdCd, count: prices.length, avg, min: prices[0], max: prices[prices.length - 1], median: prices[Math.floor(prices.length / 2)], months }
