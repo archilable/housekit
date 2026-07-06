@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { upload } from '@vercel/blob/client'
 
 type FloorPlan = {
   id: string
@@ -45,19 +46,29 @@ export default function FloorPlanSection({ houseId }: { houseId: string }) {
     if (!selectedFile || !uploadName.trim()) return
     setError('')
     setUploading(true)
-    const fd = new FormData()
-    fd.append('file', selectedFile)
-    fd.append('houseId', houseId)
-    fd.append('name', uploadName.trim())
-    const res = await fetch('/api/floorplans', { method: 'POST', body: fd })
-    const data = await res.json()
-    setUploading(false)
-    if (!res.ok) { setError(data.error || '업로드 실패'); return }
-    setPlans(prev => [...prev, data])
-    setShowUpload(false)
-    setSelectedFile(null)
-    setUploadName('')
-    if (fileRef.current) fileRef.current.value = ''
+    try {
+      const ext = selectedFile.name.includes('.')
+        ? selectedFile.name.split('.').pop()!.toLowerCase()
+        : selectedFile.type.split('/')[1] ?? 'jpg'
+      const pathname = `floorplans/${houseId}/${Date.now()}.${ext}`
+      const blob = await upload(pathname, selectedFile, {
+        access: 'public',
+        handleUploadUrl: '/api/floorplans/upload',
+        clientPayload: JSON.stringify({ houseId, name: uploadName.trim() }),
+      })
+      // blob에 저장 후 목록 새로고침
+      const list = await fetch(`/api/houses/${houseId}/floorplans`).then(r => r.json())
+      setPlans(Array.isArray(list) ? list : [])
+      setShowUpload(false)
+      setSelectedFile(null)
+      setUploadName('')
+      if (fileRef.current) fileRef.current.value = ''
+      if (cameraRef.current) cameraRef.current.value = ''
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : '업로드 실패')
+    } finally {
+      setUploading(false)
+    }
   }
 
   async function handleDelete(id: string) {
