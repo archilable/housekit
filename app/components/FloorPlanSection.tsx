@@ -86,8 +86,7 @@ export default function FloorPlanSection({ houseId }: { houseId: string }) {
   return (
     <div style={{ padding: '0 16px' }}>
       {/* 헤더 */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <p style={{ fontSize: 16, fontWeight: 600, color: '#fff' }}>도면 · 설계도</p>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: 16 }}>
         <button
           onClick={() => setShowUpload(v => !v)}
           style={{ background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: 10, padding: '8px 16px', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}

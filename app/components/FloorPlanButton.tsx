@@ -54,7 +54,7 @@ export default function FloorPlanButton({ houseId }: { houseId: string }) {
               </button>
             </div>
             {/* 내용 */}
-            <div style={{ overflowY: 'auto', flex: 1, paddingBottom: 40, WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
+            <div style={{ overflowY: 'auto', flex: 1, paddingBottom: 'calc(env(safe-area-inset-bottom) + 24px)', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
               <FloorPlanSection houseId={houseId} />
             </div>
           </div>
