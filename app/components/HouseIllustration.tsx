@@ -270,63 +270,74 @@ function Hanok() {
       ))}
 
       {/* 벽체 */}
-      <rect x="48" y="98" width="144" height="50" fill="#111828" stroke="#1e3a5f" strokeWidth="0.8" />
+      <rect x="50" y="100" width="140" height="48" fill="#111828" stroke="#1e3a5f" strokeWidth="0.8" />
 
       {/* 창살 창문 왼쪽 */}
-      <rect x="56" y="106" width="36" height="34" fill="#0a1520" stroke="#2a4a80" strokeWidth="0.7" rx="1" />
-      {[62,68,74,80,86].map(x => (
-        <line key={x} x1={x} y1="106" x2={x} y2="140" stroke="#2a4a80" strokeWidth="0.4" />
+      <rect x="58" y="108" width="34" height="32" fill="#0a1520" stroke="#2a4a80" strokeWidth="0.7" rx="1" />
+      {[64,70,76,82,88].map(x => (
+        <line key={x} x1={x} y1="108" x2={x} y2="140" stroke="#2a4a80" strokeWidth="0.4" />
       ))}
-      {[113,121,129,133].map(y => (
-        <line key={y} x1="56" y1={y} x2="92" y2={y} stroke="#2a4a80" strokeWidth="0.4" />
+      {[115,122,129,136].map(y => (
+        <line key={y} x1="58" y1={y} x2="92" y2={y} stroke="#2a4a80" strokeWidth="0.4" />
       ))}
-      <circle cx="74" cy="123" r="2.5" fill="#60a5fa" opacity="0.5" />
+      <circle cx="75" cy="124" r="2.5" fill="#60a5fa" opacity="0.5" />
 
       {/* 창살 창문 오른쪽 */}
-      <rect x="148" y="106" width="36" height="34" fill="#0a1520" stroke="#2a4a80" strokeWidth="0.7" rx="1" />
+      <rect x="148" y="108" width="34" height="32" fill="#0a1520" stroke="#2a4a80" strokeWidth="0.7" rx="1" />
       {[154,160,166,172,178].map(x => (
-        <line key={x} x1={x} y1="106" x2={x} y2="140" stroke="#2a4a80" strokeWidth="0.4" />
+        <line key={x} x1={x} y1="108" x2={x} y2="140" stroke="#2a4a80" strokeWidth="0.4" />
       ))}
-      {[113,121,129,133].map(y => (
-        <line key={y} x1="148" y1={y} x2="184" y2={y} stroke="#2a4a80" strokeWidth="0.4" />
+      {[115,122,129,136].map(y => (
+        <line key={y} x1="148" y1={y} x2="182" y2={y} stroke="#2a4a80" strokeWidth="0.4" />
       ))}
-      <circle cx="166" cy="123" r="2.5" fill="#60a5fa" opacity="0.3" />
+      <circle cx="165" cy="124" r="2.5" fill="#60a5fa" opacity="0.3" />
 
       {/* 대문 */}
-      <rect x="102" y="108" width="36" height="40" fill="#0a1018" stroke="#1e3a5f" strokeWidth="0.8" rx="1" />
-      <line x1="120" y1="108" x2="120" y2="148" stroke="#1e3a5f" strokeWidth="0.6" />
-      <rect x="104" y="110" width="14" height="22" fill="#0d1a2e" stroke="#2a4a80" strokeWidth="0.4" rx="1" opacity="0.7" />
-      <rect x="122" y="110" width="14" height="22" fill="#0d1a2e" stroke="#2a4a80" strokeWidth="0.4" rx="1" opacity="0.7" />
-      <circle cx="113" cy="121" r="1.8" fill="#60a5fa" opacity="0.7" />
-      <circle cx="127" cy="121" r="1.8" fill="#60a5fa" opacity="0.7" />
+      <rect x="103" y="110" width="34" height="38" fill="#0a1018" stroke="#1e3a5f" strokeWidth="0.8" rx="1" />
+      <line x1="120" y1="110" x2="120" y2="148" stroke="#1e3a5f" strokeWidth="0.6" />
+      <rect x="105" y="112" width="13" height="20" fill="#0d1a2e" stroke="#2a4a80" strokeWidth="0.4" rx="1" opacity="0.7" />
+      <rect x="122" y="112" width="13" height="20" fill="#0d1a2e" stroke="#2a4a80" strokeWidth="0.4" rx="1" opacity="0.7" />
+      <circle cx="113" cy="122" r="1.8" fill="#60a5fa" opacity="0.7" />
+      <circle cx="127" cy="122" r="1.8" fill="#60a5fa" opacity="0.7" />
 
-      {/* 처마 하부면 — 처마선이 중앙에서 낮고 양 끝에서 위로 올라감 */}
-      <path d="M22,82 Q120,100 218,82 L202,96 Q120,104 38,96 Z"
-        fill="#1a2540" stroke="#2a4a80" strokeWidth="0.6" />
+      {/* 처마 하부 (soffit) — 처마 끝 아래 어두운 면 */}
+      <path d="M14,64 Q120,100 226,64 L210,100 Q120,108 30,100 Z"
+        fill="#0d1520" stroke="#1e3a5f" strokeWidth="0.5" />
 
-      {/* 지붕 본체 — 가운데 낮고 양 끝 위로 올라가는 한옥 처마 */}
-      <path d="M88,20 L152,20 C182,38 206,56 218,76 Q165,96 120,100 Q75,96 22,76 C34,56 58,38 88,20 Z"
+      {/*
+        지붕 본체 핵심:
+        - 상단 경사면: 능선→처마 끝으로 내려오면서 안쪽으로 오목하게 휨 (concave)
+        - 처마선: 중앙이 낮고 양 끝이 위로 올라감 (추녀)
+        C x1,y1 x2,y2 ex,ey  ← cubic bezier: 제어점이 직선 안쪽에 있으면 concave
+      */}
+      <path d="
+        M90,22 L150,22
+        C 172,26 210,44 226,64
+        Q 173,96 120,100
+        Q 67,96 14,64
+        C 30,44 68,26 90,22
+        Z"
         fill="#0d1520" stroke="#2a4a80" strokeWidth="1.2" />
 
-      {/* 처마 곡선 강조선 — 핵심: 양 끝이 올라가는 U자 반전 */}
-      <path d="M22,76 Q120,100 218,76"
-        fill="none" stroke="#60a5fa" strokeWidth="0.8" opacity="0.5" />
+      {/* 처마 끝선 강조 — 양 끝이 올라가는 곡선 */}
+      <path d="M14,64 Q120,100 226,64"
+        fill="none" stroke="#60a5fa" strokeWidth="0.9" opacity="0.5" />
 
       {/* 추녀 끝 위로 꺾임 */}
-      <path d="M22,76 Q14,68 10,58" fill="none" stroke="#2a4a80" strokeWidth="1.6" strokeLinecap="round" />
-      <path d="M218,76 Q226,68 230,58" fill="none" stroke="#2a4a80" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M14,64 Q8,54 6,42" fill="none" stroke="#2a4a80" strokeWidth="2" strokeLinecap="round" />
+      <path d="M226,64 Q232,54 234,42" fill="none" stroke="#2a4a80" strokeWidth="2" strokeLinecap="round" />
 
       {/* 용마루 */}
-      <rect x="88" y="17" width="64" height="6" fill="#1a2540" stroke="#2a4a80" strokeWidth="0.8" rx="2" />
-      {/* 취두 장식 */}
-      <circle cx="88" cy="20" r="4" fill="#0d1a2e" stroke="#60a5fa" strokeWidth="1" />
-      <circle cx="88" cy="20" r="1.5" fill="#60a5fa" opacity="0.9" />
-      <circle cx="152" cy="20" r="4" fill="#0d1a2e" stroke="#60a5fa" strokeWidth="1" />
-      <circle cx="152" cy="20" r="1.5" fill="#60a5fa" opacity="0.9" />
+      <rect x="90" y="18" width="60" height="6" fill="#1a2540" stroke="#2a4a80" strokeWidth="0.8" rx="2" />
+      {/* 취두 */}
+      <circle cx="90" cy="21" r="4" fill="#0d1a2e" stroke="#60a5fa" strokeWidth="1" />
+      <circle cx="90" cy="21" r="1.5" fill="#60a5fa" opacity="0.9" />
+      <circle cx="150" cy="21" r="4" fill="#0d1a2e" stroke="#60a5fa" strokeWidth="1" />
+      <circle cx="150" cy="21" r="1.5" fill="#60a5fa" opacity="0.9" />
 
       {/* 서까래 */}
-      {[40,62,84,120,156,178,200].map((x,i) => (
-        <line key={i} x1={120} y1={20} x2={x} y2={96} stroke="#1e3a5f" strokeWidth="0.3" opacity="0.35" />
+      {[38,62,86,120,154,178,202].map((x,i) => (
+        <line key={i} x1={120} y1={22} x2={x} y2={98} stroke="#1e3a5f" strokeWidth="0.3" opacity="0.3" />
       ))}
     </>
   )
