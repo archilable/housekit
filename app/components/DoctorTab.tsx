@@ -209,7 +209,7 @@ export default function DoctorTab({ houseId, onDiagnosed }: { houseId: string; o
           <label style={{ display: 'block', width: '100%', background: '#1a1a24', border: '1px dashed #2a2a38', borderRadius: 12, padding: '24px 0', color: '#555', cursor: 'pointer', fontSize: 15, boxSizing: 'border-box', textAlign: 'center' }}>
             <i className="ti ti-camera" style={{ fontSize: 26, display: 'block', marginBottom: 6, color: '#444' }} />
             사진 촬영 또는 갤러리에서 선택
-            <input type="file" accept="image/*" onChange={handleFile} style={{ display: 'none' }} />
+            <input type="file" accept="image/*" capture="environment" onChange={handleFile} style={{ display: 'none' }} />
           </label>
         )}
       </div>
