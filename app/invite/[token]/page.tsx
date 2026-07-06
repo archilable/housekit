@@ -30,6 +30,18 @@ export default async function InvitePage({ params }: { params: Promise<{ token: 
     redirect(`/houses/${invite.house.id}`)
   }
 
+  // User가 DB에 없으면 생성 (Kakao 수동 매핑 계정 대응)
+  await prisma.user.upsert({
+    where: { id: session.user.id },
+    create: {
+      id: session.user.id,
+      name: session.user.name ?? null,
+      email: session.user.email ?? null,
+      image: session.user.image ?? null,
+    },
+    update: {},
+  })
+
   // 접근 권한 부여 (이미 있으면 무시)
   await prisma.houseAccess.upsert({
     where: { houseId_userId: { houseId: invite.houseId, userId: session.user.id } },
