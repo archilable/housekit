@@ -76,30 +76,52 @@ export default function FloorPlanSection({ houseId }: { houseId: string }) {
       {/* 업로드 패널 */}
       {showUpload && (
         <div style={{ background: '#111828', border: '0.5px solid #2a2a38', borderRadius: 16, padding: 16, marginBottom: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <p style={{ fontSize: 13, color: '#888' }}>PDF, JPG, PNG · 최대 20MB</p>
-          <input
-            ref={fileRef}
-            type="file"
-            accept=".pdf,.jpg,.jpeg,.png,.webp"
-            onChange={e => {
-              const f = e.target.files?.[0] ?? null
-              setSelectedFile(f)
-              if (f && !uploadName) setUploadName(f.name.replace(/\.[^.]+$/, ''))
-            }}
-            style={{ color: '#aaa', fontSize: 14 }}
-          />
+          {/* 파일 선택 버튼 (숨겨진 input 위에 스타일 버튼) */}
+          <div style={{ position: 'relative' }}>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*,.pdf"
+              onChange={e => {
+                const f = e.target.files?.[0] ?? null
+                setSelectedFile(f)
+                if (f && !uploadName) setUploadName(f.name.replace(/\.[^.]+$/, ''))
+              }}
+              style={{ position: 'absolute', inset: 0, opacity: 0, width: '100%', height: '100%', cursor: 'pointer', zIndex: 1 }}
+            />
+            <div style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              gap: 8, border: '1.5px dashed #2a2a38', borderRadius: 12, padding: '20px 16px',
+              background: selectedFile ? 'rgba(96,165,250,0.06)' : '#0a0a0f',
+              borderColor: selectedFile ? '#60a5fa' : '#2a2a38',
+            }}>
+              <span style={{ fontSize: 28 }}>{selectedFile ? (selectedFile.type === 'application/pdf' ? '📄' : '🖼️') : '📎'}</span>
+              {selectedFile ? (
+                <>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', textAlign: 'center' }}>{selectedFile.name}</p>
+                  <p style={{ fontSize: 12, color: '#555' }}>{(selectedFile.size / (1024 * 1024)).toFixed(1)}MB</p>
+                </>
+              ) : (
+                <>
+                  <p style={{ fontSize: 15, fontWeight: 500, color: '#60a5fa' }}>파일 선택 / 사진 찍기</p>
+                  <p style={{ fontSize: 12, color: '#555' }}>이미지(JPG, PNG) 또는 PDF · 최대 20MB</p>
+                </>
+              )}
+            </div>
+          </div>
+
           <input
             type="text"
             value={uploadName}
             onChange={e => setUploadName(e.target.value)}
             placeholder="도면 이름 (예: 1층 도면, 전기 배선도)"
-            style={{ background: '#1a1a24', border: '0.5px solid #2a2a38', borderRadius: 10, padding: '10px 14px', fontSize: 15, color: '#fff', fontFamily: 'inherit', outline: 'none' }}
+            style={{ background: '#1a1a24', border: '0.5px solid #2a2a38', borderRadius: 10, padding: '13px 14px', fontSize: 15, color: '#fff', fontFamily: 'inherit', outline: 'none' }}
           />
           {error && <p style={{ fontSize: 13, color: '#f87171' }}>{error}</p>}
           <button
             onClick={handleUpload}
             disabled={!selectedFile || !uploadName.trim() || uploading}
-            style={{ background: uploading || !selectedFile || !uploadName.trim() ? '#1e1e28' : '#1d4ed8', color: uploading || !selectedFile || !uploadName.trim() ? '#555' : '#fff', border: 'none', borderRadius: 10, padding: '12px 0', fontSize: 15, fontWeight: 600, cursor: uploading ? 'wait' : 'pointer', fontFamily: 'inherit' }}
+            style={{ background: uploading || !selectedFile || !uploadName.trim() ? '#1e1e28' : '#1d4ed8', color: uploading || !selectedFile || !uploadName.trim() ? '#555' : '#fff', border: 'none', borderRadius: 10, padding: '14px 0', fontSize: 16, fontWeight: 600, cursor: uploading ? 'wait' : 'pointer', fontFamily: 'inherit' }}
           >
             {uploading ? '업로드 중...' : '업로드'}
           </button>
