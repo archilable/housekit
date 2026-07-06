@@ -29,6 +29,8 @@ declare global {
           bname1: string
           bnum: string
           bnum2: string
+          autoRoadAddress: string
+          autoJibunAddress: string
         }) => void
         onresize?: (size: { width: number; height: number }) => void
         width?: string
@@ -60,17 +62,11 @@ export default function AddressSearch({ defaultAddress = '', defaultAddressDetai
     document.head.appendChild(s)
   }
 
-  async function fetchBuildingInfo(sido: string, sigungu: string, bname: string, bnum: string, bnum2: string) {
-    if (!onBuildingInfo) return
+  async function fetchBuildingInfo(jibunAddress: string) {
+    if (!onBuildingInfo || !jibunAddress) return
     setFetching(true)
     try {
-      const params = new URLSearchParams({
-        siDo: sido,
-        siGunGu: sigungu,
-        eupmyeondong: bname,
-        bun: bnum,
-        ji: bnum2 || '0',
-      })
+      const params = new URLSearchParams({ jibunAddress })
       const res = await fetch(`/api/building-info?${params}`)
       if (res.ok) {
         const data = await res.json()
@@ -91,8 +87,8 @@ export default function AddressSearch({ defaultAddress = '', defaultAddressDetai
           setTimeout(() => {
             document.getElementById('address-detail-input')?.focus()
           }, 100)
-          // 건축물대장 자동 조회
-          fetchBuildingInfo(data.sido, data.sigungu, data.bname || data.bname1, data.bnum, data.bnum2)
+          // 건축물대장 자동 조회 (지번주소 기반)
+          if (data.jibunAddress) fetchBuildingInfo(data.jibunAddress)
         },
         width: '100%',
         height: '100%',
