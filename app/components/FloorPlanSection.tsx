@@ -16,11 +16,13 @@ function formatSize(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)}MB`
 }
 
-export default function FloorPlanSection({ houseId }: { houseId: string }) {
+export default function FloorPlanSection({ houseId, onSelectionChange, clearSelectionRef }: { houseId: string; onSelectionChange?: (hasSelection: boolean) => void; clearSelectionRef?: React.MutableRefObject<(() => void) | null> }) {
   const [plans, setPlans] = useState<FloorPlan[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
-  const [selected, setSelected] = useState<FloorPlan | null>(null)
+  const [selected, setSelectedRaw] = useState<FloorPlan | null>(null)
+  const setSelected = (v: FloorPlan | null) => { setSelectedRaw(v); onSelectionChange?.(v !== null) }
+  if (clearSelectionRef) clearSelectionRef.current = () => setSelected(null)
   const [uploadName, setUploadName] = useState('')
   const [showUpload, setShowUpload] = useState(false)
   const [error, setError] = useState('')
