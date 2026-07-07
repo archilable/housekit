@@ -162,30 +162,53 @@ export default function FloorPlanSection({ houseId }: { houseId: string }) {
           <p style={{ fontSize: 14, color: '#444' }}>PDF나 이미지를 업로드해 보세요</p>
         </div>
       ) : (
+        <>{/* 전체화면 뷰어 */}
+        {selected && (
+          <div style={{ position: 'fixed', inset: 0, background: '#000', zIndex: 2000, display: 'flex', flexDirection: 'column' }}>
+            {/* 헤더 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 16px', flexShrink: 0, background: 'rgba(0,0,0,0.8)' }}>
+              <button
+                onClick={() => setSelected(null)}
+                style={{ background: 'none', border: 'none', color: '#fff', fontSize: 22, cursor: 'pointer', padding: 4, lineHeight: 1 }}
+              >✕</button>
+              <p style={{ flex: 1, fontSize: 16, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selected.name}</p>
+            </div>
+            {/* 콘텐츠 */}
+            <div style={{ flex: 1, overflow: 'auto', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
+              {selected.fileType === 'pdf' ? (
+                <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24 }}>
+                  <p style={{ color: '#aaa', fontSize: 14 }}>PDF는 새 탭에서 열어주세요</p>
+                  <a href={selected.url} target="_blank" rel="noopener noreferrer"
+                    style={{ background: '#1d4ed8', color: '#fff', borderRadius: 10, padding: '12px 24px', fontSize: 15, textDecoration: 'none', fontWeight: 500 }}>
+                    새 탭에서 열기 →
+                  </a>
+                </div>
+              ) : (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={selected.url} alt={selected.name} style={{ width: '100%', height: 'auto', display: 'block', touchAction: 'pinch-zoom' }} />
+              )}
+            </div>
+          </div>
+        )}
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {plans.map(plan => (
-            <div
-              key={plan.id}
-              style={{ background: '#111828', border: `0.5px solid ${selected?.id === plan.id ? '#60a5fa' : '#1e1e28'}`, borderRadius: 16, padding: '14px 16px', cursor: 'pointer' }}
-              onClick={() => setSelected(selected?.id === plan.id ? null : plan)}
-            >
+            <div key={plan.id} style={{ background: '#111828', border: '0.5px solid #1e1e28', borderRadius: 16, padding: '14px 16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{ width: 40, height: 40, borderRadius: 12, background: plan.fileType === 'pdf' ? 'rgba(248,113,113,0.1)' : 'rgba(96,165,250,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>
                   {plan.fileType === 'pdf' ? '📄' : '🖼️'}
                 </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ flex: 1, minWidth: 0, cursor: 'pointer' }} onClick={() => setSelected(plan)}>
                   <p style={{ fontSize: 15, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{plan.name}</p>
                   <p style={{ fontSize: 12, color: '#555', marginTop: 2 }}>{plan.fileType.toUpperCase()} · {formatSize(plan.fileSize)}</p>
                 </div>
                 <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-                  <a
-                    href={plan.url}
-                    download
-                    onClick={e => e.stopPropagation()}
-                    style={{ background: 'rgba(96,165,250,0.1)', color: '#60a5fa', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 13, textDecoration: 'none', display: 'flex', alignItems: 'center' }}
+                  <button
+                    onClick={() => setSelected(plan)}
+                    style={{ background: 'rgba(96,165,250,0.1)', color: '#60a5fa', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}
                   >
-                    ↓
-                  </a>
+                    보기
+                  </button>
                   <button
                     onClick={e => { e.stopPropagation(); handleDelete(plan.id) }}
                     style={{ background: 'rgba(248,113,113,0.1)', color: '#f87171', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}
@@ -194,49 +217,10 @@ export default function FloorPlanSection({ houseId }: { houseId: string }) {
                   </button>
                 </div>
               </div>
-
-              {/* 뷰어 */}
-              {selected?.id === plan.id && (
-                <div style={{ marginTop: 14, borderTop: '0.5px solid #1e1e28', paddingTop: 14 }}>
-                  {plan.fileType === 'pdf' ? (
-                    <div style={{ position: 'relative' }}>
-                      <button
-                        onClick={e => { e.stopPropagation(); setSelected(null) }}
-                        style={{ position: 'absolute', top: 8, right: 8, zIndex: 10, background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%', width: 32, height: 32, color: '#fff', fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                      >✕</button>
-                      <iframe
-                        src={plan.url}
-                        style={{ width: '100%', height: 480, border: 'none', borderRadius: 8, background: '#fff' }}
-                        title={plan.name}
-                      />
-                      <a
-                        href={plan.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ display: 'block', textAlign: 'center', marginTop: 10, color: '#60a5fa', fontSize: 14 }}
-                      >
-                        새 탭에서 열기 →
-                      </a>
-                    </div>
-                  ) : (
-                    <div style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', touchAction: 'pinch-zoom' }}>
-                      <button
-                        onClick={e => { e.stopPropagation(); setSelected(null) }}
-                        style={{ position: 'absolute', top: 8, right: 8, zIndex: 10, background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%', width: 32, height: 32, color: '#fff', fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                      >✕</button>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={plan.url}
-                        alt={plan.name}
-                        style={{ width: '100%', height: 'auto', display: 'block' }}
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
           ))}
         </div>
+        </>
       )}
     </div>
   )
