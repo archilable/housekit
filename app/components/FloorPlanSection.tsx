@@ -16,13 +16,11 @@ function formatSize(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)}MB`
 }
 
-export default function FloorPlanSection({ houseId, onSelectionChange, clearSelectionRef }: { houseId: string; onSelectionChange?: (hasSelection: boolean) => void; clearSelectionRef?: React.MutableRefObject<(() => void) | null> }) {
+export default function FloorPlanSection({ houseId }: { houseId: string }) {
   const [plans, setPlans] = useState<FloorPlan[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
-  const [selected, setSelectedRaw] = useState<FloorPlan | null>(null)
-  const setSelected = (v: FloorPlan | null) => { setSelectedRaw(v); onSelectionChange?.(v !== null) }
-  if (clearSelectionRef) clearSelectionRef.current = () => setSelected(null)
+  const [selected, setSelected] = useState<FloorPlan | null>(null)
   const [uploadName, setUploadName] = useState('')
   const [showUpload, setShowUpload] = useState(false)
   const [error, setError] = useState('')
@@ -200,6 +198,12 @@ export default function FloorPlanSection({ houseId, onSelectionChange, clearSele
               {/* 뷰어 */}
               {selected?.id === plan.id && (
                 <div style={{ marginTop: 14, borderTop: '0.5px solid #1e1e28', paddingTop: 14 }}>
+                  <button
+                    onClick={e => { e.stopPropagation(); setSelected(null) }}
+                    style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: 14, cursor: 'pointer', padding: '0 0 12px', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 4 }}
+                  >
+                    ← 목록으로
+                  </button>
                   {plan.fileType === 'pdf' ? (
                     <div>
                       <iframe

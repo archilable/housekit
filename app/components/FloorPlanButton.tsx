@@ -1,20 +1,10 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import FloorPlanSection from './FloorPlanSection'
 
 export default function FloorPlanButton({ houseId }: { houseId: string }) {
   const [open, setOpen] = useState(false)
-  const hasSelectionRef = useRef(false)
-  const clearSelectionRef = useRef<(() => void) | null>(null)
-
-  function handleClose() {
-    if (hasSelectionRef.current && clearSelectionRef.current) {
-      clearSelectionRef.current()
-    } else {
-      setOpen(false)
-    }
-  }
 
   return (
     <>
@@ -35,7 +25,7 @@ export default function FloorPlanButton({ houseId }: { houseId: string }) {
 
       {open && (
         <div
-          onClick={handleClose}
+          onClick={() => setOpen(false)}
           style={{
             position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)',
             zIndex: 1000, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
@@ -58,7 +48,7 @@ export default function FloorPlanButton({ houseId }: { houseId: string }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 20px 12px', flexShrink: 0 }}>
               <p style={{ fontSize: 18, fontWeight: 600, color: '#fff' }}>도면 · 설계도</p>
               <button
-                onClick={handleClose}
+                onClick={() => setOpen(false)}
                 style={{ background: 'none', border: 'none', color: '#555', fontSize: 22, cursor: 'pointer', padding: 4 }}
               >
                 ✕
@@ -66,11 +56,7 @@ export default function FloorPlanButton({ houseId }: { houseId: string }) {
             </div>
             {/* 내용 */}
             <div style={{ overflowY: 'auto', flex: 1, paddingBottom: 16, WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
-              <FloorPlanSection
-                houseId={houseId}
-                onSelectionChange={(has) => { hasSelectionRef.current = has }}
-                clearSelectionRef={clearSelectionRef}
-              />
+              <FloorPlanSection houseId={houseId} />
             </div>
           </div>
         </div>
