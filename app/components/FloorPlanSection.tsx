@@ -198,14 +198,12 @@ export default function FloorPlanSection({ houseId }: { houseId: string }) {
               {/* 뷰어 */}
               {selected?.id === plan.id && (
                 <div style={{ marginTop: 14, borderTop: '0.5px solid #1e1e28', paddingTop: 14 }}>
-                  <button
-                    onClick={e => { e.stopPropagation(); setSelected(null) }}
-                    style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: 14, cursor: 'pointer', padding: '0 0 12px', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 4 }}
-                  >
-                    ← 목록으로
-                  </button>
                   {plan.fileType === 'pdf' ? (
-                    <div>
+                    <div style={{ position: 'relative' }}>
+                      <button
+                        onClick={e => { e.stopPropagation(); setSelected(null) }}
+                        style={{ position: 'absolute', top: 8, right: 8, zIndex: 10, background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%', width: 32, height: 32, color: '#fff', fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      >✕</button>
                       <iframe
                         src={plan.url}
                         style={{ width: '100%', height: 480, border: 'none', borderRadius: 8, background: '#fff' }}
@@ -221,12 +219,16 @@ export default function FloorPlanSection({ houseId }: { houseId: string }) {
                       </a>
                     </div>
                   ) : (
-                    <div style={{ overflow: 'auto', touchAction: 'pinch-zoom', borderRadius: 8 }}>
+                    <div style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', touchAction: 'pinch-zoom' }}>
+                      <button
+                        onClick={e => { e.stopPropagation(); setSelected(null) }}
+                        style={{ position: 'absolute', top: 8, right: 8, zIndex: 10, background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%', width: 32, height: 32, color: '#fff', fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      >✕</button>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={plan.url}
                         alt={plan.name}
-                        style={{ width: '100%', height: 'auto', borderRadius: 8, display: 'block' }}
+                        style={{ width: '100%', height: 'auto', display: 'block' }}
                       />
                     </div>
                   )}
