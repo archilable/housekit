@@ -209,6 +209,14 @@ export default function FloorPlanSection({ houseId }: { houseId: string }) {
                   >
                     보기
                   </button>
+                  <a
+                    href={`/api/floorplans/download?url=${encodeURIComponent(plan.url)}&name=${encodeURIComponent(plan.name)}`}
+                    download={plan.name}
+                    onClick={e => e.stopPropagation()}
+                    style={{ background: 'rgba(96,165,250,0.1)', color: '#60a5fa', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 15, textDecoration: 'none', display: 'flex', alignItems: 'center' }}
+                  >
+                    ↓
+                  </a>
                   <button
                     onClick={e => { e.stopPropagation(); handleDelete(plan.id) }}
                     style={{ background: 'rgba(248,113,113,0.1)', color: '#f87171', border: 'none', borderRadius: 8, padding: '6px 12px', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}
