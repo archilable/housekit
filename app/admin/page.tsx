@@ -7,7 +7,6 @@ export const dynamic = 'force-dynamic'
 export default async function AdminPage() {
   const session = await auth()
 
-  // 로그인 안 된 경우 → 로그인 페이지
   if (!session?.user?.email) {
     return (
       <div style={{
@@ -22,7 +21,6 @@ export default async function AdminPage() {
           top: '5%', left: '50%', transform: 'translateX(-50%)',
           pointerEvents: 'none',
         }} />
-
         <div style={{ marginBottom: 32 }}>
           <div style={{
             width: 72, height: 72, borderRadius: 20,
@@ -36,7 +34,6 @@ export default async function AdminPage() {
           <h1 style={{ fontSize: 30, fontWeight: 700, color: '#fff', marginBottom: 8 }}>관리자 센터</h1>
           <p style={{ fontSize: 16, color: '#555' }}>관리자 권한이 있는 계정으로 로그인하세요</p>
         </div>
-
         <form action={async () => {
           'use server'
           await signIn('google', { redirectTo: '/admin' })
@@ -60,7 +57,6 @@ export default async function AdminPage() {
     )
   }
 
-  // 로그인은 됐지만 관리자 권한 없는 경우
   const me = await prisma.user.findUnique({ where: { email: session.user.email } })
   if (!me?.isAdmin) {
     return (
@@ -77,11 +73,10 @@ export default async function AdminPage() {
     )
   }
 
-  // lastSeenAt 컬럼 없으면 자동 추가 (에러 무시)
+  // lastSeenAt 컬럼 자동 추가 (이미 있으면 에러 무시)
   await prisma.$executeRawUnsafe(`ALTER TABLE User ADD COLUMN lastSeenAt DATETIME`).catch(() => {})
 
-  // 관리자 데이터 (lastSeenAt은 raw로 별도 조회)
-  const users = await prisma.user.findMany({
+  const prismaUsers = await prisma.user.findMany({
     orderBy: { createdAt: 'desc' },
     include: {
       houses: { select: { id: true, address: true } },
@@ -90,21 +85,23 @@ export default async function AdminPage() {
     },
   })
 
-  // lastSeenAt raw 조회
-  type RawUser = { id: string; lastSeenAt: string | null }
-  const rawLastSeen = await prisma.$queryRawUnsafe<RawUser[]>(
+  // lastSeenAt raw 조회 후 병합
+  const rawRows = await prisma.$queryRawUnsafe<{ id: string; lastSeenAt: string | null }[]>(
     `SELECT id, lastSeenAt FROM User`
-  ).catch(() => [] as RawUser[])
-  const lastSeenMap = Object.fromEntries(rawLastSeen.map(r => [r.id, r.lastSeenAt]))
+  ).catch(() => [] as { id: string; lastSeenAt: string | null }[])
+  const lastSeenMap: Record<string, Date | null> = {}
+  for (const r of rawRows) {
+    lastSeenMap[r.id] = r.lastSeenAt ? new Date(r.lastSeenAt) : null
+  }
 
-  const usersWithLastSeen = users
-    .map(u => ({ ...u, lastSeenAt: lastSeenMap[u.id] ? new Date(lastSeenMap[u.id]!) : null }))
+  const users = prismaUsers
+    .map(u => ({ ...u, lastSeenAt: lastSeenMap[u.id] ?? null }))
     .sort((a, b) => (b.lastSeenAt?.getTime() ?? 0) - (a.lastSeenAt?.getTime() ?? 0))
 
   const today = new Date()
   today.setHours(0, 0, 0, 0)
-  const todayUsers = users.filter(u => u.createdAt && new Date(u.createdAt) >= today)
+  const todayCount = prismaUsers.filter(u => u.createdAt && new Date(u.createdAt) >= today).length
   const totalHouses = await prisma.house.count()
 
-  return <AdminClient users={usersWithLastSeen} todayCount={todayUsers.length} totalHouses={totalHouses} myId={me.id} />
+  return <AdminClient users={users} todayCount={todayCount} totalHouses={totalHouses} myId={me.id} />
 }
