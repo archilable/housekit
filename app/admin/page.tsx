@@ -79,7 +79,7 @@ export default async function AdminPage() {
 
   // 관리자 데이터
   const users = await prisma.user.findMany({
-    orderBy: { createdAt: 'desc' },
+    orderBy: { lastSeenAt: 'desc' },
     include: {
       houses: { select: { id: true, address: true } },
       houseAccess: { select: { id: true, house: { select: { address: true } } } },

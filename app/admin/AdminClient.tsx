@@ -10,6 +10,7 @@ type User = {
   image: string | null
   isAdmin: boolean
   createdAt: Date
+  lastSeenAt: Date | null
   houses: House[]
   houseAccess: HouseAccess[]
   accounts: { provider: string }[]
@@ -80,6 +81,18 @@ export default function AdminClient({ users, todayCount, totalHouses, myId }: {
           const joinDate = user.createdAt
             ? new Date(user.createdAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
             : '—'
+          const lastSeen = user.lastSeenAt ? (() => {
+            const d = new Date(user.lastSeenAt)
+            const diffMs = Date.now() - d.getTime()
+            const diffMin = Math.floor(diffMs / 60000)
+            if (diffMin < 1) return '방금 전'
+            if (diffMin < 60) return `${diffMin}분 전`
+            const diffHr = Math.floor(diffMin / 60)
+            if (diffHr < 24) return `${diffHr}시간 전`
+            const diffDay = Math.floor(diffHr / 24)
+            if (diffDay < 7) return `${diffDay}일 전`
+            return d.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
+          })() : null
 
           return (
             <div key={user.id} style={{
@@ -111,7 +124,10 @@ export default function AdminClient({ users, todayCount, totalHouses, myId }: {
                       </span>
                     ))}
                   </p>
-                  <p style={{ fontSize: 13, color: '#444', marginTop: 1 }}>{joinDate}</p>
+                  <p style={{ fontSize: 13, color: '#444', marginTop: 1 }}>가입: {joinDate}</p>
+                  {lastSeen && (
+                    <p style={{ fontSize: 13, color: '#34d399', marginTop: 1 }}>접속: {lastSeen}</p>
+                  )}
                 </div>
                 {/* 관리자 권한 토글 */}
                 {!isMe && (
