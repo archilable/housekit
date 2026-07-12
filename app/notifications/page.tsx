@@ -278,8 +278,6 @@ export default async function NotificationsPage({ searchParams }: { searchParams
 
   const warrantyItems: WarrantyItem[] = []
   const recentHistories: RecentHistory[] = []
-  const allMaintenanceAlerts: MaintenanceAlert[] = []
-
   for (const house of houses) {
     for (const inv of house.inventories) {
       if (!inv.installedAt || !inv.warrantyMonths) continue
@@ -325,10 +323,6 @@ export default async function NotificationsPage({ searchParams }: { searchParams
       }
     }
 
-    if (!warrantyOnly) {
-      const alerts = generateMaintenanceAlerts(house, now)
-      allMaintenanceAlerts.push(...alerts)
-    }
   }
 
   recentHistories.sort((a, b) => a.daysAgo - b.daysAgo)
@@ -337,22 +331,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
   const expiredItems = warrantyItems.filter(i => i.daysLeft < 0)
   const activeItems = warrantyItems.filter(i => i.daysLeft >= 0)
 
-  // 예방 알림 정렬: 긴급 → 권장 → 참고, 같은 레벨은 daysUntil 오름차순
-  const levelOrder = { urgent: 0, recommended: 1, info: 2 }
-  allMaintenanceAlerts.sort((a, b) => {
-    const lo = levelOrder[a.level] - levelOrder[b.level]
-    if (lo !== 0) return lo
-    if (a.daysUntil === null && b.daysUntil === null) return 0
-    if (a.daysUntil === null) return 1
-    if (b.daysUntil === null) return -1
-    return a.daysUntil - b.daysUntil
-  })
-
-  const urgentAlerts = allMaintenanceAlerts.filter(a => a.level === 'urgent')
-  const recommendedAlerts = allMaintenanceAlerts.filter(a => a.level === 'recommended')
-  const infoAlerts = allMaintenanceAlerts.filter(a => a.level === 'info')
-
-  const hasAnything = warrantyItems.length > 0 || recentHistories.length > 0 || allMaintenanceAlerts.length > 0
+  const hasAnything = warrantyItems.length > 0 || recentHistories.length > 0
 
   return (
     <div style={{ padding: '24px 20px 100px', maxWidth: 480, margin: '0 auto' }}>
@@ -373,41 +352,26 @@ export default async function NotificationsPage({ searchParams }: { searchParams
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
 
-          {/* ── 예방 알림: 긴급 ── */}
-          {urgentAlerts.length > 0 && (
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <span style={{ fontSize: 13, color: '#f87171', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>긴급</span>
-                <span style={{ fontSize: 12, background: 'rgba(248,113,113,0.15)', color: '#f87171', borderRadius: 6, padding: '2px 8px', fontWeight: 600 }}>{urgentAlerts.length}</span>
-              </div>
+          {/* ── 맞춤 알림 안내 ── */}
+          {!warrantyOnly && (
+            <div style={{ background: 'linear-gradient(135deg, #0d1520 0%, #111118 100%)', border: '0.5px solid #1e2a3a', borderRadius: 18, padding: '24px 20px' }}>
+              <div style={{ fontSize: 36, marginBottom: 14 }}>🔔</div>
+              <p style={{ fontSize: 17, fontWeight: 700, color: '#fff', marginBottom: 8 }}>맞춤 알림을 준비 중이에요</p>
+              <p style={{ fontSize: 14, color: '#555', lineHeight: 1.6, marginBottom: 20 }}>
+                설비와 수리 이력을 입력하면<br />
+                실제 데이터 기반으로 알림을 드려요.
+              </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {urgentAlerts.map((alert, i) => <MaintenanceCard key={i} alert={alert} />)}
-              </div>
-            </div>
-          )}
-
-          {/* ── 예방 알림: 권장 ── */}
-          {recommendedAlerts.length > 0 && (
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <span style={{ fontSize: 13, color: '#fbbf24', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>권장</span>
-                <span style={{ fontSize: 12, background: 'rgba(251,191,36,0.15)', color: '#fbbf24', borderRadius: 6, padding: '2px 8px', fontWeight: 600 }}>{recommendedAlerts.length}</span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {recommendedAlerts.map((alert, i) => <MaintenanceCard key={i} alert={alert} />)}
-              </div>
-            </div>
-          )}
-
-          {/* ── 예방 알림: 참고 ── */}
-          {infoAlerts.length > 0 && (
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <span style={{ fontSize: 13, color: '#60a5fa', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>참고</span>
-                <span style={{ fontSize: 12, background: 'rgba(96,165,250,0.15)', color: '#60a5fa', borderRadius: 6, padding: '2px 8px', fontWeight: 600 }}>{infoAlerts.length}</span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {infoAlerts.map((alert, i) => <MaintenanceCard key={i} alert={alert} />)}
+                {[
+                  { icon: '🛠️', text: '에어컨 청소 이력 → 6개월 후 재청소 알림' },
+                  { icon: '🔥', text: '보일러 설치일 → 점검 시기 알림' },
+                  { icon: '📦', text: '설비 보증기간 → 만료 전 알림' },
+                ].map((item, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(255,255,255,0.03)', borderRadius: 12, padding: '10px 14px' }}>
+                    <span style={{ fontSize: 20 }}>{item.icon}</span>
+                    <p style={{ fontSize: 13, color: '#666' }}>{item.text}</p>
+                  </div>
+                ))}
               </div>
             </div>
           )}
