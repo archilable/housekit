@@ -16,6 +16,14 @@ type User = {
   accounts: { provider: string }[]
 }
 
+type HouseItem = {
+  id: string
+  address: string
+  houseType: string
+  createdAt: Date
+  user: { name: string | null; image: string | null } | null
+}
+
 type ActivityItem = {
   id: string
   type: 'history' | 'inventory'
@@ -39,12 +47,13 @@ function timeAgo(date: Date) {
   return new Date(date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
 }
 
-export default function AdminClient({ users, todayCount, totalHouses, myId, activities = [] }: {
+export default function AdminClient({ users, todayCount, totalHouses, myId, activities = [], allHouses = [] }: {
   users: User[]
   todayCount: number
   totalHouses: number
   myId: string
   activities?: ActivityItem[]
+  allHouses?: HouseItem[]
 }) {
   const [userList, setUserList] = useState(users)
   const [loading, setLoading] = useState<string | null>(null)
@@ -103,16 +112,44 @@ export default function AdminClient({ users, todayCount, totalHouses, myId, acti
         </button>
       </div>
 
+      {/* 등록 자산 목록 */}
+      {filter === 'houses' && (
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <p style={{ fontSize: 13, color: '#444', textTransform: 'uppercase', letterSpacing: 1 }}>
+              등록 자산 <span style={{ marginLeft: 8, color: '#f97316' }}>{allHouses.length}개</span>
+            </p>
+            <button onClick={() => setFilter('all')} style={{ background: 'none', border: 'none', color: '#555', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>전체 보기 ✕</button>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {allHouses.map(house => (
+              <div key={house.id} style={{ background: 'var(--bg-card)', border: '0.5px solid var(--border)', borderRadius: 14, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(249,115,22,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>🏠</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 15, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{house.address}</p>
+                  <p style={{ fontSize: 12, color: '#555', marginTop: 2 }}>
+                    {house.houseType} · {house.user?.name ?? '알 수 없음'} · {new Date(house.createdAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* 가입자 목록 */}
+      {filter !== 'houses' && (
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <p style={{ fontSize: 13, color: '#444', textTransform: 'uppercase', letterSpacing: 1 }}>
-          {filter === 'all' ? '가입자 목록' : filter === 'today' ? '오늘 가입자' : '자산 등록한 가입자'}
+          {filter === 'all' ? '가입자 목록' : '오늘 가입자'}
           <span style={{ marginLeft: 8, color: '#60a5fa' }}>{filteredUsers.length}명</span>
         </p>
         {filter !== 'all' && (
           <button onClick={() => setFilter('all')} style={{ background: 'none', border: 'none', color: '#555', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>전체 보기 ✕</button>
         )}
       </div>
+      )}
+      {filter !== 'houses' && (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {filteredUsers.map((user) => {
           const isToday = user.createdAt && new Date(user.createdAt) >= today
@@ -200,6 +237,7 @@ export default function AdminClient({ users, todayCount, totalHouses, myId, acti
           )
         })}
       </div>
+      )}
 
       {/* 최근 활동 피드 */}
       {activities.length > 0 && (

@@ -87,7 +87,14 @@ export default async function AdminPage() {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const todayCount = prismaUsers.filter(u => u.createdAt && new Date(u.createdAt) >= today).length
-    const totalHouses = await prisma.house.count()
+    const allHouses = await prisma.house.findMany({
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true, address: true, houseType: true, createdAt: true,
+        user: { select: { name: true, image: true } },
+      },
+    })
+    const totalHouses = allHouses.length
 
     // 최근 활동 피드 (이력 + 설비, 최근 30개)
     const recentHistories = await prisma.history.findMany({
@@ -141,7 +148,7 @@ export default async function AdminPage() {
       })),
     ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).slice(0, 30)
 
-    return <AdminClient users={users} todayCount={todayCount} totalHouses={totalHouses} myId={me.id} activities={activities} />
+    return <AdminClient users={users} todayCount={todayCount} totalHouses={totalHouses} myId={me.id} activities={activities} allHouses={allHouses} />
   } catch (e) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0a0f', color: '#f87171', padding: 32, textAlign: 'center' }}>
