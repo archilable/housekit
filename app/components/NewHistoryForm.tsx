@@ -162,7 +162,7 @@ function ContactSection({ name, setName, phone, setPhone, company, setCompany, c
           background: '#111118', border: `1px dashed ${contactImage ? '#60a5fa' : '#2a2a38'}`,
           borderRadius: 12, padding: 14, cursor: 'pointer',
         }}>
-          <input type="file" accept="image/*" capture="environment" style={{ display: 'none' }}
+          <input type="file" accept="image/*" style={{ display: 'none' }}
             onChange={e => e.target.files?.[0] && handleCardImage(e.target.files[0])} />
           {contactImage ? (
             <>
