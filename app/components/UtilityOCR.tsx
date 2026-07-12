@@ -102,7 +102,7 @@ export default function UtilityOCR({ onResult }: Props) {
         ) : (
           <>
             <i className="ti ti-camera" style={{ fontSize: 22 }} />
-            고지서 · 계좌내역 사진으로 자동 입력
+            고지서 · 문자 · 계좌내역 사진으로 자동 입력
           </>
         )}
       </button>
