@@ -86,13 +86,15 @@ export default function AdminClient({ users, todayCount, totalHouses, myId, acti
     <div style={{ padding: '32px 16px 40px', maxWidth: 480, margin: '0 auto' }}>
       {/* 헤더 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
-        <div style={{
-          width: 44, height: 44, borderRadius: 14,
-          background: 'linear-gradient(135deg, #1e1e3a 0%, #0d0d1f 100%)',
-          border: '0.5px solid #2a2a5a', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <i className="ti ti-shield-lock" style={{ fontSize: 24, color: '#818cf8' }} />
-        </div>
+        <button onClick={() => setFilter('all')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+          <div style={{
+            width: 44, height: 44, borderRadius: 14,
+            background: 'linear-gradient(135deg, #1e1e3a 0%, #0d0d1f 100%)',
+            border: `0.5px solid ${filter === 'all' ? '#4a4a8a' : '#2a2a5a'}`, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <i className="ti ti-shield-lock" style={{ fontSize: 24, color: '#818cf8' }} />
+          </div>
+        </button>
         <div>
           <p style={{ fontSize: 13, color: '#555', textTransform: 'uppercase', letterSpacing: 1 }}>관리자</p>
           <h1 style={{ fontSize: 22, fontWeight: 700 }}>HouseKit Admin</h1>
@@ -242,8 +244,8 @@ export default function AdminClient({ users, todayCount, totalHouses, myId, acti
       </div>
       )}
 
-      {/* 최근 활동 피드 */}
-      {activities.length > 0 && (
+      {/* 최근 활동 피드 - 메인(전체) 화면에서만 표시 */}
+      {filter === 'all' && activities.length > 0 && (
         <div style={{ marginTop: 32 }}>
           <p style={{ fontSize: 13, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>최근 활동</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
