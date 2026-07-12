@@ -54,6 +54,7 @@ export default function InventoryForm({ houseId, inventoryId, defaultValues = {}
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const scanFileRef = useRef<HTMLInputElement>(null)
+  const scanGalleryRef = useRef<HTMLInputElement>(null)
   const contactFileRef = useRef<HTMLInputElement>(null)
 
   // 라벨 이미지 압축 (최대 1200px, 200KB 이하)
@@ -258,11 +259,20 @@ export default function InventoryForm({ houseId, inventoryId, defaultValues = {}
           <i className="ti ti-scan" style={{ marginRight: 6 }} />
           라벨 스캔으로 자동 입력
         </p>
+        {/* 카메라 촬영 */}
         <input ref={scanFileRef} type="file" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handleScan} />
-        <button type="button" onClick={() => scanFileRef.current?.click()} disabled={scanning}
-          style={{ width: '100%', background: scanning ? '#1a1a24' : '#1d3a6e', border: '0.5px solid #2a4a8f', borderRadius: 10, padding: '12px', fontSize: 15, color: scanning ? '#555' : '#60a5fa', cursor: scanning ? 'not-allowed' : 'pointer', fontWeight: 600 }}>
-          {scanning ? '🔍 인식 중...' : '📷 제품 라벨 촬영'}
-        </button>
+        {/* 보관함 선택 */}
+        <input ref={scanGalleryRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleScan} />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <button type="button" onClick={() => scanFileRef.current?.click()} disabled={scanning}
+            style={{ background: scanning ? '#1a1a24' : '#1d3a6e', border: '0.5px solid #2a4a8f', borderRadius: 10, padding: '12px 8px', fontSize: 14, color: scanning ? '#555' : '#60a5fa', cursor: scanning ? 'not-allowed' : 'pointer', fontWeight: 600, fontFamily: 'inherit' }}>
+            {scanning ? '🔍 인식 중...' : '📷 카메라 촬영'}
+          </button>
+          <button type="button" onClick={() => scanGalleryRef.current?.click()} disabled={scanning}
+            style={{ background: scanning ? '#1a1a24' : '#1d3a6e', border: '0.5px solid #2a4a8f', borderRadius: 10, padding: '12px 8px', fontSize: 14, color: scanning ? '#555' : '#60a5fa', cursor: scanning ? 'not-allowed' : 'pointer', fontWeight: 600, fontFamily: 'inherit' }}>
+            🖼️ 사진 보관함
+          </button>
+        </div>
         {scanPreview && <img src={scanPreview} alt="스캔" style={{ width: '100%', borderRadius: 8, marginTop: 10, maxHeight: 160, objectFit: 'cover' }} />}
         {scanning && <p style={{ fontSize: 13, color: '#60a5fa', textAlign: 'center', marginTop: 8 }}>AI가 모델명을 인식하고 있어요...</p>}
         {scanOk && !scanning && <p style={{ fontSize: 13, color: '#34d399', textAlign: 'center', marginTop: 8 }}>✅ 인식 완료! 아래 내용을 확인해주세요</p>}
