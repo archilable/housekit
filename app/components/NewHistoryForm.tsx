@@ -96,7 +96,7 @@ function MultiImageUpload({ label, icon, color, images, setImages }: {
         borderRadius: 12, padding: 14, cursor: loading ? 'not-allowed' : 'pointer',
         opacity: loading ? 0.6 : 1,
       }}>
-        <input type="file" accept="image/*" capture="environment"
+        <input type="file" accept="image/*"
           style={{ display: 'none' }} disabled={loading}
           onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
         <div style={{ width: 40, height: 40, borderRadius: 10, background: color + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
