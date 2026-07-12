@@ -77,6 +77,9 @@ export default async function AdminPage() {
     )
   }
 
+  // lastSeenAt 컬럼 없으면 자동 추가
+  await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN "lastSeenAt" DATETIME`).catch(() => {})
+
   // 관리자 데이터
   const users = await prisma.user.findMany({
     orderBy: { lastSeenAt: 'desc' },
