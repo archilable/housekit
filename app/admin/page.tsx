@@ -77,12 +77,12 @@ export default async function AdminPage() {
     )
   }
 
-  // lastSeenAt 컬럼 없으면 자동 추가
-  await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN "lastSeenAt" DATETIME`).catch(() => {})
+  // lastSeenAt 컬럼 없으면 자동 추가 (에러 무시)
+  await prisma.$executeRawUnsafe(`ALTER TABLE User ADD COLUMN lastSeenAt DATETIME`).catch(() => {})
 
-  // 관리자 데이터
+  // 관리자 데이터 (lastSeenAt은 raw로 별도 조회)
   const users = await prisma.user.findMany({
-    orderBy: { lastSeenAt: 'desc' },
+    orderBy: { createdAt: 'desc' },
     include: {
       houses: { select: { id: true, address: true } },
       houseAccess: { select: { id: true, house: { select: { address: true } } } },
@@ -90,10 +90,21 @@ export default async function AdminPage() {
     },
   })
 
+  // lastSeenAt raw 조회
+  type RawUser = { id: string; lastSeenAt: string | null }
+  const rawLastSeen = await prisma.$queryRawUnsafe<RawUser[]>(
+    `SELECT id, lastSeenAt FROM User`
+  ).catch(() => [] as RawUser[])
+  const lastSeenMap = Object.fromEntries(rawLastSeen.map(r => [r.id, r.lastSeenAt]))
+
+  const usersWithLastSeen = users
+    .map(u => ({ ...u, lastSeenAt: lastSeenMap[u.id] ? new Date(lastSeenMap[u.id]!) : null }))
+    .sort((a, b) => (b.lastSeenAt?.getTime() ?? 0) - (a.lastSeenAt?.getTime() ?? 0))
+
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const todayUsers = users.filter(u => u.createdAt && new Date(u.createdAt) >= today)
   const totalHouses = await prisma.house.count()
 
-  return <AdminClient users={users} todayCount={todayUsers.length} totalHouses={totalHouses} myId={me.id} />
+  return <AdminClient users={usersWithLastSeen} todayCount={todayUsers.length} totalHouses={totalHouses} myId={me.id} />
 }

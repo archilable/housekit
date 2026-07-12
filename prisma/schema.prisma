@@ -24,7 +24,6 @@ model User {
   houseAccess   HouseAccess[]
   isAdmin       Boolean   @default(false)
   createdAt     DateTime  @default(now())
-  lastSeenAt    DateTime?
 }
 
 model HouseInvite {
