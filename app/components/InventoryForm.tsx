@@ -314,7 +314,7 @@ export default function InventoryForm({ houseId, inventoryId, defaultValues = {}
 
         <div>
           <label style={labelStyle}>명함 사진 업로드 (AI 자동추출)</label>
-          <input ref={contactFileRef} type="file" accept="image/*" capture="environment" style={{ display: 'none' }}
+          <input ref={contactFileRef} type="file" accept="image/*" style={{ display: 'none' }}
             onChange={e => e.target.files?.[0] && handleContactImage(e.target.files[0])} />
           <label onClick={() => contactFileRef.current?.click()} style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
