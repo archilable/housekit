@@ -56,7 +56,6 @@ export default function UtilityOCR({ onResult }: Props) {
         ref={inputRef}
         type="file"
         accept="image/*"
-        capture="environment"
         onChange={handleFile}
         style={{ display: 'none' }}
       />
