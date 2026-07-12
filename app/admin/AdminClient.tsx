@@ -89,7 +89,7 @@ export default function AdminClient({ users, todayCount, totalHouses, myId, acti
 
       {/* 요약 카드 */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 28 }}>
-        <button onClick={() => setFilter(filter === 'all' ? 'all' : 'all')} style={{ background: filter === 'all' ? '#1a2a4a' : '#0d1a2e', border: `0.5px solid ${filter === 'all' ? '#3a6abf' : '#1e3a5f'}`, borderRadius: 14, padding: '14px 12px', textAlign: 'center', cursor: 'pointer', fontFamily: 'inherit' }}>
+        <button onClick={() => setFilter('all')} style={{ background: filter === 'all' ? '#1a2a4a' : '#0d1a2e', border: `0.5px solid ${filter === 'all' ? '#3a6abf' : '#1e3a5f'}`, borderRadius: 14, padding: '14px 12px', textAlign: 'center', cursor: 'pointer', fontFamily: 'inherit' }}>
           <p style={{ fontSize: 26, fontWeight: 700, color: '#60a5fa' }}>{userList.length}</p>
           <p style={{ fontSize: 13, color: '#666', marginTop: 2 }}>전체 가입자</p>
         </button>
