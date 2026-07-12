@@ -16,11 +16,35 @@ type User = {
   accounts: { provider: string }[]
 }
 
-export default function AdminClient({ users, todayCount, totalHouses, myId }: {
+type ActivityItem = {
+  id: string
+  type: 'history' | 'inventory'
+  title: string
+  category: string
+  address: string
+  userName: string | null
+  userImage: string | null
+  createdAt: Date
+}
+
+function timeAgo(date: Date) {
+  const diffMs = Date.now() - new Date(date).getTime()
+  const diffMin = Math.floor(diffMs / 60000)
+  if (diffMin < 1) return '방금 전'
+  if (diffMin < 60) return `${diffMin}분 전`
+  const diffHr = Math.floor(diffMin / 60)
+  if (diffHr < 24) return `${diffHr}시간 전`
+  const diffDay = Math.floor(diffHr / 24)
+  if (diffDay < 7) return `${diffDay}일 전`
+  return new Date(date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
+}
+
+export default function AdminClient({ users, todayCount, totalHouses, myId, activities = [] }: {
   users: User[]
   todayCount: number
   totalHouses: number
   myId: string
+  activities?: ActivityItem[]
 }) {
   const [userList, setUserList] = useState(users)
   const [loading, setLoading] = useState<string | null>(null)
@@ -161,6 +185,48 @@ export default function AdminClient({ users, todayCount, totalHouses, myId }: {
           )
         })}
       </div>
+
+      {/* 최근 활동 피드 */}
+      {activities.length > 0 && (
+        <div style={{ marginTop: 32 }}>
+          <p style={{ fontSize: 13, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>최근 활동</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {activities.map((act) => (
+              <div key={act.type + act.id} style={{
+                background: 'var(--bg-card)', border: '0.5px solid var(--border)',
+                borderRadius: 14, padding: '12px 14px',
+                display: 'flex', alignItems: 'center', gap: 12,
+              }}>
+                {/* 아바타 */}
+                <div style={{
+                  width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                  background: act.type === 'history' ? 'rgba(96,165,250,0.15)' : 'rgba(52,211,153,0.15)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
+                }}>
+                  {act.userImage
+                    ? <img src={act.userImage} width={36} height={36} style={{ borderRadius: 10, objectFit: 'cover' }} alt="" />
+                    : <i className={act.type === 'history' ? 'ti ti-history' : 'ti ti-tool'} style={{ fontSize: 18, color: act.type === 'history' ? '#60a5fa' : '#34d399' }} />
+                  }
+                </div>
+                {/* 내용 */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 14, color: '#fff', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span style={{ color: act.type === 'history' ? '#60a5fa' : '#34d399' }}>
+                      {act.userName ?? '알 수 없음'}
+                    </span>
+                    {' · '}{act.title}
+                  </p>
+                  <p style={{ fontSize: 12, color: '#444', marginTop: 2 }}>
+                    {act.type === 'history' ? '이력 추가' : '설비 추가'} · {act.address}
+                  </p>
+                </div>
+                {/* 시간 */}
+                <p style={{ fontSize: 12, color: '#333', flexShrink: 0 }}>{timeAgo(act.createdAt)}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -89,7 +89,59 @@ export default async function AdminPage() {
     const todayCount = prismaUsers.filter(u => u.createdAt && new Date(u.createdAt) >= today).length
     const totalHouses = await prisma.house.count()
 
-    return <AdminClient users={users} todayCount={todayCount} totalHouses={totalHouses} myId={me.id} />
+    // 최근 활동 피드 (이력 + 설비, 최근 30개)
+    const recentHistories = await prisma.history.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 15,
+      select: {
+        id: true, title: true, category: true, createdAt: true,
+        house: { select: { address: true, userId: true } },
+      },
+    })
+    const recentInventories = await prisma.inventory.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 15,
+      select: {
+        id: true, name: true, category: true, createdAt: true,
+        house: { select: { address: true, userId: true } },
+      },
+    })
+
+    // userId → user 맵
+    const userMap: Record<string, { name: string | null; image: string | null }> = {}
+    for (const u of prismaUsers) userMap[u.id] = { name: u.name, image: u.image }
+
+    type ActivityItem = {
+      id: string
+      type: 'history' | 'inventory'
+      title: string
+      category: string
+      address: string
+      userName: string | null
+      userImage: string | null
+      createdAt: Date
+    }
+
+    const activities: ActivityItem[] = [
+      ...recentHistories.map(h => ({
+        id: h.id, type: 'history' as const,
+        title: h.title, category: h.category,
+        address: h.house.address,
+        userName: h.house.userId ? (userMap[h.house.userId]?.name ?? null) : null,
+        userImage: h.house.userId ? (userMap[h.house.userId]?.image ?? null) : null,
+        createdAt: h.createdAt,
+      })),
+      ...recentInventories.map(i => ({
+        id: i.id, type: 'inventory' as const,
+        title: i.name, category: i.category,
+        address: i.house.address,
+        userName: i.house.userId ? (userMap[i.house.userId]?.name ?? null) : null,
+        userImage: i.house.userId ? (userMap[i.house.userId]?.image ?? null) : null,
+        createdAt: i.createdAt,
+      })),
+    ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).slice(0, 30)
+
+    return <AdminClient users={users} todayCount={todayCount} totalHouses={totalHouses} myId={me.id} activities={activities} />
   } catch (e) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0a0f', color: '#f87171', padding: 32, textAlign: 'center' }}>
