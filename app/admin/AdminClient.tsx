@@ -47,13 +47,14 @@ function timeAgo(date: Date) {
   return new Date(date).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
 }
 
-export default function AdminClient({ users, todayCount, totalHouses, myId, activities = [], allHouses = [] }: {
+export default function AdminClient({ users, todayCount, totalHouses, myId, activities = [], allHouses = [], todayThreshold }: {
   users: User[]
   todayCount: number
   totalHouses: number
   myId: string
   activities?: ActivityItem[]
   allHouses?: HouseItem[]
+  todayThreshold?: string
 }) {
   const [userList, setUserList] = useState(users)
   const [loading, setLoading] = useState<string | null>(null)
@@ -62,8 +63,10 @@ export default function AdminClient({ users, todayCount, totalHouses, myId, acti
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
+  const todayDate = todayThreshold ? new Date(todayThreshold) : today
+
   const filteredUsers = userList.filter(u => {
-    if (filter === 'today') return u.createdAt && new Date(u.createdAt) >= today
+    if (filter === 'today') return u.createdAt && new Date(u.createdAt) >= todayDate
     if (filter === 'houses') return u.houses.length > 0 || u.houseAccess.length > 0
     return true
   })

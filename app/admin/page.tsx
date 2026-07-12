@@ -84,9 +84,13 @@ export default async function AdminPage() {
       .map(u => ({ ...u, lastSeenAt: lastSeenMap[u.id] ?? null }))
       .sort((a, b) => (b.lastSeenAt?.getTime() ?? 0) - (a.lastSeenAt?.getTime() ?? 0))
 
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const todayCount = prismaUsers.filter(u => u.createdAt && new Date(u.createdAt) >= today).length
+    // 한국 시간(UTC+9) 기준 오늘 자정
+    const nowKST = new Date(Date.now() + 9 * 60 * 60 * 1000)
+    const todayKST = new Date(nowKST)
+    todayKST.setUTCHours(0, 0, 0, 0)
+    todayKST.setTime(todayKST.getTime() - 9 * 60 * 60 * 1000) // UTC로 변환
+    const todayCount = prismaUsers.filter(u => u.createdAt && new Date(u.createdAt) >= todayKST).length
+    const todayThreshold = todayKST.toISOString()
     const allHouses = await prisma.house.findMany({
       orderBy: { createdAt: 'desc' },
       select: {
@@ -148,7 +152,7 @@ export default async function AdminPage() {
       })),
     ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).slice(0, 30)
 
-    return <AdminClient users={users} todayCount={todayCount} totalHouses={totalHouses} myId={me.id} activities={activities} allHouses={allHouses} />
+    return <AdminClient users={users} todayCount={todayCount} totalHouses={totalHouses} myId={me.id} activities={activities} allHouses={allHouses} todayThreshold={todayThreshold} />
   } catch (e) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0a0f', color: '#f87171', padding: 32, textAlign: 'center' }}>
