@@ -48,9 +48,16 @@ export default function AdminClient({ users, todayCount, totalHouses, myId, acti
 }) {
   const [userList, setUserList] = useState(users)
   const [loading, setLoading] = useState<string | null>(null)
+  const [filter, setFilter] = useState<'all' | 'today' | 'houses'>('all')
 
   const today = new Date()
   today.setHours(0, 0, 0, 0)
+
+  const filteredUsers = userList.filter(u => {
+    if (filter === 'today') return u.createdAt && new Date(u.createdAt) >= today
+    if (filter === 'houses') return u.houses.length > 0 || u.houseAccess.length > 0
+    return true
+  })
 
   async function toggleAdmin(userId: string, current: boolean) {
     setLoading(userId)
@@ -82,24 +89,32 @@ export default function AdminClient({ users, todayCount, totalHouses, myId, acti
 
       {/* 요약 카드 */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 28 }}>
-        <div style={{ background: '#0d1a2e', border: '0.5px solid #1e3a5f', borderRadius: 14, padding: '14px 12px', textAlign: 'center' }}>
+        <button onClick={() => setFilter(filter === 'all' ? 'all' : 'all')} style={{ background: filter === 'all' ? '#1a2a4a' : '#0d1a2e', border: `0.5px solid ${filter === 'all' ? '#3a6abf' : '#1e3a5f'}`, borderRadius: 14, padding: '14px 12px', textAlign: 'center', cursor: 'pointer', fontFamily: 'inherit' }}>
           <p style={{ fontSize: 26, fontWeight: 700, color: '#60a5fa' }}>{userList.length}</p>
           <p style={{ fontSize: 13, color: '#666', marginTop: 2 }}>전체 가입자</p>
-        </div>
-        <div style={{ background: '#0d1f14', border: '0.5px solid #1a3d28', borderRadius: 14, padding: '14px 12px', textAlign: 'center' }}>
+        </button>
+        <button onClick={() => setFilter(f => f === 'today' ? 'all' : 'today')} style={{ background: filter === 'today' ? '#1a3d28' : '#0d1f14', border: `0.5px solid ${filter === 'today' ? '#34d399' : '#1a3d28'}`, borderRadius: 14, padding: '14px 12px', textAlign: 'center', cursor: 'pointer', fontFamily: 'inherit' }}>
           <p style={{ fontSize: 26, fontWeight: 700, color: '#34d399' }}>{todayCount}</p>
           <p style={{ fontSize: 13, color: '#666', marginTop: 2 }}>오늘 가입</p>
-        </div>
-        <div style={{ background: '#1a0f00', border: '0.5px solid #3d2000', borderRadius: 14, padding: '14px 12px', textAlign: 'center' }}>
+        </button>
+        <button onClick={() => setFilter(f => f === 'houses' ? 'all' : 'houses')} style={{ background: filter === 'houses' ? '#2a1800' : '#1a0f00', border: `0.5px solid ${filter === 'houses' ? '#f97316' : '#3d2000'}`, borderRadius: 14, padding: '14px 12px', textAlign: 'center', cursor: 'pointer', fontFamily: 'inherit' }}>
           <p style={{ fontSize: 26, fontWeight: 700, color: '#f97316' }}>{totalHouses}</p>
           <p style={{ fontSize: 13, color: '#666', marginTop: 2 }}>등록 자산</p>
-        </div>
+        </button>
       </div>
 
       {/* 가입자 목록 */}
-      <p style={{ fontSize: 13, color: '#444', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>가입자 목록</p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <p style={{ fontSize: 13, color: '#444', textTransform: 'uppercase', letterSpacing: 1 }}>
+          {filter === 'all' ? '가입자 목록' : filter === 'today' ? '오늘 가입자' : '자산 등록한 가입자'}
+          <span style={{ marginLeft: 8, color: '#60a5fa' }}>{filteredUsers.length}명</span>
+        </p>
+        {filter !== 'all' && (
+          <button onClick={() => setFilter('all')} style={{ background: 'none', border: 'none', color: '#555', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>전체 보기 ✕</button>
+        )}
+      </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {userList.map((user) => {
+        {filteredUsers.map((user) => {
           const isToday = user.createdAt && new Date(user.createdAt) >= today
           const isMe = user.id === myId
           const joinDate = user.createdAt
