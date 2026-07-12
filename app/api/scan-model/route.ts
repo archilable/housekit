@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const MODELS = [
-  'google/gemini-flash-1.5-8b',
   'google/gemini-2.0-flash-lite',
+  'google/gemini-flash-1.5-8b',
   'meta-llama/llama-3.2-11b-vision-instruct:free',
-  'google/gemma-4-31b-it:free',
+  'qwen/qwen2.5-vl-72b-instruct:free',
 ]
 
 async function tryModel(model: string, mediaType: string, base64Data: string): Promise<string | null> {
@@ -22,7 +22,7 @@ async function tryModel(model: string, mediaType: string, base64Data: string): P
           role: 'user',
           content: [
             { type: 'image_url', image_url: { url: `data:${mediaType};base64,${base64Data}` } },
-            { type: 'text', text: '이 제품 라벨/스티커 이미지에서 브랜드명과 모델명을 추출해줘. JSON 형식으로만 답해: {"brand": "브랜드명", "model": "모델명"}. 찾을 수 없으면 null로.' },
+            { type: 'text', text: '이 가전제품/설비 라벨 이미지에서 제조사(브랜드)명과 모델 번호를 찾아줘. 라벨에 적힌 텍스트를 정확히 읽어. JSON 형식으로만 답해(다른 텍스트 없이): {"brand": "브랜드명", "model": "모델번호"}. 찾을 수 없는 항목은 null로.' },
           ],
         }],
       }),

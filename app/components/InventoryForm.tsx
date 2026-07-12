@@ -56,39 +56,71 @@ export default function InventoryForm({ houseId, inventoryId, defaultValues = {}
   const scanFileRef = useRef<HTMLInputElement>(null)
   const contactFileRef = useRef<HTMLInputElement>(null)
 
+  // 라벨 이미지 압축 (최대 1200px, 200KB 이하)
+  async function compressLabelImage(file: File): Promise<string> {
+    return new Promise((resolve) => {
+      const img = new Image()
+      const url = URL.createObjectURL(file)
+      img.onload = () => {
+        URL.revokeObjectURL(url)
+        const canvas = document.createElement('canvas')
+        let { width, height } = img
+        const maxDim = 1200
+        if (width > maxDim || height > maxDim) {
+          const ratio = Math.min(maxDim / width, maxDim / height)
+          width = Math.round(width * ratio)
+          height = Math.round(height * ratio)
+        }
+        canvas.width = width
+        canvas.height = height
+        canvas.getContext('2d')!.drawImage(img, 0, 0, width, height)
+        let quality = 0.8
+        let dataUrl = canvas.toDataURL('image/jpeg', quality)
+        while (dataUrl.length > 200 * 1024 * 1.37 && quality > 0.3) {
+          quality -= 0.1
+          dataUrl = canvas.toDataURL('image/jpeg', quality)
+        }
+        resolve(dataUrl)
+      }
+      img.onerror = () => { URL.revokeObjectURL(url); resolve('') }
+      img.src = url
+    })
+  }
+
   // 라벨 스캔
   async function handleScan(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = async (ev) => {
-      const imageBase64 = ev.target?.result as string
-      setScanPreview(imageBase64)
-      setScanning(true)
-      setScanError(null)
-      setScanOk(false)
-      try {
-        const res = await fetch('/api/scan-model', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ imageBase64 }),
-        })
-        if (!res.ok) throw new Error(`서버 오류 ${res.status}`)
-        const data = await res.json()
-        if (data.brand) setBrand(data.brand)
-        if (data.model) setModel(data.model)
-        if (!data.brand && !data.model) {
-          setScanError('모델명을 인식하지 못했어요. 라벨이 잘 보이게 다시 찍어주세요.')
-        } else {
-          setScanOk(true)
-        }
-      } catch (e: unknown) {
-        setScanError(e instanceof Error ? e.message : '인식 실패')
-      } finally {
-        setScanning(false)
+    setScanning(true)
+    setScanError(null)
+    setScanOk(false)
+
+    // 미리보기용 원본 URL
+    const previewUrl = URL.createObjectURL(file)
+    setScanPreview(previewUrl)
+
+    try {
+      const imageBase64 = await compressLabelImage(file)
+      if (!imageBase64) throw new Error('이미지 변환 실패')
+      const res = await fetch('/api/scan-model', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64 }),
+      })
+      if (!res.ok) throw new Error(`서버 오류 ${res.status}`)
+      const data = await res.json()
+      if (data.brand) setBrand(data.brand)
+      if (data.model) setModel(data.model)
+      if (!data.brand && !data.model) {
+        setScanError('모델명을 인식하지 못했어요. 라벨이 잘 보이게 다시 찍어주세요.')
+      } else {
+        setScanOk(true)
       }
+    } catch (e: unknown) {
+      setScanError(e instanceof Error ? e.message : '인식 실패')
+    } finally {
+      setScanning(false)
     }
-    reader.readAsDataURL(file)
   }
 
   // 명함 이미지 압축
