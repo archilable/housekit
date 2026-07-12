@@ -123,7 +123,7 @@ export default function AdminClient({ users, todayCount, totalHouses, myId, acti
             <p style={{ fontSize: 13, color: '#444', textTransform: 'uppercase', letterSpacing: 1 }}>
               등록 자산 <span style={{ marginLeft: 8, color: '#f97316' }}>{allHouses.length}개</span>
             </p>
-            <button onClick={() => setFilter('home')} style={{ background: 'none', border: 'none', color: '#555', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>전체 보기 ✕</button>
+            <button onClick={() => setFilter('home')} style={{ background: 'none', border: 'none', color: '#555', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>✕</button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {allHouses.map(house => (
@@ -141,19 +141,16 @@ export default function AdminClient({ users, todayCount, totalHouses, myId, acti
         </div>
       )}
 
-      {/* 가입자 목록 */}
-      {filter !== 'houses' && (
+      {/* 가입자 목록 - 전체 가입자 or 오늘 가입 클릭 시만 */}
+      {(filter === 'all' || filter === 'today') && (
+      <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <p style={{ fontSize: 13, color: '#444', textTransform: 'uppercase', letterSpacing: 1 }}>
-          {filter === 'today' ? '오늘 가입자' : '가입자 목록'}
+          {filter === 'today' ? '오늘 가입자' : '전체 가입자'}
           <span style={{ marginLeft: 8, color: '#60a5fa' }}>{filteredUsers.length}명</span>
         </p>
-        {(filter === 'all' || filter === 'today') && filter !== 'home' && (
-          <button onClick={() => setFilter('home')} style={{ background: 'none', border: 'none', color: '#555', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>전체 보기 ✕</button>
-        )}
+        <button onClick={() => setFilter('home')} style={{ background: 'none', border: 'none', color: '#555', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>✕</button>
       </div>
-      )}
-      {filter !== 'houses' && (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {filteredUsers.map((user) => {
           const isToday = user.createdAt && new Date(user.createdAt) >= today
@@ -240,6 +237,7 @@ export default function AdminClient({ users, todayCount, totalHouses, myId, acti
             </div>
           )
         })}
+      </div>
       </div>
       )}
 
